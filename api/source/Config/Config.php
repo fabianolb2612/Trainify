@@ -1,7 +1,7 @@
 <?php
 
-const CONF_URL_BASE = "http://localhost/trabalho"; // URL base do site, geralmente localhost em desenvolvimento
-const CONF_URL_TEST = "http://localhost/trabalho"; // URL base do site, geralmente localhost em desenvolvimento
+const CONF_URL_BASE = "http://localhost/trainify"; // URL base do site, geralmente localhost em desenvolvimento
+const CONF_URL_TEST = "http://localhost/trainify"; // URL base do site, geralmente localhost em desenvolvimento
 
 const CONF_DB_HOST = "localhost";
 const CONF_DB_NAME = "trainify_db";
