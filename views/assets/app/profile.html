@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meu Perfil — TrainiFy</title>
+  <link rel="stylesheet" href="../../assets/_common/styles/reset.css" />
+  <link rel="stylesheet" href="../../assets/_common/styles/global.css" />
+  <link rel="stylesheet" href="../../assets/app/styles/app-layout.css" />
+  <link rel="stylesheet" href="../../assets/app/styles/profile.css" />
+</head>
+<body>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <div class="app-shell">
+
+    <!-- ── SIDEBAR ── -->
+    <aside class="sidebar" id="appSidebar">
+      <div class="sidebar-logo">
+        <img src="../../assets/_common/images/logo.svg" alt="TrainiFy" />
+      </div>
+      <nav class="sidebar-nav">
+        <span class="nav-section-label">Principal</span>
+        <a class="nav-item" href="dashboard.html" data-href="dashboard"><span class="nav-icon">◼</span> Dashboard</a>
+        <a class="nav-item" href="students.html" data-href="students"><span class="nav-icon">👥</span> Alunos</a>
+        <span class="nav-section-label">Conta</span>
+        <a class="nav-item active" href="profile.html" data-href="profile"><span class="nav-icon">👤</span> Meu Perfil</a>
+        <a class="nav-item" href="#" data-action="logout"><span class="nav-icon">↩</span> Sair</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-widget">
+          <div class="user-avatar" id="sidebarUserInitials">PT</div>
+          <div class="user-info">
+            <div class="user-name" id="sidebarUserName">Personal Trainer</div>
+            <div class="user-role">Treinador</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ── TOPBAR ── -->
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button class="icon-btn show-mobile" id="sidebarOpenBtn">☰</button>
+        <h1 class="topbar-title">Meu Perfil</h1>
+      </div>
+      <div class="topbar-actions">
+        <span style="font-size:0.85rem;color:var(--clr-grey-300);" id="topbarUserName"></span>
+      </div>
+    </header>
+
+    <!-- ── MAIN ── -->
+    <main class="main-content">
+      <div class="page-header">
+        <div>
+          <h2 class="page-title">Meu Perfil</h2>
+          <p class="page-subtitle">Gerencie seus dados de personal trainer</p>
+        </div>
+      </div>
+
+      <div class="profile-page-grid">
+
+        <!-- Sidebar card -->
+        <div class="profile-sidebar-card">
+          <div class="profile-avatar-xl" id="profileAvatarInitials">PT</div>
+          <div class="profile-sidebar-name" id="profileSidebarName">—</div>
+          <div class="profile-sidebar-role">Personal Trainer</div>
+
+          <div class="profile-sidebar-stats">
+            <div class="profile-mini-stat">
+              <div class="num" id="statStudents">—</div>
+              <div class="lbl">Alunos</div>
+            </div>
+            <div class="profile-mini-stat">
+              <div class="num" id="statWorkouts">—</div>
+              <div class="lbl">Treinos</div>
+            </div>
+            <div class="profile-mini-stat" style="grid-column:1/-1;">
+              <div class="num" id="statMonths">—</div>
+              <div class="lbl">Meses ativo</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main form -->
+        <div class="profile-main">
+
+          <!-- Personal info -->
+          <div class="profile-section-card">
+            <div class="profile-section-header">
+              <h3>Informações Pessoais</h3>
+            </div>
+            <div class="profile-form">
+              <form id="profileForm">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Nome Completo</label>
+                    <input class="form-control" id="profileName" name="profileName" placeholder="Seu nome completo" />
+                  </div>
+                  <div class="form-group">
+                    <label>Email</label>
+                    <input class="form-control" id="profileEmail" name="profileEmail" type="email" placeholder="seu@email.com" disabled style="opacity:0.6;" />
+                  </div>
+                  <div class="form-group">
+                    <label>Telefone</label>
+                    <input class="form-control" id="profilePhone" name="profilePhone" placeholder="(51) 99999-0000" />
+                  </div>
+                  <div class="form-group">
+                    <label>CREF</label>
+                    <input class="form-control" id="profileCref" name="profileCref" placeholder="000000-G/RS" />
+                  </div>
+                  <div class="form-group">
+                    <label>Cidade</label>
+                    <input class="form-control" id="profileCity" name="profileCity" placeholder="Porto Alegre, RS" />
+                  </div>
+                  <div class="form-group">
+                    <label>Especialidade</label>
+                    <input class="form-control" id="profileSpecialty" name="profileSpecialty" placeholder="Hipertrofia, Funcional..." />
+                  </div>
+                  <div class="form-group" style="grid-column:1/-1;">
+                    <label>Bio</label>
+                    <textarea class="form-control" id="profileBio" name="profileBio" placeholder="Conte um pouco sobre você e sua metodologia de trabalho..."></textarea>
+                  </div>
+                </div>
+                <div class="profile-form-actions">
+                  <button type="button" class="btn btn-ghost" id="profileCancelBtn">Cancelar</button>
+                  <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Change password -->
+          <div class="profile-section-card">
+            <div class="profile-section-header">
+              <h3>Alterar Senha</h3>
+            </div>
+            <div class="profile-form">
+              <form id="passwordForm">
+                <div class="form-row">
+                  <div class="form-group" style="grid-column:1/-1;">
+                    <label>Senha Atual</label>
+                    <input class="form-control" type="password" id="currentPassword" name="currentPassword" placeholder="Digite sua senha atual" />
+                  </div>
+                  <div class="form-group">
+                    <label>Nova Senha</label>
+                    <input class="form-control" type="password" id="newPassword" name="newPassword" placeholder="Mín. 8 caracteres" />
+                  </div>
+                  <div class="form-group">
+                    <label>Confirmar Nova Senha</label>
+                    <input class="form-control" type="password" id="confirmPassword" name="confirmPassword" placeholder="Repita a nova senha" />
+                  </div>
+                </div>
+                <div class="profile-form-actions">
+                  <button type="submit" class="btn btn-outline">Alterar Senha</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Danger zone -->
+          <div class="profile-section-card" style="border-color:rgba(255,68,68,0.2);">
+            <div class="profile-section-header" style="background:rgba(255,68,68,0.04);">
+              <h3 style="color:var(--clr-danger);">Zona de Perigo</h3>
+            </div>
+            <div class="profile-form">
+              <p style="color:var(--clr-grey-300);font-size:0.9rem;margin-bottom:var(--space-md);">
+                Ações irreversíveis. Tenha certeza antes de prosseguir.
+              </p>
+              <button class="btn btn-danger" type="button" id="deleteAccountBtn">
+                Excluir minha conta
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../../assets/app/scripts/app-layout.js"></script>
+  <script src="../../assets/app/scripts/profile.js"></script>
+</body>
+</html>

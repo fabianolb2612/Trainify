@@ -1,0 +1,121 @@
+/* TrainiFy - app/styles/profile.css */
+
+.profile-page-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: var(--space-xl);
+  align-items: start;
+}
+.profile-sidebar-card {
+  background: var(--clr-bg-card);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl);
+  text-align: center;
+  position: sticky;
+  top: 80px;
+}
+.profile-avatar-xl {
+  width: 100px; height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--clr-neon-dim), var(--clr-neon));
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 2.5rem;
+  color: #000;
+  margin: 0 auto var(--space-md);
+  border: 3px solid rgba(170,255,0,0.3);
+  box-shadow: 0 0 24px rgba(170,255,0,0.15);
+}
+.profile-sidebar-name { font-size: 1.3rem; font-weight: 800; margin-bottom: 4px; }
+.profile-sidebar-role {
+  font-size: 0.8rem;
+  color: var(--clr-neon);
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-md);
+}
+.profile-sidebar-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-sm);
+  margin: var(--space-md) 0;
+}
+.profile-mini-stat {
+  background: var(--clr-bg-3);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-sm);
+}
+.profile-mini-stat .num {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--clr-neon);
+}
+.profile-mini-stat .lbl {
+  font-size: 0.72rem;
+  color: var(--clr-grey-500);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.profile-main { display: flex; flex-direction: column; gap: var(--space-lg); }
+.profile-section-card {
+  background: var(--clr-bg-card);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.profile-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--clr-border);
+}
+.profile-section-header h3 { font-size: 1rem; font-weight: 700; }
+.profile-form { padding: var(--space-lg); }
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+.profile-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+@media (max-width: 900px) {
+  .profile-page-grid { grid-template-columns: 1fr; }
+  .profile-sidebar-card { position: static; }
+  .form-row { grid-template-columns: 1fr; }
+}
+
+/* ════════════════════════════════════════════════
+   SMARTPHONE MEDIA QUERIES  (≤ 480px)
+   ════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+
+  .profile-page-grid { grid-template-columns: 1fr; gap: 16px; }
+  .profile-sidebar-card {
+    position: static;
+    padding: 20px 16px;
+  }
+  .profile-avatar-xl { width: 72px; height: 72px; font-size: 1.8rem; }
+  .profile-sidebar-name { font-size: 1.1rem; }
+  .profile-sidebar-stats { grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .profile-mini-stat .num { font-size: 1.2rem; }
+
+  .profile-section-header { padding: 12px 14px; }
+  .profile-section-header h3 { font-size: 0.9rem; }
+  .profile-form { padding: 14px; }
+  .form-row { grid-template-columns: 1fr; }
+  .profile-form-actions { flex-direction: column; }
+  .profile-form-actions .btn { width: 100%; justify-content: center; }
+}

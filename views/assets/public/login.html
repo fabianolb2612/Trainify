@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login — TrainiFy</title>
+  <link rel="stylesheet" href="../_common/styles/reset.css" />
+  <link rel="stylesheet" href="../_common/styles/global.css" />
+  <link rel="stylesheet" href="styles/auth.css" />
+</head>
+<body>
+  <div class="auth-page">
+
+    <!-- Left: Form -->
+    <div class="auth-panel">
+      <div class="auth-box">
+        <a href="../../index.html" class="auth-logo">
+          <img src="../_common/images/logo.svg" alt="TrainiFy" />
+        </a>
+        <h1 class="auth-heading">Bem-vindo de volta</h1>
+        <p class="auth-sub">Entre na sua conta para gerenciar seus alunos.</p>
+
+        <div class="alert alert-error" id="loginAlert"></div>
+
+        <form class="auth-form" id="loginForm" novalidate>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input
+              class="form-control"
+              type="email"
+              id="email"
+              name="email"
+              placeholder="seu@email.com"
+              autocomplete="email"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="password">Senha</label>
+            <div class="input-wrapper">
+              <input
+                class="form-control"
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Sua senha"
+                autocomplete="current-password"
+                required
+              />
+              <button type="button" class="toggle-password" aria-label="Mostrar senha">👁</button>
+            </div>
+          </div>
+
+          <div style="display:flex;justify-content:flex-end;margin-bottom:var(--space-md);">
+            <a href="#" style="font-size:0.85rem;color:var(--clr-neon);">Esqueceu a senha?</a>
+          </div>
+
+          <button type="submit" class="btn btn-primary auth-btn">
+            Entrar 
+          </button>
+        </form>
+
+        <div class="auth-divider">ou</div>
+
+        <div class="auth-footer-text">
+          Não tem uma conta? <a href="register.html">Cadastre-se grátis</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Branding -->
+    <div class="auth-brand-panel">
+      <div class="brand-content">
+        <div class="brand-tagline">
+          Sua gestão de<br/>alunos no <span class="accent">modo</span><br/><span class="accent">profissional.</span>
+        </div>
+        <p class="brand-desc">
+          Centenas de personal trainers já usam o TrainiFy para organizar alunos, criar treinos e acompanhar resultados.
+        </p>
+        <div class="brand-features">
+          <div class="brand-feat">
+            <div class="brand-feat-icon">👥</div>
+            <span>Gerencie todos os seus alunos em um só lugar</span>
+          </div>
+          <div class="brand-feat">
+            <div class="brand-feat-icon">🏋</div>
+            <span>Monte treinos estruturados com séries e reps</span>
+          </div>
+          <div class="brand-feat">
+            <div class="brand-feat-icon">📄</div>
+            <span>Exporte fichas de treino em PDF profissional</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="scripts/auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,269 @@
+/* TrainiFy - app/styles/student.css */
+
+/* ── Profile Header ──────────────────────────────── */
+.profile-hero {
+  background: linear-gradient(135deg, var(--clr-bg-card) 0%, rgba(170,255,0,0.04) 100%);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl);
+  margin-bottom: var(--space-xl);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xl);
+}
+.profile-avatar-lg {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--clr-neon-dim), var(--clr-neon));
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 2rem;
+  color: #000;
+  flex-shrink: 0;
+  border: 3px solid rgba(170,255,0,0.3);
+}
+.profile-meta { flex: 1; }
+.profile-name { font-size: 1.8rem; font-weight: 800; margin-bottom: 4px; }
+.profile-tags { display: flex; flex-wrap: wrap; gap: var(--space-sm); margin-top: var(--space-sm); }
+.profile-actions { display: flex; gap: var(--space-sm); flex-wrap: wrap; }
+
+/* ── Info Grid ───────────────────────────────────── */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+}
+.info-block {
+  background: var(--clr-bg-card);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md) var(--space-lg);
+}
+.info-block-label {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--clr-grey-500);
+  margin-bottom: 6px;
+}
+.info-block-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--clr-white);
+}
+
+/* ── Notes ──────────────────────────────────────── */
+.notes-card {
+  background: var(--clr-bg-card);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+.notes-card h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: var(--space-md);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.notes-text {
+  color: var(--clr-grey-300);
+  font-size: 0.9rem;
+  line-height: 1.8;
+  padding: var(--space-md);
+  background: var(--clr-bg-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--clr-border);
+  min-height: 80px;
+}
+
+/* ── Workout Panel ───────────────────────────────── */
+.workout-section {
+  background: var(--clr-bg-card);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.workout-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--clr-border);
+  background: rgba(170,255,0,0.03);
+}
+.workout-day {
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--clr-border);
+}
+.workout-day:last-child { border-bottom: none; }
+.day-label {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--clr-neon);
+  margin-bottom: var(--space-sm);
+}
+.exercise-list { display: flex; flex-direction: column; gap: 8px; }
+.exercise-row {
+  display: grid;
+  grid-template-columns: 1fr 80px 80px 80px;
+  gap: var(--space-md);
+  align-items: center;
+  padding: 10px 14px;
+  background: var(--clr-bg-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--clr-border);
+  font-size: 0.88rem;
+}
+.exercise-name { font-weight: 600; }
+.exercise-meta {
+  font-size: 0.78rem;
+  color: var(--clr-grey-500);
+  text-align: center;
+}
+.exercise-meta span {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--clr-white);
+}
+
+@media (max-width: 640px) {
+  .profile-hero { flex-direction: column; align-items: flex-start; gap: var(--space-md); }
+  .exercise-row { grid-template-columns: 1fr 60px 60px 60px; }
+}
+
+/* ════════════════════════════════════════════════
+   SMARTPHONE MEDIA QUERIES  (≤ 480px)
+   ════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+
+  /* Profile hero stacks */
+  .profile-hero {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px;
+  }
+  .profile-avatar-lg { width: 60px; height: 60px; font-size: 1.4rem; }
+  .profile-name { font-size: 1.4rem; }
+  .profile-actions {
+    flex-wrap: wrap;
+    gap: 8px;
+    width: 100%;
+  }
+  .profile-actions .btn { flex: 1; justify-content: center; font-size: 0.78rem; }
+
+  /* Info grid: 2 columns */
+  .info-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .info-block { padding: 10px 12px; }
+  .info-block-value { font-size: 0.88rem; }
+
+  /* Notes */
+  .notes-card { padding: 14px; }
+  .notes-text { font-size: 0.85rem; }
+
+  /* Exercise rows: hide rest column, compress */
+  .exercise-row {
+    grid-template-columns: 1fr 56px 56px;
+    gap: 6px;
+    padding: 8px 10px;
+    font-size: 0.82rem;
+  }
+  .exercise-row .exercise-meta:last-child { display: none; }
+  .exercise-meta span { font-size: 0.85rem; }
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 1000;
+}
+.modal-overlay.hidden { display: none; }
+.modal-card {
+  width: min(980px, 100%);
+  max-height: 90vh;
+  overflow: hidden;
+  background: var(--clr-bg-card);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 24px 80px rgba(0,0,0,0.18);
+  display: flex;
+  flex-direction: column;
+}
+.modal-header,
+.modal-footer {
+  padding: var(--space-md) var(--space-lg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+.modal-header { border-bottom: 1px solid var(--clr-border); }
+.modal-body {
+  padding: var(--space-lg);
+  overflow: auto;
+  display: grid;
+  gap: var(--space-lg);
+}
+.modal-subtitle {
+  margin-top: 6px;
+  color: var(--clr-grey-400);
+  font-size: 0.92rem;
+}
+.modal-workout-day {
+  background: var(--clr-bg-3);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+}
+.modal-day-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+.modal-day-note { color: var(--clr-grey-400); font-size: 0.85rem; margin-top: 4px; }
+.modal-exercises {
+  display: grid;
+  gap: 10px;
+}
+.modal-exercise-row {
+  display: grid;
+  grid-template-columns: 1fr 80px 80px 80px;
+  gap: var(--space-sm);
+  align-items: center;
+}
+.modal-input {
+  width: 100%;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-md);
+  background: var(--clr-bg-card);
+  color: var(--clr-white);
+}
+.modal-input:disabled {
+  opacity: 0.7;
+}
+@media (max-width: 720px) {
+  .modal-card { max-height: 100vh; }
+  .modal-body { padding: var(--space-md); }
+  .modal-exercise-row { grid-template-columns: 1fr 64px 64px 64px; }
+}

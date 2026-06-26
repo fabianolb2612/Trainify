@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cadastro — TrainiFy</title>
+  <link rel="stylesheet" href="../_common/styles/reset.css" />
+  <link rel="stylesheet" href="../_common/styles/global.css" />
+  <link rel="stylesheet" href="styles/auth.css" />
+</head>
+<body>
+  <div class="auth-page">
+
+    <!-- Left: Form -->
+    <div class="auth-panel">
+      <div class="auth-box" style="max-width:460px;">
+        <a href="../../index.html" class="auth-logo">
+          <img src="../_common/images/logo.svg" alt="TrainiFy" />
+        </a>
+        <h1 class="auth-heading">Crie sua conta</h1>
+        <p class="auth-sub">Comece grátis. Sem cartão de crédito.</p>
+
+        <div class="alert" id="registerAlert"></div>
+
+        <form class="auth-form" id="registerForm" novalidate>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 var(--space-md);">
+            <div class="form-group" style="grid-column:1/-1;">
+              <label for="name">Nome Completo *</label>
+              <input class="form-control" type="text" id="name" name="name" placeholder="João da Silva" required autocomplete="name" />
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email *</label>
+              <input class="form-control" type="email" id="email" name="email" placeholder="joao@email.com" required autocomplete="email" />
+            </div>
+
+            <div class="form-group">
+              <label for="phone">Telefone</label>
+              <input class="form-control" type="tel" id="phone" name="phone" placeholder="(51) 99999-0000" />
+            </div>
+
+            <div class="form-group" style="grid-column:1/-1;">
+              <label for="cref">CREF</label>
+              <input class="form-control" type="text" id="cref" name="cref" placeholder="000000-G/RS" />
+            </div>
+
+            <div class="form-group">
+              <label for="password">Senha *</label>
+              <div class="input-wrapper">
+                <input class="form-control" type="password" id="password" name="password" placeholder="Mín. 8 caracteres" required autocomplete="new-password" />
+                <button type="button" class="toggle-password" aria-label="Mostrar senha">👁</button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="passwordConfirm">Confirmar Senha *</label>
+              <div class="input-wrapper">
+                <input class="form-control" type="password" id="passwordConfirm" name="passwordConfirm" placeholder="Repita a senha" required autocomplete="new-password" />
+                <button type="button" class="toggle-password" aria-label="Mostrar senha">👁</button>
+              </div>
+            </div>
+          </div>
+
+          <p style="font-size:0.8rem;color:var(--clr-grey-500);margin-bottom:var(--space-md);line-height:1.5;">
+            Ao se cadastrar você concorda com os
+            <a href="#" style="color:var(--clr-neon);">Termos de Uso</a> e
+            <a href="#" style="color:var(--clr-neon);">Política de Privacidade</a>.
+          </p>
+
+          <button type="submit" class="btn btn-primary auth-btn">
+            Criar conta grátis
+          </button>
+        </form>
+
+        <div class="auth-footer-text" style="margin-top:var(--space-lg);">
+          Já tem uma conta? <a href="login.html">Fazer login</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Branding -->
+    <div class="auth-brand-panel">
+      <div class="brand-content">
+        <div class="brand-tagline">
+          Comece a organizar<br/>seus alunos<br/><span class="accent">hoje mesmo.</span>
+        </div>
+        <p class="brand-desc">
+          Cadastro rápido. Nenhum cartão necessário. Configure tudo em menos de 2 minutos.
+        </p>
+        <div class="brand-features">
+          <div class="brand-feat">
+            <div class="brand-feat-icon">✓</div>
+            <span>Gerencie até 5 alunos com acesso gratuito</span>
+          </div>
+          <div class="brand-feat">
+            <div class="brand-feat-icon">🚀</div>
+            <span>Configuração em menos de 2 minutos</span>
+          </div>
+          <div class="brand-feat">
+            <div class="brand-feat-icon">🔒</div>
+            <span>Seus dados 100% seguros e privados</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="scripts/auth.js"></script>
+</body>
+</html>

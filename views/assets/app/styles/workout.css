@@ -1,0 +1,167 @@
+/* TrainiFy - app/styles/workout.css */
+
+.workout-builder {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.workout-meta-card {
+  background: var(--clr-bg-card);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+}
+.workout-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-md);
+}
+
+.day-block {
+  background: var(--clr-bg-card);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.day-block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--clr-border);
+  background: rgba(170,255,0,0.04);
+}
+.day-block-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--clr-neon);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.day-block-body { padding: var(--space-md); display: flex; flex-direction: column; gap: 8px; }
+
+/* Exercise table */
+.ex-table-header {
+  display: grid;
+  grid-template-columns: 1fr 90px 90px 90px 60px;
+  gap: var(--space-sm);
+  padding: 6px 14px;
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--clr-grey-500);
+}
+.ex-row {
+  display: grid;
+  grid-template-columns: 1fr 90px 90px 90px 60px;
+  gap: var(--space-sm);
+  align-items: center;
+  padding: 12px 14px;
+  background: var(--clr-bg-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--clr-border);
+  font-size: 0.88rem;
+  transition: var(--transition);
+}
+.ex-row:hover { border-color: rgba(170,255,0,0.2); }
+.ex-num {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--clr-grey-500);
+  margin-right: 8px;
+}
+.ex-name-cell {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+}
+.ex-cell {
+  text-align: center;
+  color: var(--clr-grey-100);
+}
+.ex-actions { text-align: right; }
+.ex-edit-btn {
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  border-radius: var(--radius-sm);
+}
+
+.add-exercise-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border: 1px dashed var(--clr-border-light);
+  border-radius: var(--radius-md);
+  color: var(--clr-grey-500);
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.add-exercise-row:hover {
+  border-color: rgba(170,255,0,0.4);
+  color: var(--clr-neon);
+  background: rgba(170,255,0,0.03);
+}
+.add-exercise-row span { font-size: 1.2rem; }
+
+.rest-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.78rem;
+  color: var(--clr-info);
+}
+
+@media (max-width: 640px) {
+  .ex-table-header { display: none; }
+  .ex-row { grid-template-columns: 1fr 70px 70px 70px 40px; font-size: 0.8rem; }
+}
+
+/* ════════════════════════════════════════════════
+   SMARTPHONE MEDIA QUERIES  (≤ 480px)
+   ════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+
+  .workout-meta-card { padding: 16px; }
+  .workout-meta-card > div:first-child {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .workout-meta-card > div:first-child > div:last-child {
+    width: 100%;
+  }
+  .workout-meta-card > div:first-child > div:last-child .btn {
+    flex: 1;
+    justify-content: center;
+  }
+  .workout-meta-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+
+  /* Day block header stacks */
+  .day-block-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 12px 14px;
+  }
+  .day-block-title { font-size: 0.9rem; }
+
+  /* Exercise table: hide header, 3 cols */
+  .ex-table-header { display: none; }
+  .ex-row {
+    grid-template-columns: 1fr 52px 52px 52px 36px;
+    gap: 4px;
+    padding: 10px 10px;
+    font-size: 0.8rem;
+  }
+  .ex-num { font-size: 0.7rem; margin-right: 4px; }
+
+  .add-exercise-row { padding: 9px 12px; font-size: 0.82rem; }
+}
