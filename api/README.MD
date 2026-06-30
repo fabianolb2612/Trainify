@@ -5,7 +5,7 @@ API REST desenvolvida em PHP para gerenciamento de usuários, alunos e treinos d
 ## URL Base
 
 ```http
-http://localhost/trabalho/api
+http://localhost/trainify/api
 ```
 
 ## Autenticação
@@ -30,12 +30,12 @@ POST /users/register
 
 ```json
 {
-  "name": "João Dorea",
-  "email": "joao@trainify.com.br",
+  "name": "Fabiano Braga",
+  "email": "fabiano@trainify.com.br",
   "password": "12345678",
   "cref": "012345-G/RS",
   "phone": "(51) 99999-9999",
-  "city": "Porto Alegre",
+  "city": "Charqeuadas",
   "bio": "Personal trainer especializado em hipertrofia",
   "specialty": "Hipertrofia"
 }
@@ -51,8 +51,8 @@ POST /users/register
   "message": "Usuário cadastrado com sucesso",
   "data": {
     "id": 4,
-    "name": "João Dorea",
-    "email": "joao@trainify.com.br"
+    "name": "Fabiano Braga",
+    "email": "fabiano@trainify.com.br"
   }
 }
 ```
@@ -81,7 +81,7 @@ POST /users/login
 
 ```json
 {
-  "email": "joao@trainify.com.br",
+  "email": "fabiano@trainify.com.br",
   "password": "12345678"
 }
 ```
@@ -97,8 +97,8 @@ POST /users/login
   "data": {
     "id": 2,
     "type_id": 2,
-    "name": "João Dorea",
-    "email": "joao@trainify.com.br",
+    "name": "Fabiano Braga",
+    "email": "fabiano@trainify.com.br",
     "token": "TOKEN_JWT"
   }
 }
@@ -136,11 +136,11 @@ Obrigatório token JWT de usuário treinador.
 {
   "training_level_id": 1,
   "goal_id": 5,
-  "name": "Lucas Almeida",
-  "email": "lucas@email.com",
+  "name": "Alex Possamai",
+  "email": "alex@email.com",
   "phone": "(51) 99999-1234",
   "birthdate": "2002-08-15",
-  "gym": "SmartFit",
+  "gym": "fitness academy",
   "notes": "Aluno iniciante"
 }
 ```
@@ -158,7 +158,7 @@ Obrigatório token JWT de usuário treinador.
     "user_id": 2,
     "training_level_id": 1,
     "goal_id": 5,
-    "name": "Lucas Almeida"
+    "name": "Alex Possamai"
   }
 }
 ```
@@ -211,11 +211,11 @@ PUT /students/{student_id}
 {
   "training_level_id": 2,
   "goal_id": 1,
-  "name": "Lucas Almeida Atualizado",
-  "email": "lucas@email.com",
+  "name": "Alex Atualizado",
+  "email": "alex@email.com",
   "phone": "(51) 98888-7777",
   "birthdate": "2002-08-15",
-  "gym": "BlueGym",
+  "gym": "fitness",
   "notes": "Aluno atualizado"
 }
 ```
@@ -278,7 +278,7 @@ Obrigatório token JWT de usuário treinador.
   "data": {
     "id": 4,
     "name": "Treino A - Hipertrofia",
-    "student_name": "Lucas Almeida",
+    "student_name": "Alex Possamai",
     "goal_name": "Hipertrofia",
     "training_level": "Intermediário"
   }
@@ -735,4 +735,3 @@ Retorna um arquivo PDF contendo todas as informações do treino selecionado.
 | 500    | Erro interno ao processar a requisição          |
 
 ---
-
