@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Usuários — TrainiFy Admin</title>
+  <link rel="stylesheet" href="../../assets/_common/styles/reset.css" />
+  <link rel="stylesheet" href="../../assets/_common/styles/global.css" />
+  <link rel="stylesheet" href="../../assets/admin/styles/admin-layout.css" />
+</head>
+<body>
+  <div class="sidebar-overlay" id="adminOverlay"></div>
+  <div class="admin-shell">
+
+    <!-- ── ADMIN SIDEBAR ── -->
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="admin-sidebar-header">
+        <img src="../../assets/_common/images/logo.svg" alt="TrainiFy" />
+        <span class="admin-tag">⚙ Admin Panel</span>
+      </div>
+      <nav class="admin-nav">
+        <span class="admin-nav-label">Painel</span>
+        <a class="admin-nav-item" href="dashboard.html" data-href="dashboard"><span>◼</span> Dashboard</a>
+        <a class="admin-nav-item active" href="users.html" data-href="users"><span>👥</span> Usuários</a>
+        <a class="admin-nav-item" href="faqs.html" data-href="faqs"><span>❓</span> FAQs</a>
+        <span class="admin-nav-label">Conta</span>
+        <a class="admin-nav-item" href="../app/dashboard.html"><span>↩</span> Voltar ao App</a>
+        <a class="admin-nav-item" href="#" data-action="logout"><span>⏻</span> Sair</a>
+      </nav>
+      <div class="admin-sidebar-footer">TrainiFy Admin v1.0</div>
+    </aside>
+
+    <!-- ── ADMIN TOPBAR ── -->
+    <header class="admin-topbar">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button class="icon-btn show-mobile" id="adminMenuBtn">☰</button>
+        <h1 class="admin-topbar-title">Usuários</h1>
+      </div>
+      <div class="admin-topbar-right">
+        <div class="admin-user">
+          <div class="admin-avatar" id="adminAvatarInitials">AD</div>
+          <span id="adminUserName">Admin</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ── ADMIN MAIN ── -->
+    <main class="admin-main">
+      <div class="admin-page-header">
+        <div>
+          <h1>Gerenciar Usuários</h1>
+          <p style="color:#555;font-size:0.88rem;margin-top:4px;">Todos os personal trainers cadastrados no sistema.</p>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn-admin btn-admin-ghost">↓ Exportar CSV</button>
+          <button class="btn-admin btn-admin-primary">+ Convidar Usuário</button>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="admin-stats">
+        <div class="admin-stat">
+          <div class="admin-stat-icon">👥</div>
+          <div class="admin-stat-num" id="adminStatUsers">—</div>
+          <div class="admin-stat-label">Total</div>
+        </div>
+        <div class="admin-stat">
+          <div class="admin-stat-icon">✓</div>
+          <div class="admin-stat-num" style="color:var(--clr-neon);" id="adminStatActive">—</div>
+          <div class="admin-stat-label">Ativos</div>
+        </div>
+        <div class="admin-stat">
+          <div class="admin-stat-icon">🆕</div>
+          <div class="admin-stat-num" id="adminStatNew">—</div>
+          <div class="admin-stat-label">Novos este mês</div>
+        </div>
+      </div>
+
+      <!-- Users table -->
+      <div class="admin-table-wrapper">
+        <div class="admin-table-toolbar">
+          <span style="font-family:var(--font-display);font-weight:700;color:#ccc;">Lista de Usuários</span>
+          <div style="display:flex;gap:8px;">
+            <input class="admin-filter" type="search" id="userSearch" placeholder="🔍 Buscar usuário..." />
+            <select class="admin-filter" id="roleFilter">
+              <option value="">Todos os papéis</option>
+              <option value="trainer">Trainer</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+        </div>
+
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Usuário</th>
+              <th>Telefone</th>
+              <th>Papel</th>
+              <th>Status</th>
+              <th>Cadastro</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="usersTableBody">
+            <tr><td colspan="7" style="text-align:center;padding:32px;"><span class="spinner"></span></td></tr>
+          </tbody>
+        </table>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:var(--space-md) var(--space-lg);border-top:1px solid #1a1a1a;">
+          <span style="font-size:0.82rem;color:#555;" id="usersCountLabel">— usuários</span>
+          <div style="display:flex;gap:6px;" id="usersPagination"></div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="../../assets/admin/scripts/admin.js"></script>
+  <script src="../../assets/admin/scripts/admin-users.js"></script>
+</body>
+</html>

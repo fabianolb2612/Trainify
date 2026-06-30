@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard — TrainiFy</title>
+  <link rel="stylesheet" href="../../assets/_common/styles/reset.css" />
+  <link rel="stylesheet" href="../../assets/_common/styles/global.css" />
+  <link rel="stylesheet" href="../../assets/admin/styles/admin-layout.css" />
+</head>
+<body>
+  <div class="sidebar-overlay" id="adminOverlay"></div>
+  <div class="admin-shell">
+
+    <!-- ── ADMIN SIDEBAR ── -->
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="admin-sidebar-header">
+        <img src="../../assets/_common/images/logo.svg" alt="TrainiFy" />
+        <span class="admin-tag">⚙ Admin Panel</span>
+      </div>
+
+      <nav class="admin-nav">
+        <span class="admin-nav-label">Painel</span>
+        <a class="admin-nav-item active" href="dashboard.html" data-href="dashboard">
+          <span>◼</span> Dashboard
+        </a>
+        <a class="admin-nav-item" href="users.html" data-href="users">
+          <span>👥</span> Usuários
+        </a>
+        <a class="admin-nav-item" href="faqs.html" data-href="faqs">
+          <span>❓</span> FAQs
+        </a>
+
+        <span class="admin-nav-label">Conta</span>
+        <a class="admin-nav-item" href="../app/dashboard.html">
+          <span>↩</span> Voltar ao App
+        </a>
+        <a class="admin-nav-item" href="#" data-action="logout">
+          <span>⏻</span> Sair
+        </a>
+      </nav>
+
+      <div class="admin-sidebar-footer">TrainiFy Admin v1.0</div>
+    </aside>
+
+    <!-- ── ADMIN TOPBAR ── -->
+    <header class="admin-topbar">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button class="icon-btn show-mobile" id="adminMenuBtn">☰</button>
+        <h1 class="admin-topbar-title">Dashboard</h1>
+      </div>
+      <div class="admin-topbar-right">
+        <span class="admin-tag">⚡ Ambiente de Produção</span>
+        <div class="admin-user">
+          <div class="admin-avatar" id="adminAvatarInitials">AD</div>
+          <span id="adminUserName">Admin</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ── ADMIN MAIN ── -->
+    <main class="admin-main">
+      <div class="admin-page-header">
+        <h1>Visão Geral do Sistema</h1>
+        <div style="display:flex;gap:8px;">
+          <button class="btn-admin btn-admin-ghost">↻ Atualizar</button>
+          <button class="btn-admin btn-admin-primary">↓ Exportar Relatório</button>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="admin-stats">
+        <div class="admin-stat">
+          <div class="admin-stat-icon">👥</div>
+          <div class="admin-stat-num" id="adminStatUsers">—</div>
+          <div class="admin-stat-label">Usuários Cadastrados</div>
+        </div>
+        <div class="admin-stat">
+          <div class="admin-stat-icon">🏃</div>
+          <div class="admin-stat-num" id="adminStatStudents">—</div>
+          <div class="admin-stat-label">Alunos no Sistema</div>
+        </div>
+        <div class="admin-stat">
+          <div class="admin-stat-icon">🏋</div>
+          <div class="admin-stat-num" id="adminStatWorkouts">—</div>
+          <div class="admin-stat-label">Treinos Criados</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr;gap:var(--space-lg);">
+
+        <!-- Activity feed -->
+        <div class="admin-table-wrapper">
+          <div class="admin-table-toolbar">
+            <span style="font-family:var(--font-display);font-weight:700;color:#ccc;">Atividade Recente</span>
+          </div>
+          <div style="padding:var(--space-md);" id="adminActivity">
+            <div style="text-align:center;padding:24px;"><span class="spinner"></span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent users snippet -->
+      <div style="margin-top:var(--space-lg);">
+        <div class="admin-table-wrapper">
+          <div class="admin-table-toolbar">
+            <span style="font-family:var(--font-display);font-weight:700;color:#ccc;">Usuários Recentes</span>
+            <a href="users.html" class="btn-admin btn-admin-ghost">Ver todos →</a>
+          </div>
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Usuário</th>
+                <th>Status</th>
+                <th>Cadastro</th>
+              </tr>
+            </thead>
+            <tbody id="recentUsersBody">
+              <tr><td colspan="4" style="text-align:center;padding:32px;"><span class="spinner"></span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="../../assets/admin/scripts/admin.js"></script>
+  <script src="../../assets/admin/scripts/admin-dashboard.js"></script>
+  <script>
+    // Recent users rendered by admin-dashboard.js using MOCK_RECENT_USERS
+  </script>
+</body>
+</html>

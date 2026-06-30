@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Treinos — TrainiFy</title>
+  <link rel="stylesheet" href="../../assets/_common/styles/reset.css" />
+  <link rel="stylesheet" href="../../assets/_common/styles/global.css" />
+  <link rel="stylesheet" href="../../assets/app/styles/app-layout.css" />
+  <link rel="stylesheet" href="../../assets/app/styles/workout.css" />
+</head>
+<body>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <div class="app-shell">
+
+    <!-- ── SIDEBAR ── -->
+    <aside class="sidebar" id="appSidebar">
+      <div class="sidebar-logo">
+        <img src="../../assets/_common/images/logo.svg" alt="TrainiFy" />
+      </div>
+      <nav class="sidebar-nav">
+        <span class="nav-section-label">Principal</span>
+        <a class="nav-item" href="dashboard.html" data-href="dashboard"><span class="nav-icon">◼</span> Dashboard</a>
+        <a class="nav-item" href="students.html" data-href="students"><span class="nav-icon">👥</span> Alunos</a>
+        <span class="nav-section-label">Conta</span>
+        <a class="nav-item" href="profile.html" data-href="profile"><span class="nav-icon">👤</span> Meu Perfil</a>
+        <a class="nav-item" href="#" data-action="logout"><span class="nav-icon">↩</span> Sair</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-widget">
+          <div class="user-avatar" id="sidebarUserInitials">PT</div>
+          <div class="user-info">
+            <div class="user-name" id="sidebarUserName">Personal Trainer</div>
+            <div class="user-role">Pro</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ── TOPBAR ── -->
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button class="icon-btn show-mobile" id="sidebarOpenBtn">☰</button>
+        <h1 class="topbar-title" id="topbarTitle">Treinos</h1>
+      </div>
+      <div class="topbar-search hide-mobile">
+        <input type="search" id="topbarSearch" placeholder="Buscar treino..." />
+      </div>
+      <div class="topbar-actions">
+        <span style="font-size:0.85rem;color:var(--clr-grey-300);" id="topbarUserName"></span>
+      </div>
+    </header>
+
+    <!-- ── MAIN ── -->
+    <main class="main-content">
+      <div id="workoutContent">
+        <div style="text-align:center;padding:64px;">
+          <span class="spinner"></span>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../../assets/app/scripts/app-layout.js"></script>
+  <script src="../../assets/app/scripts/workout.js"></script>
+</body>
+</html>

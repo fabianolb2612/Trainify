@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 48" fill="none">
+  <!-- Dumbbell icon -->
+  <rect x="2" y="18" width="8" height="12" rx="3" fill="#AAFF00"/>
+  <rect x="10" y="21" width="24" height="6" rx="2" fill="#AAFF00"/>
+  <rect x="34" y="18" width="8" height="12" rx="3" fill="#AAFF00"/>
+  <!-- T letter integrated -->
+  <text x="50" y="34" font-family="'Barlow Condensed', sans-serif" font-weight="800" font-size="28" fill="#FFFFFF" letter-spacing="-0.5">Traini</text>
+  <text x="131" y="34" font-family="'Barlow Condensed', sans-serif" font-weight="800" font-size="28" fill="#AAFF00" letter-spacing="-0.5">Fy</text>
+</svg>
