@@ -1,19 +1,36 @@
 # TrainiFy API
 
-API REST desenvolvida em PHP para gerenciamento de usuários, alunos e treinos do sistema TrainiFy.
+API REST desenvolvida em PHP utilizando CoffeeCode Router e autenticação JWT para gerenciamento de personal trainers, alunos, treinos e exercícios personalizados do sistema TrainiFy.
 
-## URL Base
+---
+
+# Tecnologias Utilizadas
+
+- PHP 8
+- MySQL
+- CoffeeCode Router
+- JWT Authentication
+- Git/GitHub
+- Apache (WAMP)
+
+---
+
+# URL Base
 
 ```http
 http://localhost/trainify/api
 ```
 
-## Autenticação
+---
 
-As rotas protegidas utilizam JWT. Após realizar login, copie o token retornado e envie nas próximas requisições pelo header:
+# Autenticação
+
+As rotas protegidas utilizam JWT.
+
+Após realizar login, copie o token retornado e envie nas próximas requisições utilizando o header:
 
 ```http
-Authorization: Bearer SEU_TOKEN_AQUI
+Authorization: Bearer TOKEN_JWT
 ```
 
 ---
@@ -30,12 +47,12 @@ POST /users/register
 
 ```json
 {
-  "name": "Fabiano Braga",
-  "email": "fabiano@trainify.com.br",
+  "name": "João Dorea",
+  "email": "joao@trainify.com.br",
   "password": "12345678",
   "cref": "012345-G/RS",
   "phone": "(51) 99999-9999",
-  "city": "Charqeuadas",
+  "city": "Porto Alegre",
   "bio": "Personal trainer especializado em hipertrofia",
   "specialty": "Hipertrofia"
 }
@@ -48,24 +65,7 @@ POST /users/register
   "code": 201,
   "type": "success",
   "status": "created",
-  "message": "Usuário cadastrado com sucesso",
-  "data": {
-    "id": 4,
-    "name": "Fabiano Braga",
-    "email": "fabiano@trainify.com.br"
-  }
-}
-```
-
-### Resposta 400
-
-```json
-{
-  "code": 400,
-  "type": "error",
-  "status": "bad_request",
-  "message": "Nome, e-mail e senha são obrigatórios. O e-mail deve ser válido.",
-  "data": null
+  "message": "Usuário cadastrado com sucesso"
 }
 ```
 
@@ -81,7 +81,7 @@ POST /users/login
 
 ```json
 {
-  "email": "fabiano@trainify.com.br",
+  "email": "joao@trainify.com.br",
   "password": "12345678"
 }
 ```
@@ -90,30 +90,108 @@ POST /users/login
 
 ```json
 {
-  "code": 200,
-  "type": "success",
-  "status": "success",
-  "message": "Usuário logado com sucesso",
-  "data": {
-    "id": 2,
-    "type_id": 2,
-    "name": "Fabiano Braga",
-    "email": "fabiano@trainify.com.br",
-    "token": "TOKEN_JWT"
-  }
+  "id": 2,
+  "type_id": 2,
+  "name": "João Dorea",
+  "email": "joao@trainify.com.br",
+  "token": "TOKEN_JWT"
 }
 ```
 
-### Resposta 401
+---
+
+## Login de administrador
+
+```http
+POST /users/login-admin
+```
+
+### Body
 
 ```json
 {
-  "code": 401,
-  "type": "error",
-  "status": "unauthorized",
-  "message": "Usuário não encontrado ou inativo",
-  "data": null
+  "email": "admin@trainify.com.br",
+  "password": "12345678"
 }
+```
+
+---
+
+## Atualizar usuário
+
+```http
+PUT /users/update
+```
+
+### Autenticação
+
+Obrigatório token JWT de usuário treinador.
+
+### Body
+
+```json
+{
+  "name": "João Atualizado",
+  "email": "joao@trainify.com.br",
+  "photo": null,
+  "cref": "012345-G/RS",
+  "phone": "(51) 99999-9999",
+  "city": "Porto Alegre",
+  "bio": "Novo texto",
+  "specialty": "Hipertrofia"
+}
+```
+
+---
+
+## Atualizar administrador
+
+```http
+PUT /users/update-admin
+```
+
+### Autenticação
+
+Obrigatório token JWT de administrador.
+
+---
+
+## Listar usuários
+
+```http
+GET /users/list
+```
+
+### Autenticação
+
+Obrigatório token JWT de administrador.
+
+---
+
+## Buscar usuário por ID
+
+```http
+GET /users/list/{user_id}
+```
+
+### Exemplo
+
+```http
+GET /users/list/2
+```
+
+---
+
+## Listar usuários com paginação
+
+```http
+GET /users/list/paginator/{page}/{per_page}
+```
+
+### Exemplo
+
+```http
+GET /users/list/paginator/1/10
 ```
 
 ---
@@ -135,31 +213,13 @@ Obrigatório token JWT de usuário treinador.
 ```json
 {
   "training_level_id": 1,
-  "goal_id": 5,
-  "name": "Alex Possamai",
-  "email": "alex@email.com",
+  "goal_id": 1,
+  "name": "Lucas Almeida",
+  "email": "lucas@email.com",
   "phone": "(51) 99999-1234",
   "birthdate": "2002-08-15",
-  "gym": "fitness academy",
+  "gym": "SmartFit",
   "notes": "Aluno iniciante"
-}
-```
-
-### Resposta 201
-
-```json
-{
-  "code": 201,
-  "type": "success",
-  "status": "created",
-  "message": "Aluno cadastrado com sucesso",
-  "data": {
-    "id": 9,
-    "user_id": 2,
-    "training_level_id": 1,
-    "goal_id": 5,
-    "name": "Alex Possamai"
-  }
 }
 ```
 
@@ -171,30 +231,12 @@ Obrigatório token JWT de usuário treinador.
 GET /students/list
 ```
 
-### Resposta 200
-
-```json
-{
-  "code": 200,
-  "type": "success",
-  "status": "success",
-  "message": "Lista de alunos",
-  "data": []
-}
-```
-
 ---
 
 ## Buscar aluno por ID
 
 ```http
 GET /students/list/{student_id}
-```
-
-### Exemplo
-
-```http
-GET /students/list/1
 ```
 
 ---
@@ -205,21 +247,6 @@ GET /students/list/1
 PUT /students/{student_id}
 ```
 
-### Body
-
-```json
-{
-  "training_level_id": 2,
-  "goal_id": 1,
-  "name": "Alex Atualizado",
-  "email": "alex@email.com",
-  "phone": "(51) 98888-7777",
-  "birthdate": "2002-08-15",
-  "gym": "fitness",
-  "notes": "Aluno atualizado"
-}
-```
-
 ---
 
 ## Excluir aluno
@@ -228,16 +255,18 @@ PUT /students/{student_id}
 DELETE /students/{student_id}
 ```
 
-### Resposta 200
+---
 
-```json
-{
-  "code": 200,
-  "type": "success",
-  "status": "success",
-  "message": "Aluno excluído com sucesso",
-  "data": null
-}
+## Listar alunos com paginação
+
+```http
+GET /students/list/paginator/{page}/{per_page}
+```
+
+### Exemplo
+
+```http
+GET /students/list/paginator/1/10
 ```
 
 ---
@@ -262,26 +291,8 @@ Obrigatório token JWT de usuário treinador.
   "goal_id": 1,
   "training_level_id": 2,
   "name": "Treino A - Hipertrofia",
-  "description": "Foco em volume e intensidade moderada.",
-  "frequency": "4x por semana"
-}
-```
-
-### Resposta 201
-
-```json
-{
-  "code": 201,
-  "type": "success",
-  "status": "created",
-  "message": "Treino cadastrado com sucesso",
-  "data": {
-    "id": 4,
-    "name": "Treino A - Hipertrofia",
-    "student_name": "Alex Possamai",
-    "goal_name": "Hipertrofia",
-    "training_level": "Intermediário"
-  }
+  "description": "Treino focado em hipertrofia",
+  "frequency": "5x por semana"
 }
 ```
 
@@ -301,31 +312,12 @@ GET /workouts/list
 GET /workouts/list/{workout_id}
 ```
 
-### Exemplo
-
-```http
-GET /workouts/list/1
-```
-
 ---
 
 ## Atualizar treino
 
 ```http
 PUT /workouts/{workout_id}
-```
-
-### Body
-
-```json
-{
-  "student_id": 1,
-  "goal_id": 1,
-  "training_level_id": 2,
-  "name": "Treino A - Atualizado",
-  "description": "Treino atualizado com foco em progressão de carga.",
-  "frequency": "5x por semana"
-}
 ```
 
 ---
@@ -336,17 +328,16 @@ PUT /workouts/{workout_id}
 DELETE /workouts/{workout_id}
 ```
 
-### Resposta 200
+---
 
-```json
-{
-  "code": 200,
-  "type": "success",
-  "status": "success",
-  "message": "Treino excluído com sucesso",
-  "data": null
-}
+## Listar treinos com paginação
+
+```http
+GET /workouts/list/paginator/{page}/{per_page}
 ```
+
+---
+
 # Dias de Treino
 
 Os dias de treino permitem dividir um treino em sessões específicas, como Dia A, Dia B e Dia C.
@@ -357,33 +348,13 @@ Os dias de treino permitem dividir um treino em sessões específicas, como Dia 
 POST /workout-days
 ```
 
-### Autenticação
-
-Obrigatório token JWT de usuário treinador.
-
 ### Body
 
 ```json
 {
   "workout_id": 1,
   "name": "Dia A - Peito e Tríceps",
-  "description": "Treino focado em movimentos de empurrar."
-}
-```
-
-### Resposta 201
-
-```json
-{
-  "code": 201,
-  "type": "success",
-  "status": "created",
-  "message": "Dia de treino cadastrado com sucesso",
-  "data": {
-    "id": 1,
-    "workout_id": 1,
-    "name": "Dia A - Peito e Tríceps"
-  }
+  "display_order": 1
 }
 ```
 
@@ -411,21 +382,26 @@ GET /workout-days/{workout_day_id}
 PUT /workout-days/{workout_day_id}
 ```
 
-### Body
-
-```json
-{
-  "name": "Dia A - Peito, Ombro e Tríceps",
-  "description": "Treino atualizado."
-}
-```
-
 ---
 
 ## Excluir dia de treino
 
 ```http
 DELETE /workout-days/{workout_day_id}
+```
+
+---
+
+## Listar dias de treino com paginação
+
+```http
+GET /workout-days/list/{workout_id}/paginator/{page}/{per_page}
+```
+
+### Exemplo
+
+```http
+GET /workout-days/list/1/paginator/1/10
 ```
 
 ---
@@ -440,32 +416,13 @@ Cadastro dos exercícios disponíveis no sistema.
 POST /exercises
 ```
 
-### Autenticação
-
-Obrigatório token JWT de usuário treinador.
-
 ### Body
 
 ```json
 {
   "category_id": 1,
   "name": "Supino Reto",
-  "description": "Exercício para peitoral realizado com barra."
-}
-```
-
-### Resposta 201
-
-```json
-{
-  "code": 201,
-  "type": "success",
-  "status": "created",
-  "message": "Exercício cadastrado com sucesso",
-  "data": {
-    "id": 1,
-    "name": "Supino Reto"
-  }
+  "description": "Exercício para peitoral"
 }
 ```
 
@@ -493,22 +450,20 @@ GET /exercises/list/{exercise_id}
 PUT /exercises/{exercise_id}
 ```
 
-### Body
-
-```json
-{
-  "category_id": 1,
-  "name": "Supino Inclinado",
-  "description": "Exercício atualizado."
-}
-```
-
 ---
 
 ## Excluir exercício
 
 ```http
 DELETE /exercises/{exercise_id}
+```
+
+---
+
+## Listar exercícios com paginação
+
+```http
+GET /exercises/list/paginator/{page}/{per_page}
 ```
 
 ---
@@ -523,10 +478,6 @@ Responsável por relacionar exercícios aos dias de treino.
 POST /workout-day-exercises
 ```
 
-### Autenticação
-
-Obrigatório token JWT de usuário treinador.
-
 ### Body
 
 ```json
@@ -537,24 +488,7 @@ Obrigatório token JWT de usuário treinador.
   "reps": "10-12",
   "rest_seconds": 60,
   "display_order": 1,
-  "notes": "Executar até próximo da falha."
-}
-```
-
-### Resposta 201
-
-```json
-{
-  "code": 201,
-  "type": "success",
-  "status": "created",
-  "message": "Exercício adicionado ao treino com sucesso",
-  "data": {
-    "id": 1,
-    "exercise_id": 1,
-    "sets": 4,
-    "reps": "10-12"
-  }
+  "notes": "Executar próximo da falha."
 }
 ```
 
@@ -592,35 +526,20 @@ DELETE /workout-day-exercises/{workout_day_exercise_id}
 
 ---
 
-# Metas
+## Listar exercícios do treino com paginação
 
-Metas utilizadas para definir o objetivo principal dos alunos.
+```http
+GET /workout-day-exercises/list/{workout_day_id}/paginator/{page}/{per_page}
+```
+
+---
+
+# Metas (Planejado)
 
 ## Listar metas
 
 ```http
 GET /goals/list
-```
-
-### Resposta 200
-
-```json
-{
-  "code": 200,
-  "type": "success",
-  "status": "success",
-  "message": "Lista de metas",
-  "data": [
-    {
-      "id": 1,
-      "name": "Hipertrofia"
-    },
-    {
-      "id": 2,
-      "name": "Emagrecimento"
-    }
-  ]
-}
 ```
 
 ---
@@ -633,39 +552,36 @@ GET /goals/list/{goal_id}
 
 ---
 
-# Níveis de Treinamento
+## Cadastrar meta
 
-Níveis utilizados para classificar os alunos.
+```http
+POST /goals
+```
 
-## Listar níveis de treinamento
+---
+
+## Atualizar meta
+
+```http
+PUT /goals/{goal_id}
+```
+
+---
+
+## Excluir meta
+
+```http
+DELETE /goals/{goal_id}
+```
+
+---
+
+# Níveis de Treinamento (Planejado)
+
+## Listar níveis
 
 ```http
 GET /training-levels/list
-```
-
-### Resposta 200
-
-```json
-{
-  "code": 200,
-  "type": "success",
-  "status": "success",
-  "message": "Lista de níveis",
-  "data": [
-    {
-      "id": 1,
-      "name": "Iniciante"
-    },
-    {
-      "id": 2,
-      "name": "Intermediário"
-    },
-    {
-      "id": 3,
-      "name": "Avançado"
-    }
-  ]
-}
 ```
 
 ---
@@ -678,9 +594,73 @@ GET /training-levels/list/{training_level_id}
 
 ---
 
-# Dashboard
+## Cadastrar nível
 
-Resumo geral dos dados do treinador autenticado.
+```http
+POST /training-levels
+```
+
+---
+
+## Atualizar nível
+
+```http
+PUT /training-levels/{training_level_id}
+```
+
+---
+
+## Excluir nível
+
+```http
+DELETE /training-levels/{training_level_id}
+```
+
+---
+
+# Categorias de Exercícios (Planejado)
+
+## Listar categorias
+
+```http
+GET /exercise-categories/list
+```
+
+---
+
+## Buscar categoria por ID
+
+```http
+GET /exercise-categories/list/{category_id}
+```
+
+---
+
+## Cadastrar categoria
+
+```http
+POST /exercise-categories
+```
+
+---
+
+## Atualizar categoria
+
+```http
+PUT /exercise-categories/{category_id}
+```
+
+---
+
+## Excluir categoria
+
+```http
+DELETE /exercise-categories/{category_id}
+```
+
+---
+
+# Dashboard (Planejado)
 
 ## Resumo do Dashboard
 
@@ -688,50 +668,85 @@ Resumo geral dos dados do treinador autenticado.
 GET /dashboard/summary
 ```
 
-### Resposta 200
+### Resposta
 
 ```json
 {
-  "code": 200,
-  "type": "success",
-  "status": "success",
-  "message": "Resumo do dashboard",
-  "data": {
-    "total_students": 12,
-    "active_students": 10,
-    "total_workouts": 8,
-    "active_workouts": 8
-  }
+  "total_students": 25,
+  "active_students": 20,
+  "total_workouts": 18,
+  "total_exercises": 150
 }
 ```
 
 ---
 
-# Exportação PDF
+# Exportação PDF (Planejado)
 
-Funcionalidade para geração de fichas de treino em PDF.
-
-## Exportar treino em PDF
+## Exportar treino
 
 ```http
 GET /workouts/{workout_id}/export-pdf
 ```
 
-### Resposta 200
-
 Retorna um arquivo PDF contendo todas as informações do treino selecionado.
+
+---
+
+# Paginação
+
+As entidades paginadas seguem o padrão:
+
+```http
+GET /resource/list/paginator/{page}/{per_page}
+```
+
+Exemplo:
+
+```http
+GET /students/list/paginator/1/10
+```
+
+Onde:
+
+- `page` = página atual.
+- `per_page` = quantidade de registros por página.
+
+---
+
+# Estrutura da API
+
+```text
+api/
+├── users
+├── students
+├── workouts
+├── workout-days
+├── exercises
+├── workout-day-exercises
+├── goals
+├── training-levels
+├── exercise-categories
+├── dashboard
+```
 
 ---
 
 # Códigos HTTP
 
-| Código | Significado                                     |
-| ------ | ----------------------------------------------- |
-| 200    | Requisição realizada com sucesso                |
-| 201    | Registro criado com sucesso                     |
-| 400    | Dados inválidos ou campos obrigatórios ausentes |
-| 401    | Usuário não autenticado ou token inválido       |
-| 404    | Registro não encontrado                         |
-| 500    | Erro interno ao processar a requisição          |
+| Código | Significado |
+| ------ | ----------- |
+| 200 | Requisição realizada com sucesso |
+| 201 | Registro criado com sucesso |
+| 400 | Dados inválidos ou campos obrigatórios ausentes |
+| 401 | Usuário não autenticado ou token inválido |
+| 403 | Usuário sem permissão para acessar o recurso |
+| 404 | Registro não encontrado |
+| 500 | Erro interno ao processar a requisição |
 
 ---
+
+# Versionamento
+
+O código-fonte da API está versionado com Git e disponível no GitHub.
+
