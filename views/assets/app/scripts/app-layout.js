@@ -1,32 +1,59 @@
-/**
- * TrainiFy - app-layout.js
- * Shared layout logic for all app pages.
- * Static version: no API calls, no Auth guard.
- */
+import SessionStorage from "../../_common/scripts/storage.js";
+import AuthGuard from "../../_common/scripts/auth-guard.js";
 
-const STATIC_USER = { name: 'João Dorea', role: 'trainer' };
+const guard = new AuthGuard(
+    "../public/login.html",
+    "user",
+    2
+);
 
-document.addEventListener('DOMContentLoaded', () => {
-  populateUserWidget();
-  initSidebar();
-  setActiveNavItem();
-  initLogout();
-  initTopbarSearch();
+guard.protect();
+
+document.addEventListener("DOMContentLoaded", () => {
+    populateUserWidget();
+    initSidebar();
+    setActiveNavItem();
+    initLogout();
+    initTopbarSearch();
 });
 
-function populateUserWidget() {
-  const nameEl   = document.getElementById('sidebarUserName');
-  const initEl   = document.getElementById('sidebarUserInitials');
-  const topbarEl = document.getElementById('topbarUserName');
-  const parts    = STATIC_USER.name.split(' ');
-  const initials = (parts.length > 1
-    ? parts[0][0] + parts[parts.length - 1][0]
-    : parts[0].slice(0, 2)).toUpperCase();
-  if (nameEl)   nameEl.textContent   = STATIC_USER.name;
-  if (topbarEl) topbarEl.textContent = parts[0];
-  if (initEl)   initEl.textContent   = initials;
-}
 
+
+function populateUserWidget() {
+    const storage = new SessionStorage();
+    const user = storage.getUser();
+
+    const nameEl = document.getElementById("sidebarUserName");
+    const initEl = document.getElementById("sidebarUserInitials");
+    const topbarEl = document.getElementById("topbarUserName");
+    const welcomeEl = document.getElementById("welcomeName");
+
+    const name = user?.name || "Personal Trainer";
+
+    const parts = name.trim().split(" ");
+
+    const initials = (
+        parts.length > 1
+            ? parts[0][0] + parts[parts.length - 1][0]
+            : parts[0].slice(0, 2)
+    ).toUpperCase();
+
+    if (nameEl) {
+        nameEl.textContent = name;
+    }
+
+    if (topbarEl) {
+        topbarEl.textContent = parts[0];
+    }
+
+    if (initEl) {
+        initEl.textContent = initials;
+    }
+
+    if (welcomeEl) {
+        welcomeEl.textContent = parts[0];
+    }
+}
 function setActiveNavItem() {
   const page = window.location.pathname.split('/').pop();
   document.querySelectorAll('.nav-item[data-href]').forEach(item => {
@@ -50,12 +77,17 @@ function initSidebar() {
 }
 
 function initLogout() {
-  document.querySelectorAll('[data-action="logout"]').forEach(btn => {
-    btn.addEventListener('click', e => {
-      e.preventDefault();
-      window.location.href = '../public/login.html';
+    document.querySelectorAll('[data-action="logout"]').forEach(btn => {
+        btn.addEventListener('click', e => {
+            e.preventDefault();
+
+            const storage = new SessionStorage();
+
+            storage.clearSession();
+
+            window.location.href = '../public/login.html';
+        });
     });
-  });
 }
 
 function initTopbarSearch() {

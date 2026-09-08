@@ -1,7 +1,3 @@
-/**
- * TrainiFy - dashboard.js
- * Static version: all data is hardcoded mock data.
- */
 
 const MOCK_STATS = {
   totalStudents: 24,
@@ -32,10 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderRecentStudents();
   bindStudentRowClicks();
   initDashboardActions();
-  drawChart();
-  // Welcome name
-  const el = document.getElementById('welcomeName');
-  if (el) el.textContent = 'João';
+  drawChart();  
 });
 
 function renderStats() {
