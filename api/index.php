@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 use CoffeeCode\Router\Router;
-// localhost/acme-3am/api
+
 $route = new Router(url("api"),":");
 
 $route->namespace("Source\Controller");
@@ -28,7 +28,7 @@ $route->namespace("Source\Controller");
 $route->group("/users");
 $route->post("/register","Users:register"); // Registrar usuário comum
 $route->post("/login","Users:auth");
-//http://localhost/trabalho/api/users/login
+//http://localhost/tranify/api/users/login
 $route->put("/update","Users:update"); 
 $route->get("/list/paginator/{page}/{per_page}", "Users:listPaginator");
 $route->get("/list/{user_id}", "Users:listById");
@@ -40,38 +40,38 @@ $route->group(null);
 $route->group("/students");
 
 $route->post("/","Students:insert");
-//http://localhost/trabalho/api/students
+//http://localhost/tranify/api/students
 $route->put("/{student_id}","Students:update");
-//http://localhost/trabalho/api/students/9
+//http://localhost/tranify/api/students/9
 $route->get("/list","Students:listAll");
-//http://localhost/trabalho/api/students/list
+//http://localhost/tranify/api/students/list
 $route->get("/list/paginator/{page}/{per_page}", "Students:listPaginator");
 $route->delete("/{student_id}","Students:delete");
-// http://localhost/trabalho/api/students/9
+// http://localhost/tranify/api/students/9
 
 $route->get("/list/{student_id}","Students:listById");
 $route->group(null);
 
 $route->group("/workouts");
 $route->post("/","Workouts:insert");
-// http://localhost/trabalho/api/workouts
+// http://localhost/tranify/api/workouts
 $route->get("/list","Workouts:listAll");
-// http://localhost/trabalho/api/workouts/list
+// http://localhost/tranify/api/workouts/list
 $route->get("/list/{workout_id}","Workouts:listById");
-// http://localhost/trabalho/api/workouts/list/1
+// http://localhost/tranify/api/workouts/list/1
 $route->get("/list/paginator/{page}/{per_page}", "Workouts:listPaginator");
 $route->put("/{workout_id}","Workouts:update");
-// http://localhost/trabalho/api/workouts/1
+// http://localhost/tranify/api/workouts/1
 $route->delete("/{workout_id}","Workouts:delete");
-//http://localhost/trabalho/api/workouts/1
+//http://localhost/tranify/api/workouts/1
 $route->group(null);
 
 $route->group("/workout-days");
 $route->post("/", "WorkoutDays:insert");
 $route->get("/list/{workout_id}", "WorkoutDays:listByWorkout");
-//http://localhost/trabalho/api/workout-days/list/1
+//http://localhost/tranify/api/workout-days/list/1
 $route->get("/{workout_day_id}", "WorkoutDays:listById");
-//http://localhost/trabalho/api/workout-days/1
+//http://localhost/tranify/api/workout-days/1
 $route->get("/list/{workout_id}/paginator/{page}/{per_page}", "WorkoutDays:listPaginator");
 $route->put("/{workout_day_id}", "WorkoutDays:update");
 $route->delete("/{workout_day_id}", "WorkoutDays:delete");
