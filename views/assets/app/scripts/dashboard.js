@@ -1,119 +1,325 @@
+import StudentService from "../../_common/services/StudentService.js";
+import WorkoutService from "../../_common/services/WorkoutService.js";
+import SessionStorage from "../../_common/scripts/storage.js";
 
-const MOCK_STATS = {
-  totalStudents: 24,
-  totalWorkouts: 38,
-  activeStudents: 19,
-  newThisMonth: 3
-};
 
-const MOCK_ACTIVITY = [
-  { text: '<strong>João Silva</strong> iniciou o treino A', time: '2 min' },
-  { text: '<strong>Maria Cardoso</strong> foi cadastrada', time: '1h' },
-  { text: 'Treino de Pedro exportado em PDF', time: '3h' },
-  { text: '<strong>Ana Lima</strong> atualizou o perfil', time: '5h' },
-  { text: 'Novo treino criado para <strong>Carlos R.</strong>', time: 'Ontem' }
-];
+const studentService = new StudentService();
+const workoutService = new WorkoutService();
+const storage = new SessionStorage();
 
-const MOCK_STUDENTS = [
-  { id: '1', name: 'João Silva',    email: 'joao@email.com',   level: 'Intermediário', gym: 'SmartFit Centro', status: 'active' },
-  { id: '2', name: 'Maria Cardoso', email: 'maria@email.com',  level: 'Avançado',      gym: 'BioFit',          status: 'active' },
-  { id: '3', name: 'Pedro Tavares', email: 'pedro@email.com',  level: 'Iniciante',     gym: 'BlueGym',         status: 'inactive' },
-  { id: '4', name: 'Ana Lima',      email: 'ana@email.com',    level: 'Intermediário', gym: 'FitClub',         status: 'active' },
-  { id: '5', name: 'Carlos Rocha',  email: 'carlos@email.com', level: 'Avançado',      gym: 'SmartFit Norte',  status: 'active' }
-];
 
-document.addEventListener('DOMContentLoaded', () => {
-  renderStats();
-  renderActivity();
-  renderRecentStudents();
-  bindStudentRowClicks();
-  initDashboardActions();
-  drawChart();  
+document.addEventListener("DOMContentLoaded", async () => {
+
+    const token = storage.getToken();
+
+    if (!token) {
+        window.location.href = "../public/login.html";
+        return;
+    }
+
+    studentService.setAuthToken(token);
+    workoutService.setAuthToken(token);
+
+    initDashboardActions();
+
+    await loadDashboard();
 });
 
-function renderStats() {
-  setEl('statStudents', MOCK_STATS.totalStudents);
-  setEl('statWorkouts', MOCK_STATS.totalWorkouts);
-  setEl('statActive',   MOCK_STATS.activeStudents);
-  setEl('statNew',      MOCK_STATS.newThisMonth);
+
+async function loadDashboard() {
+
+    try {
+
+        const [
+            studentsResponse,
+            workoutsResponse
+        ] = await Promise.all([
+            studentService.list(),
+            workoutService.list()
+        ]);
+
+        console.log(
+            "ALUNOS DO DASHBOARD:",
+            studentsResponse
+        );
+
+        console.log(
+            "TREINOS DO DASHBOARD:",
+            workoutsResponse
+        );
+
+
+        if (studentsResponse?.status !== "success") {
+            throw new Error(
+                studentsResponse?.message ||
+                "Não foi possível carregar os alunos."
+            );
+        }
+
+        if (workoutsResponse?.status !== "success") {
+            throw new Error(
+                workoutsResponse?.message ||
+                "Não foi possível carregar os treinos."
+            );
+        }
+
+
+        const students =
+            Array.isArray(studentsResponse.data)
+                ? studentsResponse.data
+                : [];
+
+        const workouts =
+            Array.isArray(workoutsResponse.data)
+                ? workoutsResponse.data
+                : [];
+
+
+        renderStats(students, workouts);
+
+        renderRecentStudents(students);
+
+    } catch (error) {
+
+        console.error(
+            "ERRO AO CARREGAR DASHBOARD:",
+            error
+        );
+
+        showDashboardError(
+            error.message ||
+            "Não foi possível carregar os dados do dashboard."
+        );
+    }
 }
 
-function renderActivity() {
-  const container = document.getElementById('activityFeed');
-  if (!container) return;
-  container.innerHTML = MOCK_ACTIVITY.map(item => `
-    <div class="activity-item">
-      <div class="activity-dot"></div>
-      <div class="activity-text">${item.text}</div>
-      <div class="activity-time">${item.time}</div>
-    </div>
-  `).join('');
+
+function renderStats(students, workouts) {
+
+    setEl(
+        "statStudents",
+        students.length
+    );
+
+    setEl(
+        "statWorkouts",
+        workouts.length
+    );
 }
 
-function renderRecentStudents() {
-  const tbody = document.getElementById('recentStudentsBody');
-  if (!tbody) return;
-  tbody.innerHTML = MOCK_STUDENTS.map(s => `
-    <tr data-student-id="${s.id}" class="student-row">
-      <td>
-        <div class="student-cell">
-          <div class="student-avatar">${initials(s.name)}</div>
-          <div>
-            <div class="student-name">${s.name}</div>
-            <div class="student-email">${s.email}</div>
-          </div>
-        </div>
-      </td>
-      <td><span class="badge badge-info">${s.level}</span></td>
-      <td>${s.gym}</td>
-      <td><span class="badge ${s.status === 'active' ? 'badge-neon' : 'badge-warn'}">${s.status === 'active' ? 'Ativo' : 'Inativo'}</span></td>
-    </tr>
-  `).join('');
+
+function renderRecentStudents(students) {
+
+    const tbody =
+        document.getElementById(
+            "recentStudentsBody"
+        );
+
+    if (!tbody) {
+        return;
+    }
+
+
+    if (students.length === 0) {
+
+        tbody.innerHTML = `
+            <tr>
+                <td
+                    colspan="4"
+                    style="text-align:center;padding:32px;"
+                >
+                    Nenhum aluno cadastrado.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+
+    const recentStudents =
+        students.slice(0, 5);
+
+
+    tbody.innerHTML =
+        recentStudents.map(student => `
+
+            <tr
+                data-student-id="${student.id}"
+                class="student-row"
+            >
+
+                <td>
+                    <div class="student-cell">
+
+                        <div class="student-avatar">
+                            ${initials(student.name)}
+                        </div>
+
+                        <div>
+
+                            <div class="student-name">
+                                ${student.name}
+                            </div>
+
+                            <div class="student-email">
+                                ${student.email || "—"}
+                            </div>
+
+                        </div>
+
+                    </div>
+                </td>
+
+
+                <td>
+                    <span class="badge badge-info">
+                        ${student.trainingLevel || "—"}
+                    </span>
+                </td>
+
+
+                <td>
+                    ${student.gym || "—"}
+                </td>
+
+
+                <td>
+                    <span class="badge badge-neon">
+                        Ativo
+                    </span>
+                </td>
+
+            </tr>
+
+        `).join("");
+
+
+    bindStudentRowClicks();
 }
+
 
 function bindStudentRowClicks() {
-  const tbody = document.getElementById('recentStudentsBody');
-  if (!tbody) return;
-  tbody.addEventListener('click', event => {
-    const row = event.target.closest('tr[data-student-id]');
-    if (!row) return;
-    window.location.href = 'student.html?student=' + row.dataset.studentId;
-  });
+
+    const tbody =
+        document.getElementById(
+            "recentStudentsBody"
+        );
+
+    if (!tbody) {
+        return;
+    }
+
+
+    tbody.onclick = event => {
+
+        const row =
+            event.target.closest(
+                "tr[data-student-id]"
+            );
+
+        if (!row) {
+            return;
+        }
+
+
+        const studentId =
+            row.dataset.studentId;
+
+
+        window.location.href =
+            `student.html?id=${studentId}`;
+    };
 }
+
 
 function initDashboardActions() {
-  document.querySelectorAll('.quick-action-btn[data-action]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const action = btn.dataset.action;
-      if (action === 'new-student') {
-        window.location.href = 'student.html?new=1';
-      } else if (action === 'new-workout') {
-        window.location.href = 'workout.html';
-      } else if (action === 'view-students') {
-        window.location.href = 'students.html';
-      } else if (action === 'view-profile') {
-        window.location.href = 'profile.html';
-      }
-    });
-  });
+
+    document
+        .querySelectorAll(
+            ".quick-action-btn[data-action]"
+        )
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    const action =
+                        button.dataset.action;
+
+
+                    if (action === "new-student") {
+
+                        window.location.href =
+                            "student.html?new=1";
+
+                    } else if (
+                        action === "view-students"
+                    ) {
+
+                        window.location.href =
+                            "students.html";
+
+                    } else if (
+                        action === "view-profile"
+                    ) {
+
+                        window.location.href =
+                            "profile.html";
+                    }
+                }
+            );
+        });
 }
 
-function drawChart() {
-  const area = document.getElementById('trainingChart');
-  if (!area) return;
-  const vals = [3, 5, 4, 8, 6, 10, 7, 9, 5, 11, 8, 12];
-  area.innerHTML = vals.map((v, i) => `
-    <div class="chart-bar${i === 11 ? ' active' : ''}"
-         style="height:${(v/12*100)}%;transition:height 0.6s ease ${i*0.04}s"
-         title="${v} treinos"></div>
-  `).join('');
+
+function showDashboardError(message) {
+
+    const tbody =
+        document.getElementById(
+            "recentStudentsBody"
+        );
+
+    if (!tbody) {
+        return;
+    }
+
+
+    tbody.innerHTML = `
+        <tr>
+            <td
+                colspan="4"
+                style="text-align:center;padding:32px;"
+            >
+                ${message}
+            </td>
+        </tr>
+    `;
 }
 
-function setEl(id, val) {
-  const el = document.getElementById(id);
-  if (el) el.textContent = val;
+
+function setEl(id, value) {
+
+    const element =
+        document.getElementById(id);
+
+    if (element) {
+        element.textContent = value;
+    }
 }
-function initials(name = '') {
-  const p = name.trim().split(' ');
-  return (p.length > 1 ? p[0][0] + p[p.length-1][0] : p[0].slice(0,2)).toUpperCase();
+
+
+function initials(name = "") {
+
+    const parts =
+        name.trim().split(" ");
+
+
+    return (
+        parts.length > 1
+            ? parts[0][0] +
+              parts[parts.length - 1][0]
+            : parts[0].slice(0, 2)
+    ).toUpperCase();
 }

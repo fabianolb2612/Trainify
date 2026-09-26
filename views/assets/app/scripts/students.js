@@ -174,7 +174,21 @@ function initStudentActions() {
         );
     });
 }
+document.addEventListener("click", event => {
+    const row = event.target.closest(".student-row");
 
+    if (!row) {
+        return;
+    }
+
+    const studentId = row.dataset.studentId;
+
+    if (!studentId) {
+        return;
+    }
+
+    window.location.href = `student.html?id=${studentId}`;
+});
 
 /**
  * Renderiza a tabela.

@@ -48,24 +48,23 @@ export default class StudentService extends HttpClientBase {
     }
 
     async create(student) {
+    const studentObject =
+        student instanceof Student
+            ? student
+            : new Student(student);
 
-        const studentObject =
-            student instanceof Student
-                ? student
-                : new Student(student);
+    const response = await this.postForm(
+        "/students/",
+        studentObject.toPayload()
+    );
 
-        const response = await this.post(
-            "/students/",
-            studentObject.toPayload()
-        );
-
-        if (response?.data) {
-            response.data =
-                Student.fromJSON(response.data);
-        }
-
-        return response;
+    if (response?.data) {
+        response.data =
+            Student.fromJSON(response.data);
     }
+
+    return response;
+}
 
     async update(id, student) {
 

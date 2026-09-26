@@ -227,21 +227,35 @@ export default class Student {
      * Converte o objeto JavaScript para o formato
      * esperado pela API.
      */
-    toJSON() {
-        return {
-            id: this.id,
-            user_id: this.userId,
-            training_level_id: this.trainingLevelId,
-            goal_id: this.goalId,
-            name: this.name,
-            email: this.email,
-            phone: this.phone,
-            birthdate: this.birthdate,
-            gym: this.gym,
-            notes: this.notes,
-            active: this.active
-        };
-    }
+  toJSON() {
+    return {
+        id: this.id,
+        user_id: this.userId,
+        training_level_id: this.trainingLevelId,
+        goal_id: this.goalId,
+        name: this.name,
+        email: this.email,
+        phone: this.phone,
+        birthdate: this.birthdate,
+        gym: this.gym,
+        notes: this.notes,
+        active: this.active
+    };
+}
+
+toPayload() {
+    return {
+        training_level_id: this.trainingLevelId,
+        goal_id: this.goalId,
+        name: this.name,
+        email: this.email,
+        phone: this.phone,
+        birthdate: this.birthdate,
+        gym: this.gym,
+        notes: this.notes
+    };
+}
+
 
     /**
      * Cria um objeto Student a partir
@@ -265,5 +279,7 @@ export default class Student {
             trainingLevel: data.training_level,
             goal: data.goal
         });
+        
     }
+    
 }

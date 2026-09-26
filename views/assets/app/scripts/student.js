@@ -77,24 +77,94 @@ const MOCK_WORKOUT = {
 /**
  * Inicialização
  */
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
 
     const params =
         new URLSearchParams(window.location.search);
 
-    if (params.get("new") === "1") {
+    const newStudent =
+        params.get("new");
+
+    const studentId =
+        params.get("id");
+
+    if (newStudent === "1") {
 
         renderNewStudentForm();
 
-    } else {
+        initStudentActions();
 
-        renderStudentProfile(MOCK_STUDENT);
-        renderWorkout(MOCK_WORKOUT);
+        return;
     }
 
-    initStudentActions();
-});
+    if (studentId) {
 
+        await loadStudent(studentId);
+
+        initStudentActions();
+
+        return;
+    }
+
+    window.location.href = "students.html";
+});
+async function loadStudent(studentId) {
+
+    try {
+
+        const token = storage.getToken();
+
+        if (!token) {
+            window.location.href =
+                "../public/login.html";
+
+            return;
+        }
+
+        studentService.setAuthToken(token);
+
+        const response =
+            await studentService.find(studentId);
+
+        if (response?.status !== "success") {
+
+            alert(
+                response?.message ||
+                "Não foi possível carregar o aluno."
+            );
+
+            window.location.href =
+                "students.html";
+
+            return;
+        }
+
+        const student = response.data;
+
+        console.log(
+            "ALUNO CARREGADO DA API:",
+            student
+        );
+
+        renderStudentProfile(student);
+
+        renderWorkout(MOCK_WORKOUT);
+
+    } catch (error) {
+
+        console.error(
+            "ERRO AO CARREGAR ALUNO:",
+            error
+        );
+
+        alert(
+            "Erro ao carregar os dados do aluno."
+        );
+
+        window.location.href =
+            "students.html";
+    }
+}
 
 /**
  * Renderiza perfil do aluno.
@@ -136,7 +206,7 @@ function renderStudentProfile(student) {
                 <div class="profile-tags">
 
                     <span class="badge badge-info">
-                        ${LEVEL_LABEL[student.level] || student.level}
+                       ${student.trainingLevel || "—"}
                     </span>
 
                     ${
@@ -149,13 +219,13 @@ function renderStudentProfile(student) {
                             : ""
                     }
 
-                    <span class="badge ${
-                        student.status === "active"
+                        <span class="badge ${
+                            student.active === 1
                             ? "badge-neon"
                             : "badge-warn"
-                    }">
+                        }">
                         ${
-                            student.status === "active"
+                            student.active === 1
                                 ? "Ativo"
                                 : "Inativo"
                         }
@@ -241,17 +311,6 @@ function renderStudentProfile(student) {
                     ${student.goal}
                 </div>
             </div>
-
-            <div class="info-block">
-                <div class="info-block-label">
-                    Cadastrado em
-                </div>
-
-                <div class="info-block-value">
-                    ${fmtDate(student.createdAt)}
-                </div>
-            </div>
-
         </div>
 
 
@@ -857,11 +916,8 @@ async function handleNewStudentSubmit(event) {
         // 10. Volta para lista
         // ================================
 
-        setTimeout(() => {
-
-            window.location.href =
-                "students.html";
-
+       setTimeout(() => {
+        window.history.back();
         }, 1000);
 
     } catch (error) {
@@ -1266,16 +1322,81 @@ function addWorkoutExercise() {
 /**
  * Remoção ainda será integrada depois.
  */
-function confirmDelete() {
+async function confirmDelete() {
 
-    if (
-        confirm(
-            "Remover este aluno? Esta ação não pode ser desfeita."
-        )
-    ) {
+    const confirmed = confirm(
+        "Remover este aluno? Esta ação não pode ser desfeita."
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+
+        const params =
+            new URLSearchParams(window.location.search);
+
+        const studentId =
+            params.get("id");
+
+        if (!studentId) {
+
+            alert(
+                "Não foi possível identificar o aluno."
+            );
+
+            return;
+        }
+
+        const token =
+            storage.getToken();
+
+        if (!token) {
+
+            window.location.href =
+                "../public/login.html";
+
+            return;
+        }
+
+        studentService.setAuthToken(token);
+
+        const response =
+            await studentService.remove(studentId);
+
+        console.log(
+            "RESPOSTA AO REMOVER ALUNO:",
+            response
+        );
+
+        if (response?.status !== "success") {
+
+            alert(
+                response?.message ||
+                "Não foi possível remover o aluno."
+            );
+
+            return;
+        }
 
         alert(
-            "Remoção será integrada ao backend na próxima etapa."
+            "Aluno removido com sucesso!"
+        );
+
+        window.location.href =
+            "students.html";
+
+    } catch (error) {
+
+        console.error(
+            "ERRO AO REMOVER ALUNO:",
+            error
+        );
+
+        alert(
+            error.message ||
+            "Erro ao remover o aluno."
         );
     }
 }
@@ -1325,31 +1446,4 @@ function fmtDate(date) {
 
         return date;
     }
-}
-function toJSON() {
-    return {
-        id: this.id,
-        user_id: this.userId,
-        training_level_id: this.trainingLevelId,
-        goal_id: this.goalId,
-        name: this.name,
-        email: this.email,
-        phone: this.phone,
-        birthdate: this.birthdate,
-        gym: this.gym,
-        notes: this.notes,
-        active: this.active
-    };
-}
-function toPayload() {
-    return {
-        training_level_id: this.trainingLevelId,
-        goal_id: this.goalId,
-        name: this.name,
-        email: this.email,
-        phone: this.phone,
-        birthdate: this.birthdate,
-        gym: this.gym,
-        notes: this.notes
-    };
 }
