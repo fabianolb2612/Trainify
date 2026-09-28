@@ -88,6 +88,31 @@ $route->put("/{exercise_id}", "Exercises:update");
 $route->delete("/{exercise_id}", "Exercises:delete");
 
 $route->group(null);
+$route->group("/workout-day-exercises");
+
+$route->post("/", "WorkoutDayExercises:insert");
+
+$route->get(
+    "/list/{workout_day_id}",
+    "WorkoutDayExercises:listByWorkoutDay"
+);
+
+$route->get(
+    "/{workout_day_exercise_id}",
+    "WorkoutDayExercises:listById"
+);
+
+$route->put(
+    "/{workout_day_exercise_id}",
+    "WorkoutDayExercises:update"
+);
+
+$route->delete(
+    "/{workout_day_exercise_id}",
+    "WorkoutDayExercises:delete"
+);
+
+$route->group(null);
 
 // FAQs
 $route->group("/faqs");

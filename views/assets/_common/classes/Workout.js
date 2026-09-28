@@ -138,15 +138,26 @@ export default class Workout {
 
     toPayload() {
 
-        return {
-            student_id: this.#studentId,
-            goal_id: this.#goalId,
-            training_level_id: this.#trainingLevelId,
-            name: this.#name,
-            description: this.#description,
-            frequency: this.#frequency
-        };
+    const payload = {
+        name: this.#name,
+        description: this.#description,
+        frequency: this.#frequency
+    };
+
+    if (this.#studentId !== null) {
+        payload.student_id = this.#studentId;
     }
+
+    if (this.#goalId !== null) {
+        payload.goal_id = this.#goalId;
+    }
+
+    if (this.#trainingLevelId !== null) {
+        payload.training_level_id = this.#trainingLevelId;
+    }
+
+    return payload;
+}
 
 
     // =========================

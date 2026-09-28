@@ -450,4 +450,37 @@ public function listPaginator(array $data): void
     )->back($response);
 
     }
+    public function delete(array $data): void
+{
+    if (!$this->authToken(2)) {
+        $this->call(
+            401,
+            "unauthorized",
+            "Usuário não está autenticado ou token inválido.",
+            "error"
+        )->back(null);
+
+        return;
+    }
+
+    $user = new User();
+
+    if (!$user->deleteById((int)$this->userAuthId)) {
+        $this->call(
+            500,
+            "internal_server_error",
+            $user->getErrorMessage() ?? "Não foi possível excluir a conta.",
+            "error"
+        )->back(null);
+
+        return;
+    }
+
+    $this->call(
+        200,
+        "success",
+        "Conta excluída com sucesso.",
+        "success"
+    )->back(null);
+}
 }

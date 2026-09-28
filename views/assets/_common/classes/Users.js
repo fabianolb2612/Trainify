@@ -1,8 +1,12 @@
 import HttpClientBase from "./HttpClientBase.js";
 
 export default class Users extends HttpClientBase {
+
     async login(email, password) {
-        return this.postForm("/users/login", { email, password });
+        return this.postForm("/users/login", {
+            email,
+            password
+        });
     }
 
     async loginFromForm(form) {
@@ -10,7 +14,10 @@ export default class Users extends HttpClientBase {
     }
 
     async loginAdmin(email, password) {
-        return this.postForm("/users/login-admin", { email, password });
+        return this.postForm("/users/login-admin", {
+            email,
+            password
+        });
     }
 
     async loginAdminFromForm(form) {
@@ -18,7 +25,10 @@ export default class Users extends HttpClientBase {
     }
 
     async loginAthlete(email, password) {
-        return this.postForm("/users/login-athlete", { email, password });
+        return this.postForm("/users/login-athlete", {
+            email,
+            password
+        });
     }
 
     async loginAthleteFromForm(form) {
@@ -30,10 +40,14 @@ export default class Users extends HttpClientBase {
     }
 
     async update(data) {
-        return this.put("/users/update", data);
+        return this.putForm("/users/update", data);
     }
 
     async updateAdmin(data) {
-        return this.put("/users/update-admin", data);
+        return this.putForm("/users/update-admin", data);
+    }
+
+    async deleteAccount() {
+        return this.delete("/users/delete");
     }
 }

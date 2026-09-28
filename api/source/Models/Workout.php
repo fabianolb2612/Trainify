@@ -90,6 +90,7 @@ class Workout extends Model
                 w.frequency,
                 s.name AS student_name,
                 g.name AS goal_name,
+                w.student_id,
                 tl.name AS training_level
             FROM workouts w
             LEFT JOIN students s ON s.id = w.student_id

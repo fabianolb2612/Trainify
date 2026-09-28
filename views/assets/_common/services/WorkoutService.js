@@ -8,7 +8,6 @@ export default class WorkoutService extends HttpClientBase {
         const response =
             await this.get("/workouts/list");
 
-
         if (
             response?.data &&
             Array.isArray(response.data)
@@ -21,7 +20,6 @@ export default class WorkoutService extends HttpClientBase {
                 );
         }
 
-
         return response;
     }
 
@@ -33,7 +31,6 @@ export default class WorkoutService extends HttpClientBase {
                 `/workouts/list/${id}`
             );
 
-
         if (response?.data) {
 
             response.data =
@@ -41,7 +38,6 @@ export default class WorkoutService extends HttpClientBase {
                     response.data
                 );
         }
-
 
         return response;
     }
@@ -54,13 +50,11 @@ export default class WorkoutService extends HttpClientBase {
                 ? workout
                 : new Workout(workout);
 
-
         const response =
             await this.postForm(
                 "/workouts/",
                 workoutObject.toPayload()
             );
-
 
         if (response?.data) {
 
@@ -69,7 +63,6 @@ export default class WorkoutService extends HttpClientBase {
                     response.data
                 );
         }
-
 
         return response;
     }
@@ -82,13 +75,16 @@ export default class WorkoutService extends HttpClientBase {
                 ? workout
                 : new Workout(workout);
 
+        const payload = {
+            workout_id: id,
+            ...workoutObject.toPayload()
+        };
 
         const response =
             await this.putForm(
                 `/workouts/${id}`,
-                workoutObject.toPayload()
+                payload
             );
-
 
         if (response?.data) {
 
@@ -97,7 +93,6 @@ export default class WorkoutService extends HttpClientBase {
                     response.data
                 );
         }
-
 
         return response;
     }
