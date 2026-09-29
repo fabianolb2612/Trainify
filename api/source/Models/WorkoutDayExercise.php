@@ -168,7 +168,7 @@ class WorkoutDayExercise extends Model
     }
 
     /**
-     * Verifica se o exercício existe e está ativo.
+     * Verifica se o exercício existe.
      */
     public function exerciseExists(int $exerciseId): bool
     {
@@ -176,7 +176,6 @@ class WorkoutDayExercise extends Model
             SELECT id
             FROM exercises
             WHERE id = :exercise_id
-            AND active = 1
             LIMIT 1
         ";
 
@@ -234,7 +233,6 @@ class WorkoutDayExercise extends Model
             WHERE wde.workout_day_id = :workout_day_id
             AND w.user_id = :user_id
             AND w.active = 1
-            AND e.active = 1
 
             ORDER BY
                 wde.display_order ASC,
@@ -301,7 +299,6 @@ class WorkoutDayExercise extends Model
             WHERE wde.id = :id
             AND w.user_id = :user_id
             AND w.active = 1
-            AND e.active = 1
 
             LIMIT 1
         ";

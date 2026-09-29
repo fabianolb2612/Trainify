@@ -6,12 +6,31 @@
 import Student from "../../_common/classes/Student.js";
 import StudentService from "../../_common/services/StudentService.js";
 import SessionStorage from "../../_common/scripts/storage.js";
-
 import StudentWorkouts from "./student-workouts.js";
+import "../../_common/prototypes/test-prototypes.js";
+
+import {
+    createFormController
+} from "../../_common/prototypes/FormController.js";
+
+import {
+    createToast
+} from "../../_common/prototypes/Toast.js";
 
 
-const studentService = new StudentService();
-const storage = new SessionStorage();
+const studentFormController =
+    createFormController();
+
+const studentToast =
+    createToast();
+
+
+const studentService =
+    new StudentService();
+
+const storage =
+    new SessionStorage();
+
 
 let currentStudent = null;
 let workoutsManager = null;
@@ -21,31 +40,51 @@ let workoutsManager = null;
    INICIALIZAÇÃO
 ========================================================= */
 
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener(
+    "DOMContentLoaded",
+    async () => {
 
-    const params = new URLSearchParams(window.location.search);
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
 
-    const newStudent = params.get("new");
-    const studentId = params.get("id");
+        const newStudent =
+            params.get("new");
 
-    if (!configureServices()) {
-        return;
+        const studentId =
+            params.get("id");
+
+
+        if (!configureServices()) {
+            return;
+        }
+
+
+        if (newStudent === "1") {
+
+            renderNewStudentForm();
+
+            initStudentActions();
+
+            return;
+        }
+
+
+        if (studentId) {
+
+            await loadStudent(studentId);
+
+            initStudentActions();
+
+            return;
+        }
+
+
+        window.location.href =
+            "students.html";
     }
-
-    if (newStudent === "1") {
-        renderNewStudentForm();
-        initStudentActions();
-        return;
-    }
-
-    if (studentId) {
-        await loadStudent(studentId);
-        initStudentActions();
-        return;
-    }
-
-    window.location.href = "students.html";
-});
+);
 
 
 /* =========================================================
@@ -54,14 +93,23 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 function configureServices() {
 
-    const token = storage.getToken();
+    const token =
+        storage.getToken();
+
 
     if (!token) {
-        window.location.href = "../public/login.html";
+
+        window.location.href =
+            "../public/login.html";
+
         return false;
     }
 
-    studentService.setAuthToken(token);
+
+    studentService.setAuthToken(
+        token
+    );
+
 
     return true;
 }
@@ -75,59 +123,103 @@ async function loadStudent(studentId) {
 
     try {
 
-        const response = await studentService.find(studentId);
+        const response =
+            await studentService.find(
+                studentId
+            );
 
-        if (!response || response.status !== "success") {
 
-            alert(
-                response?.message ||
+        if (
+            !response ||
+            response.status !== "success"
+        ) {
+
+            studentToast.showResponse(
+                response,
                 "Não foi possível carregar o aluno."
             );
 
-            window.location.href = "students.html";
+            window.location.href =
+                "students.html";
+
             return;
         }
 
-        currentStudent = response.data;
 
-        renderStudentProfile(currentStudent);
+        currentStudent =
+            response.data;
 
-        workoutsManager = new StudentWorkouts({
-            student: currentStudent,
-            storage
-        });
+
+        renderStudentProfile(
+            currentStudent
+        );
+
+
+        workoutsManager =
+            new StudentWorkouts({
+                student: currentStudent,
+                storage
+            });
+
 
         await workoutsManager.load();
 
     } catch (error) {
 
-        console.error("ERRO AO CARREGAR ALUNO:", error);
+        console.error(
+            "ERRO AO CARREGAR ALUNO:",
+            error
+        );
 
-        alert(
+
+        studentToast.showError(
             error.message ||
             "Erro ao carregar os dados do aluno."
         );
 
-        window.location.href = "students.html";
+
+        setTimeout(
+            () => {
+
+                window.location.href =
+                    "students.html";
+
+            },
+            1200
+        );
     }
 }
 
 
 function renderStudentProfile(student) {
 
-    document.title = `${student.name} — TrainiFy`;
+    document.title =
+        `${student.name} — TrainiFy`;
 
-    const titleEl = document.getElementById("topbarTitle");
+
+    const titleEl =
+        document.getElementById(
+            "topbarTitle"
+        );
+
 
     if (titleEl) {
-        titleEl.textContent = student.name;
+
+        titleEl.textContent =
+            student.name;
     }
 
-    const container = document.getElementById("studentContent");
+
+    const container =
+        document.getElementById(
+            "studentContent"
+        );
+
 
     if (!container) {
         return;
     }
+
 
     container.innerHTML = `
         <div class="profile-hero">
@@ -218,6 +310,7 @@ function renderStudentProfile(student) {
                 <div class="info-block-label">
                     Data de Nascimento
                 </div>
+
                 <div class="info-block-value">
                     ${fmtDate(student.birthdate)}
                 </div>
@@ -260,6 +353,7 @@ function infoBlock(label, value) {
 
     return `
         <div class="info-block">
+
             <div class="info-block-label">
                 ${label}
             </div>
@@ -267,6 +361,7 @@ function infoBlock(label, value) {
             <div class="info-block-value">
                 ${escapeHtml(value || "—")}
             </div>
+
         </div>
     `;
 }
@@ -278,70 +373,103 @@ function infoBlock(label, value) {
 
 function initStudentActions() {
 
-    document.body.addEventListener("click", async event => {
+    document.body.addEventListener(
+        "click",
+        async event => {
 
-        const button = event.target.closest(
-            "button[data-action]"
-        );
+            const button =
+                event.target.closest(
+                    "button[data-action]"
+                );
 
-        if (!button) {
-            return;
-        }
 
-        const action = button.dataset.action;
-
-        try {
-
-            switch (action) {
-
-                case "edit-student":
-                    editStudent();
-                    break;
-
-                case "export-student-pdf":
-                    alert(
-                        "A exportação do PDF será integrada posteriormente."
-                    );
-                    break;
-
-                case "remove-student":
-                    await confirmDelete();
-                    break;
-
-                case "cancel-form":
-                    window.location.href = "students.html";
-                    break;
-
-                case "cancel-edit-student":
-                    renderStudentProfile(currentStudent);
-
-                    if (workoutsManager) {
-                        await workoutsManager.load();
-                    }
-                    break;
-
-                default:
-
-                    if (workoutsManager) {
-                        await workoutsManager.handleAction(
-                            action,
-                            button.dataset
-                        );
-                    }
-
-                    break;
+            if (!button) {
+                return;
             }
 
-        } catch (error) {
 
-            console.error("ERRO NA AÇÃO:", error);
+            const action =
+                button.dataset.action;
 
-            alert(
-                error.message ||
-                "Não foi possível executar a ação."
-            );
+
+            try {
+
+                switch (action) {
+
+                    case "edit-student":
+
+                        editStudent();
+
+                        break;
+
+
+                    case "export-student-pdf":
+
+                        studentToast.showWarning(
+                            "A exportação do PDF será integrada posteriormente."
+                        );
+
+                        break;
+
+
+                    case "remove-student":
+
+                        await confirmDelete();
+
+                        break;
+
+
+                    case "cancel-form":
+
+                        window.location.href =
+                            "students.html";
+
+                        break;
+
+
+                    case "cancel-edit-student":
+
+                        renderStudentProfile(
+                            currentStudent
+                        );
+
+
+                        if (workoutsManager) {
+
+                            await workoutsManager.load();
+                        }
+
+                        break;
+
+
+                    default:
+
+                        if (workoutsManager) {
+
+                            await workoutsManager.handleAction(
+                                action,
+                                button.dataset
+                            );
+                        }
+
+                        break;
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "ERRO NA AÇÃO:",
+                    error
+                );
+
+
+                studentToast.showError(
+                    error.message ||
+                    "Não foi possível executar a ação."
+                );
+            }
         }
-    });
+    );
 }
 
 
@@ -355,28 +483,48 @@ function editStudent() {
         return;
     }
 
-    renderEditStudentForm(currentStudent);
+
+    renderEditStudentForm(
+        currentStudent
+    );
 }
 
 
 function renderEditStudentForm(student) {
 
-    const titleEl = document.getElementById("topbarTitle");
+    const titleEl =
+        document.getElementById(
+            "topbarTitle"
+        );
+
 
     if (titleEl) {
-        titleEl.textContent = "Editar Aluno";
+
+        titleEl.textContent =
+            "Editar Aluno";
     }
 
-    const container = document.getElementById("studentContent");
+
+    const container =
+        document.getElementById(
+            "studentContent"
+        );
+
 
     if (!container) {
         return;
     }
 
-    container.innerHTML = `
-        <div class="card" style="max-width:700px;">
 
-            <h2 style="margin-bottom:var(--space-xl);">
+    container.innerHTML = `
+        <div
+            class="card"
+            style="max-width:700px;"
+        >
+
+            <h2
+                style="margin-bottom:var(--space-xl);"
+            >
                 Editar Aluno
             </h2>
 
@@ -399,80 +547,130 @@ function renderEditStudentForm(student) {
                         class="form-group"
                         style="grid-column:1/-1"
                     >
-                        <label>Nome Completo *</label>
+
+                        <label>
+                            Nome Completo *
+                        </label>
 
                         <input
                             class="form-control"
                             name="name"
                             required
-                            value="${escapeAttribute(student.name || "")}"
+                            value="${escapeAttribute(
+                                student.name || ""
+                            )}"
                         />
+
                     </div>
 
+
                     <div class="form-group">
-                        <label>Email</label>
+
+                        <label>
+                            Email
+                        </label>
 
                         <input
                             class="form-control"
                             name="email"
                             type="email"
-                            value="${escapeAttribute(student.email || "")}"
+                            value="${escapeAttribute(
+                                student.email || ""
+                            )}"
                         />
+
                     </div>
 
+
                     <div class="form-group">
-                        <label>Telefone</label>
+
+                        <label>
+                            Telefone
+                        </label>
 
                         <input
                             class="form-control"
                             name="phone"
-                            value="${escapeAttribute(student.phone || "")}"
+                            value="${escapeAttribute(
+                                student.phone || ""
+                            )}"
                         />
+
                     </div>
 
+
                     <div class="form-group">
-                        <label>Academia</label>
+
+                        <label>
+                            Academia
+                        </label>
 
                         <input
                             class="form-control"
                             name="gym"
-                            value="${escapeAttribute(student.gym || "")}"
+                            value="${escapeAttribute(
+                                student.gym || ""
+                            )}"
                         />
+
                     </div>
 
-                    <div class="form-group">
-                        <label>Nível de Treino *</label>
 
-                        ${trainingLevelSelect(student.trainingLevelId)}
+                    <div class="form-group">
+
+                        <label>
+                            Nível de Treino *
+                        </label>
+
+                        ${trainingLevelSelect(
+                            student.trainingLevelId
+                        )}
+
                     </div>
 
+
                     <div class="form-group">
-                        <label>Data de Nascimento</label>
+
+                        <label>
+                            Data de Nascimento
+                        </label>
 
                         <input
                             class="form-control"
                             name="birthdate"
                             type="date"
-                            value="${escapeAttribute(student.birthdate || "")}"
+                            value="${escapeAttribute(
+                                student.birthdate || ""
+                            )}"
                         />
+
                     </div>
 
+
                     <div class="form-group">
-                        <label>ID do Objetivo</label>
+
+                        <label>
+                            ID do Objetivo
+                        </label>
 
                         <input
                             class="form-control"
                             name="goal_id"
                             type="number"
                             min="1"
-                            value="${escapeAttribute(student.goalId || "")}"
+                            value="${escapeAttribute(
+                                student.goalId || ""
+                            )}"
                         />
+
                     </div>
+
 
                     <div
                         class="form-group"
                         style="grid-column:1/-1"
                     >
+
                         <label>
                             Observações / Lesões / Dificuldades
                         </label>
@@ -480,10 +678,14 @@ function renderEditStudentForm(student) {
                         <textarea
                             class="form-control"
                             name="notes"
-                        >${escapeHtml(student.notes || "")}</textarea>
+                        >${escapeHtml(
+                            student.notes || ""
+                        )}</textarea>
+
                     </div>
 
                 </div>
+
 
                 <div
                     style="
@@ -502,6 +704,7 @@ function renderEditStudentForm(student) {
                         Cancelar
                     </button>
 
+
                     <button
                         type="submit"
                         class="btn btn-primary"
@@ -513,11 +716,15 @@ function renderEditStudentForm(student) {
                 </div>
 
             </form>
+
         </div>
     `;
 
+
     document
-        .getElementById("editStudentForm")
+        .getElementById(
+            "editStudentForm"
+        )
         ?.addEventListener(
             "submit",
             handleEditStudentSubmit
@@ -533,20 +740,28 @@ function trainingLevelSelect(selected) {
             name="training_level_id"
             required
         >
+
             ${[
                 [1, "Iniciante"],
                 [2, "Intermediário"],
                 [3, "Avançado"]
             ]
-                .map(([id, label]) => `
-                    <option
-                        value="${id}"
-                        ${Number(selected) === id ? "selected" : ""}
-                    >
-                        ${label}
-                    </option>
-                `)
+                .map(
+                    ([id, label]) => `
+                        <option
+                            value="${id}"
+                            ${
+                                Number(selected) === id
+                                    ? "selected"
+                                    : ""
+                            }
+                        >
+                            ${label}
+                        </option>
+                    `
+                )
                 .join("")}
+
         </select>
     `;
 }
@@ -556,76 +771,161 @@ async function handleEditStudentSubmit(event) {
 
     event.preventDefault();
 
-    const form = event.currentTarget;
-    const button = document.getElementById("updateStudentBtn");
+
+    const form =
+        event.currentTarget;
+
+
+    const button =
+        document.getElementById(
+            "updateStudentBtn"
+        );
+
 
     try {
 
-        const data = new FormData(form);
-        const name = data.get("name")?.trim();
-
-        if (!name) {
-            showFormMessage(
-                "Informe o nome do aluno.",
-                "error"
+        const data =
+            studentFormController.serialize(
+                form
             );
+
+
+        if (
+            !studentFormController.validateRequired(
+                form,
+                [
+                    "name",
+                    "training_level_id"
+                ]
+            )
+        ) {
+
+            studentToast.showWarning(
+                "Preencha os campos obrigatórios."
+            );
+
             return;
         }
 
-        const student = new Student({
-            name,
-            email: data.get("email")?.trim() || null,
-            phone: data.get("phone")?.trim() || null,
-            birthdate: data.get("birthdate") || null,
-            gym: data.get("gym")?.trim() || null,
-            notes: data.get("notes")?.trim() || null,
-            trainingLevelId: Number(
-                data.get("training_level_id")
-            ),
-            goalId: data.get("goal_id")
-                ? Number(data.get("goal_id"))
-                : null
-        });
+
+        const name =
+            data.name?.trim();
+
+
+        const student =
+            new Student({
+
+                name,
+
+                email:
+                    data.email?.trim() ||
+                    null,
+
+                phone:
+                    data.phone?.trim() ||
+                    null,
+
+                birthdate:
+                    data.birthdate ||
+                    null,
+
+                gym:
+                    data.gym?.trim() ||
+                    null,
+
+                notes:
+                    data.notes?.trim() ||
+                    null,
+
+                trainingLevelId:
+                    Number(
+                        data.training_level_id
+                    ),
+
+                goalId:
+                    data.goal_id
+                        ? Number(
+                            data.goal_id
+                        )
+                        : null
+            });
+
 
         button.disabled = true;
-        button.textContent = "Salvando...";
 
-        const response = await studentService.update(
-            currentStudent.id,
-            student
-        );
+        button.textContent =
+            "Salvando...";
 
-        if (!response || response.status !== "success") {
-            throw new Error(
-                response?.message ||
+
+        const response =
+            await studentService.update(
+                currentStudent.id,
+                student
+            );
+
+
+        if (
+            !response ||
+            response.status !== "success"
+        ) {
+
+            studentToast.showResponse(
+                response,
                 "Não foi possível atualizar o aluno."
             );
+
+            button.disabled = false;
+
+            button.textContent =
+                "Salvar alterações";
+
+            return;
         }
 
-        currentStudent = response.data || student;
 
-        alert("Aluno atualizado com sucesso!");
+        currentStudent =
+            response.data ||
+            student;
 
-        renderStudentProfile(currentStudent);
 
-        workoutsManager = new StudentWorkouts({
-            student: currentStudent,
-            storage
-        });
+        studentToast.showSuccess(
+            response.message ||
+            "Aluno atualizado com sucesso!"
+        );
+
+
+        renderStudentProfile(
+            currentStudent
+        );
+
+
+        workoutsManager =
+            new StudentWorkouts({
+                student: currentStudent,
+                storage
+            });
+
 
         await workoutsManager.load();
 
     } catch (error) {
 
-        console.error("ERRO AO ATUALIZAR ALUNO:", error);
-
-        showFormMessage(
-            error.message || "Erro ao atualizar aluno.",
-            "error"
+        console.error(
+            "ERRO AO ATUALIZAR ALUNO:",
+            error
         );
 
+
+        studentToast.showError(
+            error.message ||
+            "Erro ao atualizar aluno."
+        );
+
+
         button.disabled = false;
-        button.textContent = "Salvar alterações";
+
+        button.textContent =
+            "Salvar alterações";
     }
 }
 
@@ -636,31 +936,52 @@ async function handleEditStudentSubmit(event) {
 
 function renderNewStudentForm() {
 
-    document.title = "Novo Aluno — TrainiFy";
+    document.title =
+        "Novo Aluno — TrainiFy";
 
-    const titleEl = document.getElementById("topbarTitle");
+
+    const titleEl =
+        document.getElementById(
+            "topbarTitle"
+        );
+
 
     if (titleEl) {
-        titleEl.textContent = "Novo Aluno";
+
+        titleEl.textContent =
+            "Novo Aluno";
     }
 
-    const container = document.getElementById("studentContent");
+
+    const container =
+        document.getElementById(
+            "studentContent"
+        );
+
 
     if (!container) {
         return;
     }
 
-    container.innerHTML = `
-        <div class="card" style="max-width:700px;">
 
-            <h2 style="margin-bottom:var(--space-xl);">
+    container.innerHTML = `
+        <div
+            class="card"
+            style="max-width:700px;"
+        >
+
+            <h2
+                style="margin-bottom:var(--space-xl);"
+            >
                 Cadastrar Novo Aluno
             </h2>
+
 
             <div
                 id="studentFormMessage"
                 style="margin-bottom:var(--space-md);"
             ></div>
+
 
             <form id="newStudentForm">
 
@@ -676,7 +997,10 @@ function renderNewStudentForm() {
                         class="form-group"
                         style="grid-column:1/-1"
                     >
-                        <label>Nome Completo *</label>
+
+                        <label>
+                            Nome Completo *
+                        </label>
 
                         <input
                             class="form-control"
@@ -684,10 +1008,15 @@ function renderNewStudentForm() {
                             required
                             placeholder="João da Silva"
                         />
+
                     </div>
 
+
                     <div class="form-group">
-                        <label>Email</label>
+
+                        <label>
+                            Email
+                        </label>
 
                         <input
                             class="form-control"
@@ -695,63 +1024,93 @@ function renderNewStudentForm() {
                             type="email"
                             placeholder="joao@email.com"
                         />
+
                     </div>
 
+
                     <div class="form-group">
-                        <label>Telefone</label>
+
+                        <label>
+                            Telefone
+                        </label>
 
                         <input
                             class="form-control"
                             name="phone"
                             placeholder="(51) 99999-0000"
                         />
+
                     </div>
 
+
                     <div class="form-group">
-                        <label>Academia</label>
+
+                        <label>
+                            Academia
+                        </label>
 
                         <input
                             class="form-control"
                             name="gym"
                             placeholder="SmartFit Centro"
                         />
+
                     </div>
 
+
                     <div class="form-group">
-                        <label>Nível de Treino *</label>
+
+                        <label>
+                            Nível de Treino *
+                        </label>
 
                         <select
                             class="form-control"
                             name="training_level_id"
                             required
                         >
+
                             <option value="">
                                 Selecionar...
                             </option>
+
                             <option value="1">
                                 Iniciante
                             </option>
+
                             <option value="2">
                                 Intermediário
                             </option>
+
                             <option value="3">
                                 Avançado
                             </option>
+
                         </select>
+
                     </div>
 
+
                     <div class="form-group">
-                        <label>Data de Nascimento</label>
+
+                        <label>
+                            Data de Nascimento
+                        </label>
 
                         <input
                             class="form-control"
                             name="birthdate"
                             type="date"
                         />
+
                     </div>
 
+
                     <div class="form-group">
-                        <label>ID do Objetivo</label>
+
+                        <label>
+                            ID do Objetivo
+                        </label>
 
                         <input
                             class="form-control"
@@ -760,12 +1119,15 @@ function renderNewStudentForm() {
                             min="1"
                             placeholder="Ex.: 1"
                         />
+
                     </div>
+
 
                     <div
                         class="form-group"
                         style="grid-column:1/-1"
                     >
+
                         <label>
                             Observações / Lesões / Dificuldades
                         </label>
@@ -775,9 +1137,11 @@ function renderNewStudentForm() {
                             name="notes"
                             placeholder="Descreva lesões, limitações ou qualquer informação importante..."
                         ></textarea>
+
                     </div>
 
                 </div>
+
 
                 <div
                     style="
@@ -796,6 +1160,7 @@ function renderNewStudentForm() {
                         Cancelar
                     </button>
 
+
                     <button
                         type="submit"
                         class="btn btn-primary"
@@ -807,11 +1172,15 @@ function renderNewStudentForm() {
                 </div>
 
             </form>
+
         </div>
     `;
 
+
     document
-        .getElementById("newStudentForm")
+        .getElementById(
+            "newStudentForm"
+        )
         ?.addEventListener(
             "submit",
             handleNewStudentSubmit
@@ -823,65 +1192,130 @@ async function handleNewStudentSubmit(event) {
 
     event.preventDefault();
 
-    const form = event.currentTarget;
-    const button = document.getElementById("saveStudentBtn");
+
+    const form =
+        event.currentTarget;
+
+
+    const button =
+        document.getElementById(
+            "saveStudentBtn"
+        );
+
 
     try {
 
-        const data = new FormData(form);
+        const data =
+            studentFormController.serialize(
+                form
+            );
 
-        const name = data.get("name")?.trim();
+
+        if (
+            !studentFormController.validateRequired(
+                form,
+                [
+                    "name",
+                    "training_level_id"
+                ]
+            )
+        ) {
+
+            studentToast.showWarning(
+                "Preencha os campos obrigatórios."
+            );
+
+            return;
+        }
+
+
+        const name =
+            data.name?.trim();
+
+
         const trainingLevelId =
-            data.get("training_level_id");
+            data.training_level_id;
 
-        if (!name) {
-            showFormMessage(
-                "Informe o nome do aluno.",
-                "error"
-            );
-            return;
-        }
 
-        if (!trainingLevelId) {
-            showFormMessage(
-                "Selecione o nível de treino.",
-                "error"
-            );
-            return;
-        }
+        const student =
+            new Student({
 
-        const student = new Student({
-            name,
-            email: data.get("email")?.trim() || null,
-            phone: data.get("phone")?.trim() || null,
-            birthdate: data.get("birthdate") || null,
-            gym: data.get("gym")?.trim() || null,
-            notes: data.get("notes")?.trim() || null,
-            trainingLevelId: Number(trainingLevelId),
-            goalId: data.get("goal_id")
-                ? Number(data.get("goal_id"))
-                : null
-        });
+                name,
+
+                email:
+                    data.email?.trim() ||
+                    null,
+
+                phone:
+                    data.phone?.trim() ||
+                    null,
+
+                birthdate:
+                    data.birthdate ||
+                    null,
+
+                gym:
+                    data.gym?.trim() ||
+                    null,
+
+                notes:
+                    data.notes?.trim() ||
+                    null,
+
+                trainingLevelId:
+                    Number(
+                        trainingLevelId
+                    ),
+
+                goalId:
+                    data.goal_id
+                        ? Number(
+                            data.goal_id
+                        )
+                        : null
+            });
+
 
         button.disabled = true;
-        button.textContent = "Cadastrando...";
+
+        button.textContent =
+            "Cadastrando...";
+
 
         const response =
-            await studentService.create(student);
+            await studentService.create(
+                student
+            );
 
-        if (!response || response.status !== "success") {
-            throw new Error(
-                response?.message ||
+
+        if (
+            !response ||
+            response.status !== "success"
+        ) {
+
+            studentToast.showResponse(
+                response,
                 "Não foi possível cadastrar o aluno."
             );
+
+            button.disabled = false;
+
+            button.textContent =
+                "Cadastrar Aluno";
+
+            return;
         }
 
-        showFormMessage(
-            "Aluno cadastrado com sucesso!",
-            "success"
+
+        studentToast.showSuccess(
+            response.message ||
+            "Aluno cadastrado com sucesso!"
         );
 
-        button.textContent = "Aluno cadastrado!";
+
+        button.textContent =
+            "Aluno cadastrado!";
+
 
         setTimeout(
             () => window.history.back(),
@@ -890,16 +1324,22 @@ async function handleNewStudentSubmit(event) {
 
     } catch (error) {
 
-        console.error("ERRO AO CADASTRAR ALUNO:", error);
-
-        showFormMessage(
-            error.message ||
-            "Erro ao cadastrar aluno.",
-            "error"
+        console.error(
+            "ERRO AO CADASTRAR ALUNO:",
+            error
         );
 
+
+        studentToast.showError(
+            error.message ||
+            "Erro ao cadastrar aluno."
+        );
+
+
         button.disabled = false;
-        button.textContent = "Cadastrar Aluno";
+
+        button.textContent =
+            "Cadastrar Aluno";
     }
 }
 
@@ -910,43 +1350,82 @@ async function handleNewStudentSubmit(event) {
 
 async function confirmDelete() {
 
-    if (!confirm(
-        "Remover este aluno? Esta ação não pode ser desfeita."
-    )) {
+    if (
+        !confirm(
+            "Remover este aluno? Esta ação não pode ser desfeita."
+        )
+    ) {
         return;
     }
+
 
     try {
 
         const params =
-            new URLSearchParams(window.location.search);
+            new URLSearchParams(
+                window.location.search
+            );
 
-        const studentId = params.get("id");
+
+        const studentId =
+            params.get("id");
+
 
         if (!studentId) {
-            alert("Não foi possível identificar o aluno.");
+
+            studentToast.showError(
+                "Não foi possível identificar o aluno."
+            );
+
             return;
         }
 
-        const response =
-            await studentService.remove(studentId);
 
-        if (!response || response.status !== "success") {
-            throw new Error(
-                response?.message ||
+        const response =
+            await studentService.remove(
+                studentId
+            );
+
+
+        if (
+            !response ||
+            response.status !== "success"
+        ) {
+
+            studentToast.showResponse(
+                response,
                 "Não foi possível remover o aluno."
             );
+
+            return;
         }
 
-        alert("Aluno removido com sucesso!");
 
-        window.location.href = "students.html";
+        studentToast.showSuccess(
+            response.message ||
+            "Aluno removido com sucesso!"
+        );
+
+
+        setTimeout(
+            () => {
+
+                window.location.href =
+                    "students.html";
+
+            },
+            800
+        );
 
     } catch (error) {
 
-        console.error("ERRO AO REMOVER ALUNO:", error);
+        console.error(
+            "ERRO AO REMOVER ALUNO:",
+            error
+        );
 
-        alert(
+
+        studentToast.showError(
             error.message ||
             "Erro ao remover aluno."
         );
@@ -958,16 +1437,25 @@ async function confirmDelete() {
    UTILITÁRIOS
 ========================================================= */
 
-function showFormMessage(message, type = "error") {
+function showFormMessage(
+    message,
+    type = "error"
+) {
 
     const element =
-        document.getElementById("studentFormMessage");
+        document.getElementById(
+            "studentFormMessage"
+        );
+
 
     if (!element) {
         return;
     }
 
-    const success = type === "success";
+
+    const success =
+        type === "success";
+
 
     element.innerHTML = `
         <div
@@ -998,18 +1486,24 @@ function fmtDate(date) {
         return "—";
     }
 
+
     try {
 
         return new Date(
             date +
             (
-                /^\d{4}-\d{2}-\d{2}$/.test(date)
+                /^\d{4}-\d{2}-\d{2}$/.test(
+                    date
+                )
                     ? "T00:00:00"
                     : ""
             )
-        ).toLocaleDateString("pt-BR");
+        ).toLocaleDateString(
+            "pt-BR"
+        );
 
     } catch {
+
         return date;
     }
 }
@@ -1017,11 +1511,16 @@ function fmtDate(date) {
 
 function initials(name = "") {
 
-    const parts = name.trim().split(/\s+/);
+    const parts =
+        name
+            .trim()
+            .split(/\s+/);
+
 
     if (!parts[0]) {
         return "??";
     }
+
 
     return (
         parts.length > 1
@@ -1035,14 +1534,30 @@ function initials(name = "") {
 function escapeHtml(value = "") {
 
     return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
 }
 
 
 function escapeAttribute(value = "") {
+
     return escapeHtml(value);
 }

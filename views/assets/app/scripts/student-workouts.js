@@ -10,12 +10,28 @@ import SessionStorage from "../../_common/scripts/storage.js";
 
 import StudentWorkoutDays
     from "./student-workout-days.js";
+
 import {
     createFormController
 } from "../../_common/prototypes/FormController.js";
 
+import {
+    createToast
+} from "../../_common/prototypes/Toast.js";
+
+
+/*
+ * Protótipos reutilizáveis.
+ *
+ * Os objetos são criados com Object.create(),
+ * demonstrando programação prototipal.
+ */
 const workoutFormController =
     createFormController();
+
+const workoutToast =
+    createToast();
+
 
 export default class StudentWorkouts {
 
@@ -52,6 +68,7 @@ export default class StudentWorkouts {
             this.storage.getToken();
 
         if (!token) {
+
             window.location.href =
                 "../public/login.html";
 
@@ -109,14 +126,39 @@ export default class StudentWorkouts {
             const response =
                 await this.workoutService.list();
 
+            const responseStatus =
+                String(
+                    response?.status ||
+                    response?.type ||
+                    ""
+                ).toLowerCase();
+
+            const successStatuses = [
+                "success",
+                "ok"
+            ];
+
             if (
                 !response ||
-                response.status !== "success"
+                !successStatuses.includes(
+                    responseStatus
+                )
             ) {
-                throw new Error(
-                    response?.message ||
+
+                workoutToast.showResponse(
+                    response,
                     "Não foi possível carregar os treinos."
                 );
+
+                const error =
+                    new Error(
+                        response?.message ||
+                        "Não foi possível carregar os treinos."
+                    );
+
+                error.__toastDisplayed = true;
+
+                throw error;
             }
 
             const workouts =
@@ -132,7 +174,10 @@ export default class StudentWorkouts {
                 );
 
             for (const workout of this.workouts) {
-                await this.daysManager.load(workout);
+
+                await this.daysManager.load(
+                    workout
+                );
             }
 
             this.render();
@@ -143,7 +188,9 @@ export default class StudentWorkouts {
                 );
 
             if (currentSection) {
-                currentSection.__trainifyWorkoutManager =
+
+                currentSection
+                    .__trainifyWorkoutManager =
                     this;
             }
 
@@ -153,6 +200,16 @@ export default class StudentWorkouts {
                 "ERRO AO CARREGAR TREINOS:",
                 error
             );
+
+            if (
+                !error.__toastDisplayed
+            ) {
+
+                workoutToast.showError(
+                    error.message ||
+                    "Erro ao carregar treinos."
+                );
+            }
 
             section.innerHTML = `
                 <div class="card">
@@ -185,6 +242,7 @@ export default class StudentWorkouts {
                 <div class="workout-section-header">
 
                     <div>
+
                         <h3
                             style="
                                 font-size:1rem;
@@ -209,7 +267,9 @@ export default class StudentWorkouts {
                                     : "treinos cadastrados"
                             }
                         </div>
+
                     </div>
+
 
                     <button
                         class="btn btn-primary btn-sm"
@@ -220,6 +280,7 @@ export default class StudentWorkouts {
                     </button>
 
                 </div>
+
 
                 ${
                     this.workouts.length === 0
@@ -255,6 +316,7 @@ export default class StudentWorkouts {
                 >
                     Este aluno ainda não possui nenhum treino.
                 </p>
+
 
                 <button
                     class="btn btn-primary"
@@ -308,6 +370,7 @@ export default class StudentWorkouts {
                             ${escapeHtml(workout.name)}
                         </h3>
 
+
                         <div
                             style="
                                 font-size:.8rem;
@@ -322,6 +385,7 @@ export default class StudentWorkouts {
                         </div>
 
                     </div>
+
 
                     <div
                         style="
@@ -340,6 +404,7 @@ export default class StudentWorkouts {
                             Ver detalhes
                         </button>
 
+
                         <button
                             class="btn btn-outline btn-sm"
                             type="button"
@@ -348,6 +413,7 @@ export default class StudentWorkouts {
                         >
                             ✏ Editar
                         </button>
+
 
                         <button
                             class="btn btn-danger btn-sm"
@@ -361,6 +427,7 @@ export default class StudentWorkouts {
                     </div>
 
                 </div>
+
 
                 ${
                     days.length
@@ -382,6 +449,7 @@ export default class StudentWorkouts {
                         `
                 }
 
+
                 <div
                     style="
                         margin-top:12px;
@@ -390,6 +458,7 @@ export default class StudentWorkouts {
                     "
                 >
                     ${days.length}
+
                     ${
                         days.length === 1
                             ? "dia"
@@ -399,6 +468,7 @@ export default class StudentWorkouts {
                     ·
 
                     ${exerciseCount}
+
                     ${
                         exerciseCount === 1
                             ? "exercício"
@@ -423,521 +493,10 @@ export default class StudentWorkouts {
 
     openForm(workoutId = null) {
 
-    const workout =
-        workoutId
-            ? this.find(workoutId)
-            : null;
-
-    const modal =
-        document.getElementById("workoutModal");
-
-    const title =
-        document.getElementById("workoutModalTitle");
-
-    const subtitle =
-        document.getElementById("workoutModalSubtitle");
-
-    const body =
-        document.getElementById("workoutModalBody");
-
-    if (!modal || !title || !subtitle || !body) {
-        return;
-    }
-
-    title.textContent =
-        workout
-            ? "Editar treino"
-            : "Novo treino";
-
-    subtitle.textContent =
-        workout
-            ? "Altere os dados do treino e gerencie seus dias."
-            : "Cadastre um novo treino para o aluno.";
-
-    body.innerHTML = `
-
-        <form
-            id="workoutForm"
-            style="
-                display:grid;
-                gap:16px;
-            "
-        >
-
-            <div class="form-group">
-
-                <label>
-                    Nome do treino *
-                </label>
-
-                <input
-                    class="form-control"
-                    name="name"
-                    required
-                    value="${escapeAttribute(
-                        workout?.name || ""
-                    )}"
-                    placeholder="Treino A — Hipertrofia"
-                />
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label>
-                    Descrição
-                </label>
-
-                <textarea
-                    class="form-control"
-                    name="description"
-                    placeholder="Descreva o objetivo do treino..."
-                >${escapeHtml(
-                    workout?.description || ""
-                )}</textarea>
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label>
-                    Frequência
-                </label>
-
-                <input
-                    class="form-control"
-                    name="frequency"
-                    value="${escapeAttribute(
-                        workout?.frequency || ""
-                    )}"
-                    placeholder="Ex.: 5x por semana"
-                />
-
-            </div>
-
-
-            ${
-                workout
-                    ? this.renderWorkoutDaysEditor(workout)
-                    : `
-                        <div
-                            class="card"
-                            style="
-                                margin-top:8px;
-                                padding:20px;
-                                text-align:center;
-                            "
-                        >
-
-                            <strong>
-                                Dias do treino
-                            </strong>
-
-                            <p
-                                style="
-                                    color:var(--clr-grey-500);
-                                    margin-top:6px;
-                                "
-                            >
-                                Primeiro crie o treino.
-                                Depois você poderá adicionar
-                                os dias e exercícios.
-                            </p>
-
-                        </div>
-                    `
-            }
-
-
-            <div
-                id="workoutFormMessage"
-                style="
-                    display:none;
-                    padding:12px;
-                    border-radius:8px;
-                    font-size:.85rem;
-                "
-            ></div>
-
-
-            <div
-                style="
-                    display:flex;
-                    justify-content:flex-end;
-                    gap:8px;
-                    margin-top:8px;
-                "
-            >
-
-                <button
-                    type="button"
-                    class="btn btn-ghost"
-                    data-action="close-workout-modal"
-                >
-                    Cancelar
-                </button>
-
-
-                <button
-                    type="submit"
-                    class="btn btn-primary"
-                >
-                    ${
-                        workout
-                            ? "Salvar alterações"
-                            : "Criar treino"
-                    }
-                </button>
-
-            </div>
-
-        </form>
-    `;
-
-
-    modal.classList.remove("hidden");
-    modal.setAttribute("aria-hidden", "false");
-
-
-    document
-        .getElementById("workoutForm")
-        ?.addEventListener(
-            "submit",
-            event =>
-                this.saveForm(event, workout)
-        );
-}
-renderWorkoutDaysEditor(workout) {
-
-    const days =
-        Array.isArray(workout.days)
-            ? workout.days
-            : [];
-
-    return `
-
-        <div
-            style="
-                margin-top:8px;
-                padding-top:20px;
-                border-top:1px solid var(--clr-border);
-            "
-        >
-
-            <div
-                style="
-                    display:flex;
-                    align-items:center;
-                    justify-content:space-between;
-                    gap:12px;
-                    margin-bottom:16px;
-                "
-            >
-
-                <div>
-
-                    <h3
-                        style="
-                            font-size:1rem;
-                            font-weight:700;
-                        "
-                    >
-                        Dias do treino
-                    </h3>
-
-                    <p
-                        style="
-                            color:var(--clr-grey-500);
-                            font-size:.8rem;
-                            margin-top:4px;
-                        "
-                    >
-                        Adicione os dias e os exercícios.
-                    </p>
-
-                </div>
-
-
-                <button
-                    class="btn btn-outline btn-sm"
-                    type="button"
-                    data-action="add-workout-day"
-                    data-workout-id="${workout.id}"
-                >
-                    + Adicionar dia
-                </button>
-
-            </div>
-
-
-            <div id="workoutDaysContainer">
-
-                ${
-                    days.length === 0
-                        ? `
-                            <div
-                                class="card"
-                                style="
-                                    padding:28px;
-                                    text-align:center;
-                                "
-                            >
-
-                                <p
-                                    style="
-                                        color:var(--clr-grey-500);
-                                        margin-bottom:16px;
-                                    "
-                                >
-                                    Nenhum dia adicionado ainda.
-                                </p>
-
-                                <button
-                                    class="btn btn-outline"
-                                    type="button"
-                                    data-action="add-workout-day"
-                                    data-workout-id="${workout.id}"
-                                >
-                                    + Adicionar primeiro dia
-                                </button>
-
-                            </div>
-                        `
-                        : days
-                            .map(day =>
-                                this.daysManager.renderModal(day)
-                            )
-                            .join("")
-                }
-
-            </div>
-
-        </div>
-    `;
-}
-
-
-    async saveForm(event, workout) {
-
-    event.preventDefault();
-
-    const data =
-        new FormData(event.currentTarget);
-
-    const name =
-        data.get("name")?.trim();
-
-    const message =
-        document.getElementById(
-            "workoutFormMessage"
-        );
-
-
-    if (!name) {
-
-        this.showMessage(
-            "Informe o nome do treino.",
-            "error"
-        );
-
-        return;
-    }
-
-
-    try {
-
-        const workoutObject =
-            new Workout({
-                id: workout?.id ?? null,
-                studentId: this.student.id,
-                goalId:
-                    this.student.goalId ??
-                    null,
-                trainingLevelId:
-                    this.student.trainingLevelId ??
-                    null,
-                name,
-                description:
-                    data.get("description")?.trim() ||
-                    "",
-                frequency:
-                    data.get("frequency")?.trim() ||
-                    ""
-            });
-
-
-        const response =
-            workout
-                ? await this.workoutService.update(
-                    workout.id,
-                    workoutObject
-                )
-                : await this.workoutService.create(
-                    workoutObject
-                );
-
-
-        if (
-            !response ||
-            response.type !== "success"
-        ) {
-
-            throw new Error(
-                response?.message ||
-                "Não foi possível salvar o treino."
-            );
-        }
-
-
-        await this.load();
-
-
-        /*
-         * Se era um novo treino, pegamos o ID
-         * retornado pela API.
-         */
-        const workoutId =
-            workout?.id ??
-            response.data?.id;
-
-
-        if (!workoutId) {
-
-            throw new Error(
-                "O treino foi salvo, mas a API não retornou o ID."
-            );
-        }
-
-
-        const savedWorkout =
-            this.find(workoutId);
-
-
-        if (!savedWorkout) {
-
-            throw new Error(
-                "Não foi possível carregar o treino criado."
-            );
-        }
-
-
-        /*
-         * Mantém o modal aberto e agora
-         * mostra a tela de dias.
-         */
-        this.openForm(savedWorkout.id);
-
-
-        this.showMessage(
-            workout
-                ? "Treino atualizado com sucesso!"
-                : "Treino criado com sucesso! Agora adicione os dias e exercícios.",
-            "success"
-        );
-
-    } catch (error) {
-
-        console.error(
-            "ERRO AO SALVAR TREINO:",
-            error
-        );
-
-        this.showMessage(
-            error.message ||
-            "Erro ao salvar treino.",
-            "error"
-        );
-    }
-}
-
-
-    getFormMessage(form) {
-
-        let message =
-            form.querySelector(
-                ".form-message"
-            );
-
-        if (!message) {
-
-            message =
-                document.createElement(
-                    "div"
-                );
-
-            message.className =
-                "form-message";
-
-            form.prepend(message);
-        }
-
-        return message;
-    }
-
-
-    async remove(id) {
-
         const workout =
-            this.find(id);
-
-        if (!workout) {
-            return;
-        }
-
-        const confirmed =
-            window.confirm(
-                `Remover o treino "${workout.name}"?\n\n` +
-                "Os dias e exercícios relacionados também serão afetados."
-            );
-
-        if (!confirmed) {
-            return;
-        }
-
-        try {
-
-            const response =
-                await this.workoutService.remove(
-                    id
-                );
-
-            if (
-                !response ||
-                response.status !== "success"
-            ) {
-                throw new Error(
-                    response?.message ||
-                    "Não foi possível remover o treino."
-                );
-            }
-
-            await this.load();
-
-        } catch (error) {
-
-            console.error(
-                "ERRO AO REMOVER TREINO:",
-                error
-            );
-
-            alert(
-                error.message ||
-                "Erro ao remover treino."
-            );
-        }
-    }
-
-
-    async openModal(id) {
-
-        const workout =
-            this.find(id);
-
-        if (!workout) {
-            return;
-        }
+            workoutId
+                ? this.find(workoutId)
+                : null;
 
         const modal =
             document.getElementById(
@@ -969,18 +528,629 @@ renderWorkoutDaysEditor(workout) {
         }
 
         title.textContent =
-            workout.name;
+            workout
+                ? "Editar treino"
+                : "Novo treino";
 
         subtitle.textContent =
-            workout.description ||
-            "Detalhes do treino";
+            workout
+                ? "Altere os dados do treino e gerencie seus dias."
+                : "Cadastre um novo treino para o aluno.";
+
+        body.innerHTML = `
+
+            <form
+                id="workoutForm"
+                style="
+                    display:grid;
+                    gap:16px;
+                "
+            >
+
+                <div class="form-group">
+
+                    <label>
+                        Nome do treino *
+                    </label>
+
+                    <input
+                        class="form-control"
+                        name="name"
+                        required
+                        value="${escapeAttribute(
+                            workout?.name || ""
+                        )}"
+                        placeholder="Treino A — Hipertrofia"
+                    />
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Descrição
+                    </label>
+
+                    <textarea
+                        class="form-control"
+                        name="description"
+                        placeholder="Descreva o objetivo do treino..."
+                    >${escapeHtml(
+                        workout?.description || ""
+                    )}</textarea>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Frequência
+                    </label>
+
+                    <input
+                        class="form-control"
+                        name="frequency"
+                        value="${escapeAttribute(
+                            workout?.frequency || ""
+                        )}"
+                        placeholder="Ex.: 5x por semana"
+                    />
+
+                </div>
+
+
+                ${
+                    workout
+                        ? this.renderWorkoutDaysEditor(workout)
+                        : `
+                            <div
+                                class="card"
+                                style="
+                                    margin-top:8px;
+                                    padding:20px;
+                                    text-align:center;
+                                "
+                            >
+
+                                <strong>
+                                    Dias do treino
+                                </strong>
+
+                                <p
+                                    style="
+                                        color:var(--clr-grey-500);
+                                        margin-top:6px;
+                                    "
+                                >
+                                    Primeiro crie o treino.
+                                    Depois você poderá adicionar
+                                    os dias e exercícios.
+                                </p>
+
+                            </div>
+                        `
+                }
+
+
+                <div
+                    id="workoutFormMessage"
+                    style="
+                        display:none;
+                        padding:12px;
+                        border-radius:8px;
+                        font-size:.85rem;
+                    "
+                ></div>
+
+
+                <div
+                    style="
+                        display:flex;
+                        justify-content:flex-end;
+                        gap:8px;
+                        margin-top:8px;
+                    "
+                >
+
+                    <button
+                        type="button"
+                        class="btn btn-ghost"
+                        data-action="close-workout-modal"
+                    >
+                        Cancelar
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        ${
+                            workout
+                                ? "Salvar alterações"
+                                : "Criar treino"
+                        }
+                    </button>
+
+                </div>
+
+            </form>
+        `;
+
+
+        modal.classList.remove("hidden");
+
+        modal.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+
+
+        document
+            .getElementById("workoutForm")
+            ?.addEventListener(
+                "submit",
+                event =>
+                    this.saveForm(
+                        event,
+                        workout
+                    )
+            );
+    }
+
+
+    renderWorkoutDaysEditor(workout) {
 
         const days =
             Array.isArray(workout.days)
                 ? workout.days
                 : [];
 
+        return `
+
+            <div
+                style="
+                    margin-top:8px;
+                    padding-top:20px;
+                    border-top:1px solid var(--clr-border);
+                "
+            >
+
+                <div
+                    style="
+                        display:flex;
+                        align-items:center;
+                        justify-content:space-between;
+                        gap:12px;
+                        margin-bottom:16px;
+                    "
+                >
+
+                    <div>
+
+                        <h3
+                            style="
+                                font-size:1rem;
+                                font-weight:700;
+                            "
+                        >
+                            Dias do treino
+                        </h3>
+
+                        <p
+                            style="
+                                color:var(--clr-grey-500);
+                                font-size:.8rem;
+                                margin-top:4px;
+                            "
+                        >
+                            Adicione os dias e os exercícios.
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        class="btn btn-outline btn-sm"
+                        type="button"
+                        data-action="add-workout-day"
+                        data-workout-id="${workout.id}"
+                    >
+                        + Adicionar dia
+                    </button>
+
+                </div>
+
+
+                <div id="workoutDaysContainer">
+
+                    ${
+                        days.length === 0
+                            ? `
+                                <div
+                                    class="card"
+                                    style="
+                                        padding:28px;
+                                        text-align:center;
+                                    "
+                                >
+
+                                    <p
+                                        style="
+                                            color:var(--clr-grey-500);
+                                            margin-bottom:16px;
+                                        "
+                                    >
+                                        Nenhum dia adicionado ainda.
+                                    </p>
+
+
+                                    <button
+                                        class="btn btn-outline"
+                                        type="button"
+                                        data-action="add-workout-day"
+                                        data-workout-id="${workout.id}"
+                                    >
+                                        + Adicionar primeiro dia
+                                    </button>
+
+                                </div>
+                            `
+                            : days
+                                .map(day =>
+                                    this.daysManager
+                                        .renderModal(day)
+                                )
+                                .join("")
+                    }
+
+                </div>
+
+            </div>
+        `;
+    }
+
+
+    async saveForm(event, workout) {
+
+        event.preventDefault();
+
+        const form =
+            event.currentTarget;
+
+
+        /*
+         * Utiliza o protótipo FormController
+         * para transformar o formulário em objeto.
+         */
+        const data =
+            workoutFormController.serialize(
+                form
+            );
+
+
+        /*
+         * Validação utilizando o protótipo.
+         */
+        if (
+            !workoutFormController.validateRequired(
+                form,
+                ["name"]
+            )
+        ) {
+
+            workoutToast.showWarning(
+                "Informe o nome do treino."
+            );
+
+            return;
+        }
+
+
+        const name =
+            data.name?.trim();
+
+
+        try {
+
+            const workoutObject =
+                new Workout({
+
+                    id:
+                        workout?.id ??
+                        null,
+
+                    studentId:
+                        this.student.id,
+
+                    goalId:
+                        this.student.goalId ??
+                        null,
+
+                    trainingLevelId:
+                        this.student.trainingLevelId ??
+                        null,
+
+                    name,
+
+                    description:
+                        data.description?.trim() ||
+                        "",
+
+                    frequency:
+                        data.frequency?.trim() ||
+                        ""
+                });
+
+
+            const response =
+                workout
+                    ? await this.workoutService.update(
+                        workout.id,
+                        workoutObject
+                    )
+                    : await this.workoutService.create(
+                        workoutObject
+                    );
+
+
+            console.log(
+                "RESPOSTA AO SALVAR TREINO:",
+                response
+            );
+
+
+            const responseStatus =
+                String(
+                    response?.status ||
+                    response?.type ||
+                    ""
+                ).toLowerCase();
+
+
+            const successStatuses = [
+                "success",
+                "created",
+                "updated",
+                "ok"
+            ];
+
+
+            if (
+                !response ||
+                !successStatuses.includes(
+                    responseStatus
+                )
+            ) {
+
+                workoutToast.showResponse(
+                    response,
+                    "Não foi possível salvar o treino."
+                );
+
+                return;
+            }
+
+
+            /*
+             * Fecha o modal após a criação/edição.
+             */
+            this.closeModal();
+
+
+            /*
+             * Recarrega os treinos pela API.
+             *
+             * Isso atualiza a lista sem precisar
+             * atualizar a página inteira.
+             */
+            await this.load();
+
+
+            /*
+             * Mostra a mensagem de sucesso.
+             */
+            workoutToast.showSuccess(
+                workout
+                    ? "Treino atualizado com sucesso!"
+                    : "Treino criado com sucesso!"
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "ERRO AO SALVAR TREINO:",
+                error
+            );
+
+            workoutToast.showError(
+                error.message ||
+                "Erro ao salvar treino."
+            );
+        }
+    }
+
+
+    getFormMessage(form) {
+
+        let message =
+            form.querySelector(
+                ".form-message"
+            );
+
+        if (!message) {
+
+            message =
+                document.createElement(
+                    "div"
+                );
+
+            message.className =
+                "form-message";
+
+            form.prepend(
+                message
+            );
+        }
+
+        return message;
+    }
+
+
+    async remove(id) {
+
+        const workout =
+            this.find(id);
+
+        if (!workout) {
+
+            workoutToast.showWarning(
+                "Treino não encontrado."
+            );
+
+            return;
+        }
+
+
+        const confirmed =
+            window.confirm(
+                `Remover o treino "${workout.name}"?\n\n` +
+                "Os dias e exercícios relacionados também serão afetados."
+            );
+
+
+        if (!confirmed) {
+            return;
+        }
+
+
+        try {
+
+            const response =
+                await this.workoutService.remove(
+                    id
+                );
+
+
+            const responseStatus =
+                String(
+                    response?.status ||
+                    response?.type ||
+                    ""
+                ).toLowerCase();
+
+
+            const successStatuses = [
+                "success",
+                "deleted",
+                "ok"
+            ];
+
+
+            if (
+                !response ||
+                !successStatuses.includes(
+                    responseStatus
+                )
+            ) {
+
+                workoutToast.showResponse(
+                    response,
+                    "Não foi possível remover o treino."
+                );
+
+                return;
+            }
+
+
+            await this.load();
+
+
+            workoutToast.showSuccess(
+                "Treino removido com sucesso."
+            );
+
+        } catch (error) {
+
+            console.error(
+                "ERRO AO REMOVER TREINO:",
+                error
+            );
+
+            workoutToast.showError(
+                error.message ||
+                "Erro ao remover treino."
+            );
+        }
+    }
+
+
+    async openModal(id) {
+
+        const workout =
+            this.find(id);
+
+        if (!workout) {
+
+            workoutToast.showWarning(
+                "Treino não encontrado."
+            );
+
+            return;
+        }
+
+
+        const modal =
+            document.getElementById(
+                "workoutModal"
+            );
+
+        const title =
+            document.getElementById(
+                "workoutModalTitle"
+            );
+
+        const subtitle =
+            document.getElementById(
+                "workoutModalSubtitle"
+            );
+
+        const body =
+            document.getElementById(
+                "workoutModalBody"
+            );
+
+
+        if (
+            !modal ||
+            !title ||
+            !subtitle ||
+            !body
+        ) {
+            return;
+        }
+
+
+        title.textContent =
+            workout.name;
+
+
+        subtitle.textContent =
+            workout.description ||
+            "Detalhes do treino";
+
+
+        const days =
+            Array.isArray(workout.days)
+                ? workout.days
+                : [];
+
+
         body.innerHTML = `
+
             <div>
 
                 <div
@@ -1002,6 +1172,7 @@ renderWorkoutDaysEditor(workout) {
 
                 </div>
 
+
                 ${
                     days.length === 0
                         ? `
@@ -1013,6 +1184,7 @@ renderWorkoutDaysEditor(workout) {
                                 "
                             >
                                 Nenhum dia cadastrado.
+
                                 <br><br>
 
                                 <small>
@@ -1032,7 +1204,10 @@ renderWorkoutDaysEditor(workout) {
             </div>
         `;
 
-        modal.classList.remove("hidden");
+
+        modal.classList.remove(
+            "hidden"
+        );
 
         modal.setAttribute(
             "aria-hidden",
@@ -1052,18 +1227,23 @@ renderWorkoutDaysEditor(workout) {
             return;
         }
 
+
         if (
             document.activeElement &&
             modal.contains(
                 document.activeElement
             )
         ) {
+
             document
                 .activeElement
                 .blur();
         }
 
-        modal.classList.add("hidden");
+
+        modal.classList.add(
+            "hidden"
+        );
 
         modal.setAttribute(
             "aria-hidden",
@@ -1076,7 +1256,9 @@ renderWorkoutDaysEditor(workout) {
 
         await this.load();
 
-        await this.openModal(id);
+        await this.openModal(
+            id
+        );
     }
 
 
@@ -1088,36 +1270,51 @@ renderWorkoutDaysEditor(workout) {
         switch (action) {
 
             case "add-workout":
+
                 this.openForm();
+
                 break;
 
+
             case "view-workout-details":
+
                 await this.openModal(
                     Number(
                         data.workoutId
                     )
                 );
+
                 break;
 
+
             case "edit-workout":
+
                 this.openForm(
                     Number(
                         data.workoutId
                     )
                 );
+
                 break;
 
+
             case "remove-workout":
+
                 await this.remove(
                     Number(
                         data.workoutId
                     )
                 );
+
                 break;
 
+
             case "close-workout-modal":
+
                 this.closeModal();
+
                 break;
+
 
             default:
 
@@ -1130,21 +1327,51 @@ renderWorkoutDaysEditor(workout) {
                 break;
         }
     }
-    showMessage(message, type = "error") {
-    const form = document.getElementById("workoutForm");
-    if (!form) return;
 
-    let messageBox = form.querySelector(".form-message");
 
-    if (!messageBox) {
-        messageBox = document.createElement("div");
-        messageBox.className = "form-message";
-        form.prepend(messageBox);
+    showMessage(
+        message,
+        type = "error"
+    ) {
+
+        const form =
+            document.getElementById(
+                "workoutForm"
+            );
+
+        if (!form) {
+            return;
+        }
+
+
+        let messageBox =
+            form.querySelector(
+                ".form-message"
+            );
+
+
+        if (!messageBox) {
+
+            messageBox =
+                document.createElement(
+                    "div"
+                );
+
+            messageBox.className =
+                "form-message";
+
+            form.prepend(
+                messageBox
+            );
+        }
+
+
+        messageBox.textContent =
+            message;
+
+        messageBox.className =
+            `form-message ${type}`;
     }
-
-    messageBox.textContent = message;
-    messageBox.className = `form-message ${type}`;
-}
 }
 
 
@@ -1179,5 +1406,8 @@ function escapeHtml(value = "") {
 
 
 function escapeAttribute(value = "") {
-    return escapeHtml(value);
+
+    return escapeHtml(
+        value
+    );
 }
