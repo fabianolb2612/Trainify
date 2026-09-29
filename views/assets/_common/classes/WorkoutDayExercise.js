@@ -12,6 +12,7 @@ export default class WorkoutDayExercise {
     #exerciseName;
     #exerciseDescription;
 
+
     constructor({
         id = null,
         workoutDayId = null,
@@ -38,14 +39,16 @@ export default class WorkoutDayExercise {
         this.exerciseDescription = exerciseDescription;
     }
 
+
     get id() {
         return this.#id;
     }
 
     set id(value) {
-        this.#id = value !== null
-            ? Number(value)
-            : null;
+        this.#id =
+            value !== null
+                ? Number(value)
+                : null;
     }
 
 
@@ -54,9 +57,10 @@ export default class WorkoutDayExercise {
     }
 
     set workoutDayId(value) {
-        this.#workoutDayId = value !== null
-            ? Number(value)
-            : null;
+        this.#workoutDayId =
+            value !== null
+                ? Number(value)
+                : null;
     }
 
 
@@ -65,6 +69,7 @@ export default class WorkoutDayExercise {
     }
 
     set exerciseId(value) {
+
         if (
             value === null ||
             value === undefined ||
@@ -91,6 +96,7 @@ export default class WorkoutDayExercise {
     }
 
     set sets(value) {
+
         const number = Number(value);
 
         if (!Number.isInteger(number) || number <= 0) {
@@ -128,6 +134,7 @@ export default class WorkoutDayExercise {
     }
 
     set restSeconds(value) {
+
         const number = Number(value);
 
         if (!Number.isInteger(number) || number < 0) {
@@ -145,6 +152,7 @@ export default class WorkoutDayExercise {
     }
 
     set order(value) {
+
         const number = Number(value);
 
         this.#order =
@@ -159,6 +167,7 @@ export default class WorkoutDayExercise {
     }
 
     set notes(value) {
+
         this.#notes =
             value !== null &&
             value !== undefined &&
@@ -173,6 +182,7 @@ export default class WorkoutDayExercise {
     }
 
     set exerciseName(value) {
+
         this.#exerciseName =
             value
                 ? String(value).trim()
@@ -185,6 +195,7 @@ export default class WorkoutDayExercise {
     }
 
     set exerciseDescription(value) {
+
         this.#exerciseDescription =
             value
                 ? String(value).trim()
@@ -193,6 +204,7 @@ export default class WorkoutDayExercise {
 
 
     toPayload() {
+
         return {
             workout_day_id: this.#workoutDayId,
             exercise_id: this.#exerciseId,

@@ -72,11 +72,45 @@
         <button class="icon-btn" type="button" data-action="close-workout-modal" aria-label="Fechar modal">✕</button>
       </div>
       <div class="modal-body" id="workoutModalBody"></div>
-      <div class="modal-footer">
-        <button class="btn btn-outline" type="button" data-action="toggle-workout-edit">Editar treino</button>
-        <button class="btn btn-ghost" type="button" data-action="add-workout-exercise">Adicionar exercício</button>
-        <button class="btn btn-primary" type="button" data-action="save-workout-changes">Salvar alterações</button>
-      </div>
+      <div class="modal-overlay hidden" id="workoutModal" aria-hidden="true">
+    <div
+        class="modal-card"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="workoutModalTitle"
+    >
+
+        <div class="modal-header">
+
+            <div>
+                <h2 id="workoutModalTitle">Treino</h2>
+
+                <p
+                    id="workoutModalSubtitle"
+                    class="modal-subtitle"
+                >
+                    Detalhes do treino e exercícios
+                </p>
+            </div>
+
+            <button
+                class="icon-btn"
+                type="button"
+                data-action="close-workout-modal"
+                aria-label="Fechar modal"
+            >
+                ✕
+            </button>
+
+        </div>
+
+        <div
+            class="modal-body"
+            id="workoutModalBody"
+        ></div>
+
+    </div>
+</div>
     </div>
   </div>
 

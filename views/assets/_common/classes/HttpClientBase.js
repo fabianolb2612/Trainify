@@ -70,35 +70,55 @@ export default class HttpClientBase {
     }
 
     async #fetchWithConfig(endpoint, config, params = {}) {
-        const { _isFormData, ...fetchConfig } = config;
+    const { _isFormData, ...fetchConfig } = config;
 
-        try {
-            const url = this.#buildUrl(endpoint, params);
+    try {
+        const url = this.#buildUrl(endpoint, params);
 
-            const headers = { ...this.#defaultHeaders, ...fetchConfig.headers };
-            if (_isFormData) {
-                delete headers["Content-Type"];
-            }
+        const headers = {
+            ...this.#defaultHeaders,
+            ...fetchConfig.headers
+        };
 
-            const response = await fetch(url, {
-                ...fetchConfig,
-                headers
-            });
-
-            const contentType = response.headers.get("content-type");
-            if (contentType && contentType.includes("application/json")) {
-                return await response.json();
-            }
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            return await response.text();
-        } catch (error) {
-            throw new Error(`Request failed: ${error.message}`);
+        if (_isFormData) {
+            delete headers["Content-Type"];
         }
+
+        const response = await fetch(url, {
+            ...fetchConfig,
+            headers
+        });
+
+        const contentType = response.headers.get("content-type");
+
+        if (contentType && contentType.includes("application/json")) {
+            return await response.json();
+        }
+
+        const text = await response.text();
+
+        if (!response.ok) {
+            throw new Error(
+                `HTTP error! status: ${response.status} - ${text}`
+            );
+        }
+
+        if (text.trim() !== "") {
+            try {
+                return JSON.parse(text);
+            } catch {
+                return text;
+            }
+        }
+
+        return text;
+
+    } catch (error) {
+        throw new Error(
+            `Request failed: ${error.message}`
+        );
     }
+}
 
     async get(endpoint, params = {}, headers = {}) {
         return this.#fetchWithConfig(endpoint, {
