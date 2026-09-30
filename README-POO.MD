@@ -23,6 +23,8 @@ views/assets/
 │   │   ├── WorkoutDay.js
 │   │   ├── WorkoutDayExercise.js
 │   │   └── Exercise.js
+│   │   ├── Users.js
+
 │   │
 │   ├── services/
 │   │   ├── StudentService.js
@@ -30,17 +32,19 @@ views/assets/
 │   │   ├── WorkoutDayService.js
 │   │   ├── WorkoutDayExerciseService.js
 │   │   └── ExerciseService.js
+
 │   │
 │   └── prototypes/
 │       ├── FormController.js
 │       ├── Toast.js
 │       └── test-prototypes.js
 │
-└── app/
-    ├── student.js
-    ├── student-workouts.js
-    ├── student-workout-days.js
-    └── student-workout-exercises.js
+└── app/│
+│   └── scripts/
+        ├── student.js
+        ├── student-workouts.js
+        ├── student-workout-days.js
+        └── student-workout-exercises.js
 ```
 
 ---
@@ -51,6 +55,7 @@ views/assets/
 
 Foram criadas classes para as principais entidades utilizadas pelo frontend:
 
+- `User`
 - `Student`
 - `Workout`
 - `WorkoutDay`
