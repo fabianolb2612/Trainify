@@ -1,6 +1,5 @@
 import HttpClientBase from "../classes/HttpClientBase.js";
 import Exercise from "../classes/Exercise.js";
-
 export default class ExerciseService extends HttpClientBase {
 
     async list() {

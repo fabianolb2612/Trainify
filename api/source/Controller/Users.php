@@ -3,6 +3,8 @@
 namespace Source\Controller;
 
 use Source\Models\User;
+use Source\Support\Upload;
+use RuntimeException;
 
 class Users extends Api
 {
@@ -68,118 +70,117 @@ class Users extends Api
             "success"
         )->back($response);
     }
+
     public function listAll(array $data): void
-{
-    if (!$this->authToken(1)) {
+    {
+        if (!$this->authToken(1)) {
+            $this->call(
+                401,
+                "unauthorized",
+                "Administrador não autenticado ou token inválido.",
+                "error"
+            )->back(null);
+            return;
+        }
+
+        $user = new User();
+
         $this->call(
-            401,
-            "unauthorized",
-            "Administrador não autenticado ou token inválido.",
-            "error"
-        )->back(null);
-        return;
+            200,
+            "success",
+            "Lista de usuários",
+            "success"
+        )->back($user->listAll());
     }
 
-    $user = new User();
+    public function listById(array $data): void
+    {
+        if (!$this->authToken(1)) {
+            $this->call(
+                401,
+                "unauthorized",
+                "Administrador não autenticado ou token inválido.",
+                "error"
+            )->back(null);
+            return;
+        }
 
-    $this->call(
-        200,
-        "success",
-        "Lista de usuários",
-        "success"
-    )->back($user->listAll());
-}
+        if (
+            !isset($data["user_id"]) ||
+            empty($data["user_id"]) ||
+            !filter_var($data["user_id"], FILTER_VALIDATE_INT)
+        ) {
+            $this->call(
+                400,
+                "bad_request",
+                "ID do usuário é obrigatório e deve ser um número inteiro",
+                "error"
+            )->back(null);
+            return;
+        }
 
-public function listById(array $data): void
-{
-    if (!$this->authToken(1)) {
+        $user = new User();
+        $response = $user->listById((int)$data["user_id"]);
+
+        if (!$response) {
+            $this->call(
+                404,
+                "not_found",
+                "Usuário não encontrado",
+                "error"
+            )->back(null);
+            return;
+        }
+
         $this->call(
-            401,
-            "unauthorized",
-            "Administrador não autenticado ou token inválido.",
-            "error"
-        )->back(null);
-        return;
+            200,
+            "success",
+            "Usuário encontrado",
+            "success"
+        )->back($response);
     }
 
-    if (
-        !isset($data["user_id"]) ||
-        empty($data["user_id"]) ||
-        !filter_var($data["user_id"], FILTER_VALIDATE_INT)
-    ) {
+    public function listPaginator(array $data): void
+    {
+        if (!$this->authToken(1)) {
+            $this->call(
+                401,
+                "unauthorized",
+                "Administrador não autenticado ou token inválido.",
+                "error"
+            )->back(null);
+            return;
+        }
+
+        if (
+            !isset($data["page"], $data["per_page"]) ||
+            empty($data["page"]) ||
+            empty($data["per_page"]) ||
+            !filter_var($data["page"], FILTER_VALIDATE_INT) ||
+            !filter_var($data["per_page"], FILTER_VALIDATE_INT)
+        ) {
+            $this->call(
+                400,
+                "bad_request",
+                "Os campos page e per_page são obrigatórios e devem ser números inteiros",
+                "error"
+            )->back(null);
+            return;
+        }
+
+        $user = new User();
+        $response = $user->listPaginator(
+            (int)$data["page"],
+            (int)$data["per_page"]
+        );
+
         $this->call(
-            400,
-            "bad_request",
-            "ID do usuário é obrigatório e deve ser um número inteiro",
-            "error"
-        )->back(null);
-        return;
+            200,
+            "success",
+            "Lista de usuários com paginação",
+            "success"
+        )->back($response);
     }
-
-    $user = new User();
-
-    $response = $user->listById((int)$data["user_id"]);
-
-    if (!$response) {
-        $this->call(
-            404,
-            "not_found",
-            "Usuário não encontrado",
-            "error"
-        )->back(null);
-        return;
-    }
-
-    $this->call(
-        200,
-        "success",
-        "Usuário encontrado",
-        "success"
-    )->back($response);
-}
-
-public function listPaginator(array $data): void
-{
-    if (!$this->authToken(1)) {
-        $this->call(
-            401,
-            "unauthorized",
-            "Administrador não autenticado ou token inválido.",
-            "error"
-        )->back(null);
-        return;
-    }
-
-    if (
-        !isset($data["page"], $data["per_page"]) ||
-        empty($data["page"]) ||
-        empty($data["per_page"]) ||
-        !filter_var($data["page"], FILTER_VALIDATE_INT) ||
-        !filter_var($data["per_page"], FILTER_VALIDATE_INT)
-    ) {
-        $this->call(
-            400,
-            "bad_request",
-            "Os campos page e per_page são obrigatórios e devem ser números inteiros",
-            "error"
-        )->back(null);
-        return;
-    }
-
-    $user = new User();
-
-    $response = $user->listPaginator(
-        (int)$data["page"],
-        (int)$data["per_page"]
-    );
-
-    $this->call(
-        200,
-        "success",
-        "Lista de usuários com paginação",
-        "success"
-    )->back($response);
-}
 
     public function auth(array $data): void
     {
@@ -279,90 +280,101 @@ public function listPaginator(array $data): void
     }
 
     public function update(array $data): void
-{
-    if (!$this->authToken(2)) {
+    {
+        if (!$this->authToken(2)) {
+            $this->call(
+                401,
+                "unauthorized",
+                "Usuário não está autenticado ou token inválido.",
+                "error"
+            )->back(null);
+            return;
+        }
+
+        $rawInput = file_get_contents("php://input");
+        if (!empty($rawInput)) {
+            $body = json_decode($rawInput, true);
+            if (!is_array($body)) {
+                parse_str($rawInput, $body);
+            }
+            if (is_array($body)) {
+                $data = array_merge($data, $body);
+            }
+        }
+
+        if (
+            !isset($data["name"], $data["email"]) ||
+            empty(trim($data["name"])) ||
+            empty(trim($data["email"])) ||
+            !filter_var($data["email"], FILTER_VALIDATE_EMAIL)
+        ) {
+            $this->call(
+                400,
+                "bad_request",
+                "Nome e e-mail são obrigatórios. O e-mail deve ser válido.",
+                "error"
+            )->back(null);
+            return;
+        }
+
+        $user = new User(
+            null,
+            2,
+            trim($data["name"]),
+            trim($data["email"]),
+            null,
+            $data["photo"] ?? null,
+            $data["cref"] ?? null,
+            $data["phone"] ?? null,
+            $data["city"] ?? null,
+            $data["bio"] ?? null,
+            $data["specialty"] ?? null,
+            1
+        );
+
+        if (!$user->updateById((int)$this->userAuthId)) {
+            $this->call(
+                500,
+                "internal_server_error",
+                $user->getErrorMessage() ?? "Não foi possível atualizar o usuário",
+                "error"
+            )->back(null);
+            return;
+        }
+
+        $updatedUser = new User();
+
+        if (!$updatedUser->selectById((int)$this->userAuthId)) {
+            $this->call(
+                404,
+                "not_found",
+                "Usuário não encontrado",
+                "error"
+            )->back(null);
+            return;
+        }
+
+        $response = [
+            "id" => $updatedUser->getId(),
+            "type_id" => $updatedUser->getTypeId(),
+            "name" => $updatedUser->getName(),
+            "email" => $updatedUser->getEmail(),
+            "photo" => $updatedUser->getPhoto(),
+            "cref" => $updatedUser->getCref(),
+            "phone" => $updatedUser->getPhone(),
+            "city" => $updatedUser->getCity(),
+            "bio" => $updatedUser->getBio(),
+            "specialty" => $updatedUser->getSpecialty(),
+            "active" => $updatedUser->getActive()
+        ];
+
         $this->call(
-            401,
-            "unauthorized",
-            "Usuário não está autenticado ou token inválido.",
-            "error"
-        )->back(null);
-        return;
+            200,
+            "success",
+            "Usuário atualizado com sucesso",
+            "success"
+        )->back($response);
     }
-
-    if (
-        !isset($data["name"], $data["email"]) ||
-        empty(trim($data["name"])) ||
-        empty(trim($data["email"])) ||
-        !filter_var($data["email"], FILTER_VALIDATE_EMAIL)
-    ) {
-        $this->call(
-            400,
-            "bad_request",
-            "Nome e e-mail são obrigatórios. O e-mail deve ser válido.",
-            "error"
-        )->back(null);
-        return;
-    }
-
-    $user = new User(
-        null,
-        2,
-        trim($data["name"]),
-        trim($data["email"]),
-        null,
-        $data["photo"] ?? null,
-        $data["cref"] ?? null,
-        $data["phone"] ?? null,
-        $data["city"] ?? null,
-        $data["bio"] ?? null,
-        $data["specialty"] ?? null,
-        1
-    );
-
-    if (!$user->updateById((int)$this->userAuthId)) {
-        $this->call(
-            500,
-            "internal_server_error",
-            $user->getErrorMessage() ?? "Não foi possível atualizar o usuário",
-            "error"
-        )->back(null);
-        return;
-    }
-
-    $updatedUser = new User();
-
-    if (!$updatedUser->selectById((int)$this->userAuthId)) {
-        $this->call(
-            404,
-            "not_found",
-            "Usuário não encontrado",
-            "error"
-        )->back(null);
-        return;
-    }
-
-    $response = [
-        "id" => $updatedUser->getId(),
-        "type_id" => $updatedUser->getTypeId(),
-        "name" => $updatedUser->getName(),
-        "email" => $updatedUser->getEmail(),
-        "photo" => $updatedUser->getPhoto(),
-        "cref" => $updatedUser->getCref(),
-        "phone" => $updatedUser->getPhone(),
-        "city" => $updatedUser->getCity(),
-        "bio" => $updatedUser->getBio(),
-        "specialty" => $updatedUser->getSpecialty(),
-        "active" => $updatedUser->getActive()
-    ];
-
-    $this->call(
-        200,
-        "success",
-        "Usuário atualizado com sucesso",
-        "success"
-    )->back($response);
-}
 
     public function updateAdmin(array $data): void
     {
@@ -376,111 +388,234 @@ public function listPaginator(array $data): void
             return;
         }
 
-          if (
-        !isset($data["name"], $data["email"]) ||
-        empty(trim($data["name"])) ||
-        empty(trim($data["email"])) ||
-        !filter_var($data["email"], FILTER_VALIDATE_EMAIL)
-    ) {
+        $rawInput = file_get_contents("php://input");
+        if (!empty($rawInput)) {
+            $body = json_decode($rawInput, true);
+            if (!is_array($body)) {
+                parse_str($rawInput, $body);
+            }
+            if (is_array($body)) {
+                $data = array_merge($data, $body);
+            }
+        }
+
+        if (
+            !isset($data["name"], $data["email"]) ||
+            empty(trim($data["name"])) ||
+            empty(trim($data["email"])) ||
+            !filter_var($data["email"], FILTER_VALIDATE_EMAIL)
+        ) {
+            $this->call(
+                400,
+                "bad_request",
+                "Nome e e-mail são obrigatórios. O e-mail deve ser válido.",
+                "error"
+            )->back(null);
+            return;
+        }
+
+        $user = new User(
+            null,
+            2,
+            trim($data["name"]),
+            trim($data["email"]),
+            null,
+            $data["photo"] ?? null,
+            $data["cref"] ?? null,
+            $data["phone"] ?? null,
+            $data["city"] ?? null,
+            $data["bio"] ?? null,
+            $data["specialty"] ?? null,
+            1
+        );
+
+        if (!$user->updateById((int)$this->userAuthId)) {
+            $this->call(
+                500,
+                "internal_server_error",
+                $user->getErrorMessage() ?? "Não foi possível atualizar o usuário",
+                "error"
+            )->back(null);
+            return;
+        }
+
+        $updatedUser = new User();
+
+        if (!$updatedUser->selectById((int)$this->userAuthId)) {
+            $this->call(
+                404,
+                "not_found",
+                "Usuário não encontrado",
+                "error"
+            )->back(null);
+            return;
+        }
+
+        $response = [
+            "id" => $updatedUser->getId(),
+            "type_id" => $updatedUser->getTypeId(),
+            "name" => $updatedUser->getName(),
+            "email" => $updatedUser->getEmail(),
+            "photo" => $updatedUser->getPhoto(),
+            "cref" => $updatedUser->getCref(),
+            "phone" => $updatedUser->getPhone(),
+            "city" => $updatedUser->getCity(),
+            "bio" => $updatedUser->getBio(),
+            "specialty" => $updatedUser->getSpecialty(),
+            "active" => $updatedUser->getActive()
+        ];
+
         $this->call(
-            400,
-            "bad_request",
-            "Nome e e-mail são obrigatórios. O e-mail deve ser válido.",
-            "error"
-        )->back(null);
-        return;
+            200,
+            "success",
+            "Usuário atualizado com sucesso",
+            "success"
+        )->back($response);
     }
 
-    $user = new User(
-        null,
-        2,
-        trim($data["name"]),
-        trim($data["email"]),
-        null,
-        $data["photo"] ?? null,
-        $data["cref"] ?? null,
-        $data["phone"] ?? null,
-        $data["city"] ?? null,
-        $data["bio"] ?? null,
-        $data["specialty"] ?? null,
-        1
-    );
+    public function uploadPhoto(array $data): void
+    {
+        if (!$this->authToken(2)) {
+            $this->call(
+                401,
+                "unauthorized",
+                "Usuário não está autenticado ou token inválido.",
+                "error"
+            )->back(null);
+            return;
+        }
 
-    if (!$user->updateById((int)$this->userAuthId)) {
-        $this->call(
-            500,
-            "internal_server_error",
-            $user->getErrorMessage() ?? "Não foi possível atualizar o usuário",
-            "error"
-        )->back(null);
-        return;
+        if (!isset($_FILES["photo"]) || !is_array($_FILES["photo"])) {
+            $this->call(
+                400,
+                "bad_request",
+                "Nenhuma foto foi enviada.",
+                "error"
+            )->back(null);
+            return;
+        }
+
+        $user = new User();
+
+        if (!$user->selectById((int)$this->userAuthId)) {
+            $this->call(
+                404,
+                "not_found",
+                "Usuário não encontrado.",
+                "error"
+            )->back(null);
+            return;
+        }
+
+        $oldPhoto = $user->getPhoto();
+
+        $uploadDirectory = dirname(__DIR__, 3)
+            . DIRECTORY_SEPARATOR
+            . "uploads"
+            . DIRECTORY_SEPARATOR
+            . "users";
+
+        try {
+            $uploader = new Upload($uploadDirectory);
+            $filename = $uploader->image($_FILES["photo"]);
+            $photoPath = "uploads/users/" . $filename;
+
+            if (!$user->updatePhoto((int)$this->userAuthId, $photoPath)) {
+                $newPhotoPath = $uploadDirectory
+                    . DIRECTORY_SEPARATOR
+                    . $filename;
+
+                if (is_file($newPhotoPath)) {
+                    unlink($newPhotoPath);
+                }
+
+                $this->call(
+                    500,
+                    "internal_server_error",
+                    $user->getErrorMessage() ?? "Não foi possível atualizar a foto do usuário.",
+                    "error"
+                )->back(null);
+                return;
+            }
+
+            $this->deletePreviousPhoto($oldPhoto);
+
+            $response = [
+                "id" => $user->getId(),
+                "photo" => $photoPath
+            ];
+
+            $this->call(
+                200,
+                "success",
+                "Foto de perfil atualizada com sucesso.",
+                "success"
+            )->back($response);
+
+        } catch (RuntimeException $exception) {
+            $this->call(
+                400,
+                "bad_request",
+                $exception->getMessage(),
+                "error"
+            )->back(null);
+        }
     }
 
-    $updatedUser = new User();
+    private function deletePreviousPhoto(?string $photo): void
+    {
+        if (empty($photo)) {
+            return;
+        }
 
-    if (!$updatedUser->selectById((int)$this->userAuthId)) {
-        $this->call(
-            404,
-            "not_found",
-            "Usuário não encontrado",
-            "error"
-        )->back(null);
-        return;
+        $filename = basename($photo);
+
+        if (!preg_match('/\A[a-f0-9]{32}\.(?:jpg|png|webp)\z/', $filename)) {
+            return;
+        }
+
+        $oldPhotoPath = dirname(__DIR__, 3)
+            . DIRECTORY_SEPARATOR
+            . "uploads"
+            . DIRECTORY_SEPARATOR
+            . "users"
+            . DIRECTORY_SEPARATOR
+            . $filename;
+
+        if (is_file($oldPhotoPath)) {
+            unlink($oldPhotoPath);
+        }
     }
 
-    $response = [
-        "id" => $updatedUser->getId(),
-        "type_id" => $updatedUser->getTypeId(),
-        "name" => $updatedUser->getName(),
-        "email" => $updatedUser->getEmail(),
-        "photo" => $updatedUser->getPhoto(),
-        "cref" => $updatedUser->getCref(),
-        "phone" => $updatedUser->getPhone(),
-        "city" => $updatedUser->getCity(),
-        "bio" => $updatedUser->getBio(),
-        "specialty" => $updatedUser->getSpecialty(),
-        "active" => $updatedUser->getActive()
-    ];
-
-    $this->call(
-        200,
-        "success",
-        "Usuário atualizado com sucesso",
-        "success"
-    )->back($response);
-
-    }
     public function delete(array $data): void
-{
-    if (!$this->authToken(2)) {
+    {
+        if (!$this->authToken(2)) {
+            $this->call(
+                401,
+                "unauthorized",
+                "Usuário não está autenticado ou token inválido.",
+                "error"
+            )->back(null);
+            return;
+        }
+
+        $user = new User();
+
+        if (!$user->deleteById((int)$this->userAuthId)) {
+            $this->call(
+                500,
+                "internal_server_error",
+                $user->getErrorMessage() ?? "Não foi possível excluir a conta.",
+                "error"
+            )->back(null);
+            return;
+        }
+
         $this->call(
-            401,
-            "unauthorized",
-            "Usuário não está autenticado ou token inválido.",
-            "error"
+            200,
+            "success",
+            "Conta excluída com sucesso.",
+            "success"
         )->back(null);
-
-        return;
     }
-
-    $user = new User();
-
-    if (!$user->deleteById((int)$this->userAuthId)) {
-        $this->call(
-            500,
-            "internal_server_error",
-            $user->getErrorMessage() ?? "Não foi possível excluir a conta.",
-            "error"
-        )->back(null);
-
-        return;
-    }
-
-    $this->call(
-        200,
-        "success",
-        "Conta excluída com sucesso.",
-        "success"
-    )->back(null);
-}
 }

@@ -1,8 +1,3 @@
-/**
- * TrainiFy - workout.js
- * Static version: renders hardcoded mock workout.
- */
-
 const MOCK_WORKOUT_DETAIL = {
   id: 'w1',
   name: 'Treino A — Hipertrofia',

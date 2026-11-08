@@ -1,10 +1,579 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TrainiFy — Plataforma para Personal Trainers</title>
+  <link rel="stylesheet" href="views/assets/_common/styles/reset.css" />
+  <link rel="stylesheet" href="views/assets/_common/styles/global.css" />
+  <link rel="stylesheet" href="views/assets/public/styles/landing.css" />
 </head>
 <body>
 
+  <!-- ── NAV ── -->
+  <nav class="pub-nav" id="pubNav">
+    <div class="container nav-inner">
+      <a href="index.html" class="nav-logo">
+        <img src="views/assets/_common/images/logo.svg" alt="TrainiFy" />
+      </a>
+      <div class="nav-links hide-mobile">
+        <a href="#features">Funcionalidades</a>
+        <a href="#how">Como Funciona</a>
+        <a href="#benefits">Benefícios</a>
+        <a href="#about">Sobre</a>
+        <a href="#faq">FAQ</a>
+        <a href="#contact">Contato</a>
+      </div>
+      <div class="nav-actions">
+        <a href="views/assets/public/login.html" class="btn btn-ghost btn-sm">Entrar</a>
+        <a href="views/assets/public/register.html" class="btn btn-primary btn-sm">Começar Grátis</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ── HERO ── -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+    <div class="container" style="position:relative;z-index:1;">
+      <div class="hero-content">
+        <div class="hero-eyebrow">Plataforma para Personal Trainers</div>
+        <h1>
+          Gerencie seus<br/>
+          alunos com<br/>
+          <span class="line-neon">total controle.</span>
+        </h1>
+        <p class="hero-desc">
+          TrainiFy é a plataforma completa para personal trainers organizarem alunos,
+          montarem treinos personalizados e acompanharem a evolução de cada um — tudo em um só lugar.
+        </p>
+        <div class="hero-actions">
+          <a href="views/assets/public/register.html" class="btn btn-primary">Criar conta grátis →</a>
+          <a href="#features" class="btn btn-outline">Ver funcionalidades</a>
+        </div>
+      </div>
+
+      <!-- Floating stat pills -->
+      <div class="hero-stats">
+        <div class="stat-pill">
+          <div class="stat-icon">🏋</div>
+          <div>
+            <div class="stat-num">2.4k+</div>
+            <div class="stat-label">Treinos criados</div>
+          </div>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-icon">👤</div>
+          <div>
+            <div class="stat-num">980+</div>
+            <div class="stat-label">Alunos ativos</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── LOGOS / TRUST BAR ── -->
+  <div style="border-top:1px solid var(--clr-border);border-bottom:1px solid var(--clr-border);padding:20px 0;background:var(--clr-bg-2);">
+    <div class="container" style="display:flex;align-items:center;justify-content:center;gap:48px;flex-wrap:wrap;">
+      <span style="font-family:var(--font-display);font-size:0.75rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--clr-grey-500);">Confiado por personal trainers em todo o Brasil</span>
+      <div style="display:flex;gap:32px;align-items:center;flex-wrap:wrap;">
+        <span style="font-family:var(--font-display);font-weight:800;font-size:1.1rem;color:var(--clr-grey-700);">SmartFit</span>
+        <span style="font-family:var(--font-display);font-weight:800;font-size:1.1rem;color:var(--clr-grey-700);">BlueGym</span>
+        <span style="font-family:var(--font-display);font-weight:800;font-size:1.1rem;color:var(--clr-grey-700);">Acqua Fit</span>
+        <span style="font-family:var(--font-display);font-weight:800;font-size:1.1rem;color:var(--clr-grey-700);">BioFit</span>
+        <span style="font-family:var(--font-display);font-weight:800;font-size:1.1rem;color:var(--clr-grey-700);">FitClub</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FEATURES ── -->
+  <section class="section" id="features">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Funcionalidades</span>
+        <h2 class="section-title">Tudo que você precisa,<br/><span class="neon">em um só lugar.</span></h2>
+        <p class="section-sub">Do cadastro do aluno à exportação do treino em PDF, o TrainiFy cobre toda a sua rotina.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <span class="feature-icon">👥</span>
+          <h3>Gestão de Alunos</h3>
+          <p>Cadastre, organize e acompanhe todos os seus alunos. Perfis completos com histórico, observações e status de treino.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">🏋</span>
+          <h3>Montagem de Treinos</h3>
+          <p>Crie planos de treino estruturados com dias, exercícios, séries, repetições e tempo de descanso.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">📋</span>
+          <h3>Fichas Personalizadas</h3>
+          <p>Cada aluno tem sua ficha individual com nível, academia, lesões e dificuldades registradas.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">📄</span>
+          <h3>Exportação em PDF</h3>
+          <p>Gere PDFs profissionais dos treinos para entregar impressos ou por WhatsApp para seus alunos.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">📊</span>
+          <h3>Dashboard com Métricas</h3>
+          <p>Visualize seus números: total de alunos ativos, treinos criados, novidades do mês e atividades recentes.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">🔍</span>
+          <h3>Busca e Filtros</h3>
+          <p>Encontre qualquer aluno instantaneamente por nome, nível, academia ou status de atividade.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── HOW IT WORKS ── -->
+  <section class="section steps-section" id="how">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Como Funciona</span>
+        <h2 class="section-title">Configure em <span class="neon">minutos.</span></h2>
+        <p class="section-sub">Sem complicação. Três passos e você já está gerenciando seus alunos.</p>
+      </div>
+      <div class="steps-wrapper">
+        <div class="step-card">
+          <div class="step-num">01</div>
+          <h3>Crie sua conta</h3>
+          <p>Cadastre-se gratuitamente. Informe seus dados, CREF e comece a usar em segundos.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">02</div>
+          <h3>Adicione seus alunos</h3>
+          <p>Cadastre cada aluno com seu perfil completo: nível, academia, objetivos e observações clínicas.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">03</div>
+          <h3>Monte os treinos</h3>
+          <p>Crie fichas de treino organizadas por dia, exporte em PDF e compartilhe direto com seus alunos.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">04</div>
+          <h3>Acompanhe o progresso</h3>
+          <p>Use o dashboard para visualizar métricas, ver atividades recentes e manter tudo sob controle.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── BENEFITS ── -->
+  <section class="section" id="benefits">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Benefícios</span>
+        <h2 class="section-title">Por que personal trainers<br/><span class="neon">escolhem o TrainiFy?</span></h2>
+      </div>
+      <div class="benefits-split">
+        <div class="benefits-list">
+          <div class="benefit-item">
+            <div class="benefit-icon">⚡</div>
+            <div>
+              <h4>Economize tempo</h4>
+              <p>Monte treinos em minutos com nossa interface intuitiva. Sem planilhas, sem papelada.</p>
+            </div>
+          </div>
+          <div class="benefit-item">
+            <div class="benefit-icon">🎯</div>
+            <div>
+              <h4>Resultados organizados</h4>
+              <p>Histórico completo de cada aluno em um só lugar. Nada se perde, tudo está acessível.</p>
+            </div>
+          </div>
+          <div class="benefit-item">
+            <div class="benefit-icon">📱</div>
+            <div>
+              <h4>Acesse de qualquer lugar</h4>
+              <p>Plataforma responsiva, acessível no celular, tablet ou computador onde você estiver.</p>
+            </div>
+          </div>
+          <div class="benefit-item">
+            <div class="benefit-icon">🔒</div>
+            <div>
+              <h4>Seus dados seguros</h4>
+              <p>Dados dos seus alunos protegidos com autenticação segura e tokens de acesso.</p>
+            </div>
+          </div>
+          <div class="benefit-item">
+            <div class="benefit-icon">📄</div>
+            <div>
+              <h4>PDF profissional</h4>
+              <p>Gere fichas de treino em PDF com visual limpo e profissional para impressão ou envio.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Visual mockup -->
+        <div class="benefits-visual">
+          <div class="mock-header">
+            <div class="mock-dot" style="background:#ff5f57;"></div>
+            <div class="mock-dot" style="background:#febc2e;"></div>
+            <div class="mock-dot" style="background:#28c840;"></div>
+            <div class="mock-bar"></div>
+          </div>
+          <div style="font-family:var(--font-display);font-size:0.75rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--clr-grey-500);padding:4px 0 8px;">Meus Alunos</div>
+          <div class="mock-row">
+            <div class="mock-avatar"></div>
+            <div class="mock-lines">
+              <div class="mock-line"></div>
+              <div class="mock-line short"></div>
+            </div>
+            <div class="mock-badge-green">Ativo</div>
+          </div>
+          <div class="mock-row" style="opacity:0.7;">
+            <div class="mock-avatar" style="background:linear-gradient(135deg,#4488ff,#88bbff);"></div>
+            <div class="mock-lines">
+              <div class="mock-line"></div>
+              <div class="mock-line short"></div>
+            </div>
+            <div class="mock-badge-green">Ativo</div>
+          </div>
+          <div class="mock-row" style="opacity:0.5;">
+            <div class="mock-avatar" style="background:linear-gradient(135deg,#aa44ff,#dd88ff);"></div>
+            <div class="mock-lines">
+              <div class="mock-line"></div>
+              <div class="mock-line short"></div>
+            </div>
+            <span style="font-size:0.7rem;color:var(--clr-warning);background:rgba(255,170,0,0.1);border:1px solid rgba(255,170,0,0.3);padding:3px 8px;border-radius:99px;font-family:var(--font-display);font-weight:700;">Inativo</span>
+          </div>
+          <!-- Mini chart -->
+          <div style="margin-top:auto;">
+            <div style="font-family:var(--font-display);font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--clr-grey-500);margin-bottom:8px;">Treinos / Mês</div>
+            <div class="chart-area" style="height:100px;" id="benefitChart"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- ── ABOUT ── -->
+  <section class="section about-section" id="about">
+    <div class="container">
+      <div class="about-grid">
+
+        <!-- Left: text content -->
+        <div class="about-content">
+          <span class="section-tag">Sobre nós</span>
+          <h2 class="section-title">Construído por quem<br/><span class="neon">vive o fitness.</span></h2>
+          <p class="about-lead">
+            O TrainiFy nasceu da dor real de personal trainers que perdiam horas com planilhas,
+            cadernos e WhatsApp para organizar alunos e treinos. Criamos uma plataforma que
+            elimina essa fricção e devolve tempo para o que importa: seus alunos.
+          </p>
+
+          <div class="about-stats-grid">
+            <div class="about-stat-box">
+              <div class="num">500+</div>
+              <div class="lbl">Personal trainers ativos</div>
+            </div>
+            <div class="about-stat-box">
+              <div class="num">24k+</div>
+              <div class="lbl">Alunos gerenciados</div>
+            </div>
+            <div class="about-stat-box">
+              <div class="num">98%</div>
+              <div class="lbl">Satisfação dos usuários</div>
+            </div>
+            <div class="about-stat-box">
+              <div class="num">2022</div>
+              <div class="lbl">Ano de fundação</div>
+            </div>
+          </div>
+
+          <div class="about-values">
+            <div class="about-value">Simplicidade acima de tudo — sem curva de aprendizado</div>
+            <div class="about-value">Feito 100% para o mercado fitness brasileiro</div>
+            <div class="about-value">Dados dos alunos sempre seguros e privados</div>
+            <div class="about-value">Atualizações constantes guiadas pelo feedback dos trainers</div>
+          </div>
+        </div>
+
+        <!-- Right: team cards + mission -->
+        <div class="about-visual">
+          <div class="about-card-stack">
+            <div class="about-team-card">
+              <div class="about-avatar a1">RS</div>
+              <div>
+                <div class="about-member-name">Rafael Souza</div>
+                <div class="about-member-role">CEO & Co-fundador · Ex-personal trainer</div>
+              </div>
+              <span class="about-member-tag">Fundador</span>
+            </div>
+            <div class="about-team-card">
+              <div class="about-avatar a2">LC</div>
+              <div>
+                <div class="about-member-name">Lucas Costa</div>
+                <div class="about-member-role">CTO & Co-fundador · Engenheiro de Software</div>
+              </div>
+              <span class="about-member-tag">Tech</span>
+            </div>
+            <div class="about-team-card">
+              <div class="about-avatar a3">AM</div>
+              <div>
+                <div class="about-member-name">Ana Mello</div>
+                <div class="about-member-role">Head de Produto · UX &amp; Design</div>
+              </div>
+              <span class="about-member-tag">Produto</span>
+            </div>
+          </div>
+
+          <div class="about-mission">
+            <div class="about-mission-label">Nossa missão</div>
+            <p>
+              "Empoderar personal trainers brasileiros com tecnologia simples, eficiente e acessível —
+              para que possam focar no que fazem de melhor: transformar vidas."
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FAQ ── -->
+  <section class="section faq-section" id="faq">
+    <div class="container">
+      <div class="faq-layout">
+
+        <!-- Sidebar -->
+        <div class="faq-sidebar">
+          <span class="section-tag">FAQ</span>
+          <h2 class="section-title">Perguntas<br/><span class="neon">frequentes.</span></h2>
+          <p>Não encontrou sua resposta? Entre em contato com nosso suporte.</p>
+          <div class="faq-contact-nudge">
+            <p>Ainda tem dúvidas? Nossa equipe está pronta para ajudar você.</p>
+            <a href="#contact" class="btn btn-outline btn-sm">Falar com suporte</a>
+          </div>
+        </div>
+
+        <!-- Accordion -->
+        <div class="faq-list" id="faqList">
+
+          <div class="faq-item open">
+            <button class="faq-question">
+              O TrainiFy é gratuito?
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>Sim! O TrainiFy é gratuito e permite cadastrar até 5 alunos, criar treinos básicos e usar o dashboard com todos os recursos essenciais para organizar sua rotina.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              Preciso instalar algum aplicativo?
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>Não. O TrainiFy é uma plataforma web responsiva que funciona diretamente no navegador — no computador, tablet ou celular. Sem instalação, sem download.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              Meus alunos precisam ter uma conta?
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>Não. Apenas o personal trainer precisa de uma conta. Você cadastra seus alunos dentro da plataforma e pode exportar as fichas em PDF para compartilhar com eles pelo meio que preferir.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              Como funciona a exportação em PDF?
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>Com um clique, o TrainiFy gera um PDF profissional da ficha de treino do aluno, com layout formatado e pronto para impressão ou envio via WhatsApp.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              Posso encerrar minha conta a qualquer momento?
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>Sim. Você pode encerrar sua conta a qualquer momento. Seus dados serão tratados conforme nossa política de privacidade e disponibilizados para exclusão quando necessário.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              Os dados dos meus alunos estão seguros?
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>Absolutamente. Todos os dados são criptografados em trânsito e em repouso. Seguimos as diretrizes da LGPD e nenhuma informação dos seus alunos é compartilhada com terceiros.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              Posso migrar minha base de alunos de outra plataforma?
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>Sim! Oferecemos importação via planilha CSV para quem está vindo de outra ferramenta. Nossa equipe de suporte também pode auxiliar no processo de migração.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CONTACT ── -->
+  <section class="section contact-section" id="contact">
+    <div class="container">
+      <div class="contact-grid">
+
+        <!-- Left: info -->
+        <div class="contact-info">
+          <span class="section-tag">Contato</span>
+          <h2 class="section-title">Fale com<br/><span class="neon">a gente.</span></h2>
+          <p>
+            Tem alguma dúvida, sugestão ou precisa de ajuda? Nossa equipe está disponível
+            de segunda a sexta, das 9h às 18h.
+          </p>
+
+          <div class="contact-channels">
+            <div class="contact-channel">
+              <div class="contact-ch-icon">✉</div>
+              <div>
+                <div class="contact-ch-label">Email</div>
+                <div class="contact-ch-value">suporte@trainify.com.br</div>
+              </div>
+            </div>
+            <div class="contact-channel">
+              <div class="contact-ch-icon">💬</div>
+              <div>
+                <div class="contact-ch-label">WhatsApp</div>
+                <div class="contact-ch-value">(51) 99999-0000</div>
+              </div>
+            </div>
+            <div class="contact-channel">
+              <div class="contact-ch-icon">📍</div>
+              <div>
+                <div class="contact-ch-label">Localização</div>
+                <div class="contact-ch-value">Porto Alegre, RS — Brasil</div>
+              </div>
+            </div>
+            <div class="contact-channel">
+              <div class="contact-ch-icon">⏰</div>
+              <div>
+                <div class="contact-ch-label">Horário de atendimento</div>
+                <div class="contact-ch-value">Seg–Sex · 9h às 18h</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+       
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA ── -->
+  <section class="section cta-section">
+    <div class="container">
+      <div class="cta-inner">
+        <h2>Pronto para organizar<br/><span class="neon">seus alunos?</span></h2>
+        <p>Junte-se a centenas de personal trainers que já usam o TrainiFy.</p>
+        <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+          <a href="views/assets/public/register.html" class="btn btn-primary">Criar conta grátis →</a>
+          <a href="views/assets/public/login.html" class="btn btn-outline">Já tenho conta</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ── -->
+  <footer class="pub-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <img src="views/assets/_common/images/logo.svg" alt="TrainiFy" style="height:30px;margin-bottom:8px;" />
+          <p>Plataforma completa para personal trainers gerenciarem alunos e treinos com eficiência.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Produto</h4>
+          <a href="#features">Funcionalidades</a>
+          <a href="#benefits">Benefícios</a>
+          <a href="#how">Como funciona</a>
+        </div>
+        <div class="footer-col">
+          <h4>Empresa</h4>
+          <a href="#about">Sobre nós</a>
+          <a href="#contact">Contato</a>
+          <a href="#faq">FAQ</a>
+        </div>
+        <div class="footer-col">
+          <h4>Conta</h4>
+          <a href="views/assets/public/login.html">Login</a>
+          <a href="views/assets/public/register.html">Cadastro</a>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <a href="#">Privacidade</a>
+          <a href="#">Termos de uso</a>
+          <a href="#">Suporte</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2025 TrainiFy. Todos os direitos reservados.</span>
+        <span>Feito com 💚 para personal trainers brasileiros</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="views/assets/public/scripts/landing.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+      // ── Benefit chart ──────────────────────────────
+      const chart = document.getElementById('benefitChart');
+      if (chart) {
+        const vals = [3,5,4,8,6,10,7,9,5,11,8,12];
+        chart.innerHTML = vals.map((v,i) =>
+          `<div class="chart-bar${i===11?' active':''}" style="height:${(v/12*100)}%;transition:height 0.6s ease ${i*0.04}s;"></div>`
+        ).join('');
+      }
+
+      // ── Contact form (static) ──────────────────────
+      const form = document.getElementById('contactForm');
+      if (form) {
+        form.addEventListener('submit', e => {
+          e.preventDefault();
+          const btn = document.getElementById('contactSubmitBtn');
+          btn.disabled = true;
+          btn.textContent = 'Enviando...';
+          setTimeout(() => {
+            document.getElementById('contactFormWrap').style.display = 'none';
+            document.getElementById('contactSuccess').style.display = 'block';
+          }, 900);
+        });
+      }
+    });
+
+    // ── FAQ accordion ──────────────────────────────
+    function toggleFaq(btn) {
+      const item = btn.closest('.faq-item');
+      const isOpen = item.classList.contains('open');
+      // Close all
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+      // Toggle clicked
+      if (!isOpen) item.classList.add('open');
+    }
+  </script>
 </body>
 </html>

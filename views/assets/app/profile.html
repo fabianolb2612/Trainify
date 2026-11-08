@@ -80,11 +80,14 @@
 
                 <div class="user-widget">
 
-                    <div
-                        class="user-avatar"
-                        id="sidebarUserInitials"
-                    >
-                        PT
+                    <div class="user-avatar" id="sidebarUserAvatarContainer" style="position: relative; width: 40px; height: 40px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background-color: var(--color-primary, #4f46e5); color: #fff; font-weight: bold;">
+                        <span id="sidebarUserInitials">PT</span>
+                        <img
+                            id="sidebarUserImg"
+                            src=""
+                            alt="Foto de Perfil"
+                            style="display: none; width: 100%; height: 100%; object-fit: cover;"
+                        >
                     </div>
 
                     <div class="user-info">
@@ -161,59 +164,109 @@
 
                 <aside class="profile-sidebar-card">
 
-                    <div
-                        class="profile-avatar-xl"
-                        id="profileAvatarInitials"
-                    >
-                        PT
-                    </div>
+    <div class="profile-avatar-wrapper" style="position: relative; display: flex; flex-direction: column; align-items: center; gap: 12px;">
 
-                    <div
-                        class="profile-sidebar-name"
-                        id="profileSidebarName"
-                    >
-                        —
-                    </div>
+        <div
+            class="profile-avatar-xl"
+            id="profileAvatarInitials"
+        >
+            PT
+        </div>
 
-                    <div class="profile-sidebar-role">
-                        Personal Trainer
-                    </div>
+        <img
+            class="profile-avatar-xl"
+            id="profileAvatarImg"
+            src=""
+            alt="Foto de Perfil"
+            style="display: none; object-fit: cover; border-radius: 50%; width: 96px; height: 96px;"
+        >
 
-                    <div class="profile-sidebar-stats">
+        <!-- BOTÃO INICIAL PARA SELECIONAR FOTO -->
+        <label
+            for="profilePhotoInput"
+            class="btn btn-ghost"
+            id="changePhotoBtn"
+            style="font-size: 0.85rem; padding: 6px 12px; cursor: pointer; display: inline-block;"
+        >
+            📷 Alterar Foto
+        </label>
 
-                        <div class="profile-mini-stat">
+        <!-- AÇÕES DE CONFIRMAÇÃO DA PRÉVIA (INICIALMENTE OCULTAS) -->
+        <div id="photoPreviewActions" style="display: none; gap: 8px; margin-top: 4px;">
+            <button
+                type="button"
+                class="btn btn-primary"
+                id="confirmPhotoBtn"
+                style="font-size: 0.85rem; padding: 6px 12px;"
+            >
+                ✓ Salvar Foto
+            </button>
 
-                            <div
-                                class="num"
-                                id="statStudents"
-                            >
-                                0
-                            </div>
+            <button
+                type="button"
+                class="btn btn-ghost"
+                id="cancelPhotoPreviewBtn"
+                style="font-size: 0.85rem; padding: 6px 12px;"
+            >
+                ✕ Cancelar
+            </button>
+        </div>
 
-                            <div class="lbl">
-                                Alunos
-                            </div>
+        <input
+            type="file"
+            id="profilePhotoInput"
+            accept="image/jpeg, image/png, image/webp"
+            style="display: none;"
+        >
 
-                        </div>
+    </div>
 
-                        <div class="profile-mini-stat">
+    <div
+        class="profile-sidebar-name"
+        id="profileSidebarName"
+    >
+        —
+    </div>
 
-                            <div
-                                class="num"
-                                id="statWorkouts"
-                            >
-                                0
-                            </div>
+    <div class="profile-sidebar-role">
+        Personal Trainer
+    </div>
 
-                            <div class="lbl">
-                                Treinos
-                            </div>
+    <div class="profile-sidebar-stats">
 
-                        </div>
+        <div class="profile-mini-stat">
 
-                    </div>
+            <div
+                class="num"
+                id="statStudents"
+            >
+                0
+            </div>
 
-                </aside>
+            <div class="lbl">
+                Alunos
+            </div>
+
+        </div>
+
+        <div class="profile-mini-stat">
+
+            <div
+                class="num"
+                id="statWorkouts"
+            >
+                0
+            </div>
+
+            <div class="lbl">
+                Treinos
+            </div>
+
+        </div>
+
+    </div>
+
+</aside>
 
                 <!-- CONTEÚDO -->
 
@@ -419,9 +472,7 @@
 
     </div>
 
-    <script
-        src="../../assets/app/scripts/app-layout.js"
-    ></script>
+    <script type="module" src="../../assets/app/scripts/app-layout.js"></script>
 
     <script
         type="module"

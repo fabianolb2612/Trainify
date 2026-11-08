@@ -3,6 +3,7 @@
 namespace Source\Models;
 
 use PDO;
+use PDOException;
 use Source\Core\Model;
 use Source\Core\Connect;
 use Source\Core\JWTToken;
@@ -127,98 +128,99 @@ class User extends Model
 
         return true;
     }
+
     public function listAll(): array
-{
-    $query = "
-        SELECT 
-            id,
-            type_id,
-            name,
-            email,
-            photo,
-            cref,
-            phone,
-            city,
-            bio,
-            specialty,
-            active
-        FROM users
-        ORDER BY id ASC
-    ";
+    {
+        $query = "
+            SELECT
+                id,
+                type_id,
+                name,
+                email,
+                photo,
+                cref,
+                phone,
+                city,
+                bio,
+                specialty,
+                active
+            FROM users
+            ORDER BY id ASC
+        ";
 
-    $stmt = Connect::getInstance()->prepare($query);
-    $stmt->execute();
+        $stmt = Connect::getInstance()->prepare($query);
+        $stmt->execute();
 
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    public function listById(int $id)
+    {
+        $query = "
+            SELECT
+                id,
+                type_id,
+                name,
+                email,
+                photo,
+                cref,
+                phone,
+                city,
+                bio,
+                specialty,
+                active
+            FROM users
+            WHERE id = :id
+            LIMIT 1
+        ";
 
-public function listById(int $id): array|bool
-{
-    $query = "
-        SELECT 
-            id,
-            type_id,
-            name,
-            email,
-            photo,
-            cref,
-            phone,
-            city,
-            bio,
-            specialty,
-            active
-        FROM users
-        WHERE id = :id
-        LIMIT 1
-    ";
+        $stmt = Connect::getInstance()->prepare($query);
+        $stmt->bindValue(":id", $id, PDO::PARAM_INT);
+        $stmt->execute();
 
-    $stmt = Connect::getInstance()->prepare($query);
-    $stmt->bindValue(":id", $id, PDO::PARAM_INT);
-    $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 
-    return $stmt->fetch(PDO::FETCH_ASSOC);
-}
+    public function listPaginator(int $page, int $perPage): array
+    {
+        $offset = ($page - 1) * $perPage;
 
-public function listPaginator(int $page, int $perPage): array
-{
-    $offset = ($page - 1) * $perPage;
+        $queryCount = "SELECT COUNT(*) AS total FROM users";
 
-    $queryCount = "SELECT COUNT(*) AS total FROM users";
+        $stmtCount = Connect::getInstance()->prepare($queryCount);
+        $stmtCount->execute();
 
-    $stmtCount = Connect::getInstance()->prepare($queryCount);
-    $stmtCount->execute();
-    $total = (int) $stmtCount->fetch(PDO::FETCH_OBJ)->total;
+        $total = (int) $stmtCount->fetch(PDO::FETCH_OBJ)->total;
 
-    $query = "
-        SELECT 
-            id,
-            type_id,
-            name,
-            email,
-            photo,
-            cref,
-            phone,
-            city,
-            bio,
-            specialty,
-            active
-        FROM users
-        ORDER BY id ASC
-        LIMIT :limit OFFSET :offset
-    ";
+        $query = "
+            SELECT
+                id,
+                type_id,
+                name,
+                email,
+                photo,
+                cref,
+                phone,
+                city,
+                bio,
+                specialty,
+                active
+            FROM users
+            ORDER BY id ASC
+            LIMIT :limit OFFSET :offset
+        ";
 
-    $stmt = Connect::getInstance()->prepare($query);
-    $stmt->bindValue(":limit", $perPage, PDO::PARAM_INT);
-    $stmt->bindValue(":offset", $offset, PDO::PARAM_INT);
-    $stmt->execute();
+        $stmt = Connect::getInstance()->prepare($query);
+        $stmt->bindValue(":limit", $perPage, PDO::PARAM_INT);
+        $stmt->bindValue(":offset", $offset, PDO::PARAM_INT);
+        $stmt->execute();
 
-    return [
-        "page" => $page,
-        "per_page" => $perPage,
-        "total" => $total,
-        "data" => $stmt->fetchAll(PDO::FETCH_ASSOC)
-    ];
-}
+        return [
+            "page" => $page,
+            "per_page" => $perPage,
+            "total" => $total,
+            "data" => $stmt->fetchAll(PDO::FETCH_ASSOC)
+        ];
+    }
 
     public function login(string $email, string $password, int $typeId = 2): bool
     {
@@ -270,6 +272,47 @@ public function listPaginator(int $page, int $perPage): array
         ]);
 
         return true;
+    }
+
+    public function updatePhoto(int $id, string $photo): bool
+    {
+        if ($id <= 0 || trim($photo) === "") {
+            $this->errorMessage = "ID ou caminho da foto inválido.";
+            return false;
+        }
+
+        try {
+            $query = "
+                UPDATE {$this->table}
+                SET photo = :photo
+                WHERE id = :id
+                AND type_id = 2
+                AND active = 1
+            ";
+
+            $stmt = Connect::getInstance()->prepare($query);
+            $stmt->bindValue(":photo", $photo);
+            $stmt->bindValue(":id", $id, PDO::PARAM_INT);
+
+            if (!$stmt->execute()) {
+                $this->errorMessage = "Não foi possível atualizar a foto do usuário.";
+                return false;
+            }
+
+            if ($stmt->rowCount() !== 1) {
+                $this->errorMessage = "Usuário não encontrado ou não foi possível atualizar a foto.";
+                return false;
+            }
+
+            $this->id = $id;
+            $this->photo = $photo;
+
+            return true;
+
+        } catch (PDOException $exception) {
+            $this->errorMessage = "Erro ao atualizar a foto no banco de dados.";
+            return false;
+        }
     }
 
     public function permissionVerify(string $email, int $typeId): bool

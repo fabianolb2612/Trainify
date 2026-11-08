@@ -26,52 +26,50 @@ $route = new Router(url("api"),":");
 $route->namespace("Source\Controller");
 
 $route->group("/users");
-$route->post("/register","Users:register"); // Registrar usuário comum
+
+$route->post("/register","Users:register");
 $route->post("/login","Users:auth");
-//http://localhost/tranify/api/users/login
-$route->put("/update","Users:update"); 
+$route->put("/update","Users:update");
+$route->post("/photo", "Users:uploadPhoto");
+
 $route->get("/list/paginator/{page}/{per_page}", "Users:listPaginator");
 $route->get("/list/{user_id}", "Users:listById");
 $route->get("/list", "Users:listAll");
-$route->post("/login-admin","Users:authAdmin"); 
-$route->put("/update-admin","Users:updateAdmin"); 
+$route->post("/login-admin","Users:authAdmin");
+$route->put("/update-admin","Users:updateAdmin");
+
+
 $route->group(null);
 
 $route->group("/students");
 
 $route->post("/","Students:insert");
-//http://localhost/tranify/api/students
 $route->put("/{student_id}","Students:update");
-//http://localhost/tranify/api/students/9
 $route->get("/list","Students:listAll");
-//http://localhost/tranify/api/students/list
 $route->get("/list/paginator/{page}/{per_page}", "Students:listPaginator");
 $route->delete("/{student_id}","Students:delete");
-// http://localhost/tranify/api/students/9
 
 $route->get("/list/{student_id}","Students:listById");
+$route->post("/{student_id}/images", "StudentImages:upload");
+$route->get("/{student_id}/images", "StudentImages:list");
+$route->delete("/{student_id}/images/{image_id}", "StudentImages:delete");
 $route->group(null);
 
 $route->group("/workouts");
 $route->post("/","Workouts:insert");
-// http://localhost/tranify/api/workouts
 $route->get("/list","Workouts:listAll");
-// http://localhost/tranify/api/workouts/list
 $route->get("/list/{workout_id}","Workouts:listById");
-// http://localhost/tranify/api/workouts/list/1
 $route->get("/list/paginator/{page}/{per_page}", "Workouts:listPaginator");
 $route->put("/{workout_id}","Workouts:update");
-// http://localhost/tranify/api/workouts/1
 $route->delete("/{workout_id}","Workouts:delete");
-//http://localhost/tranify/api/workouts/1
 $route->group(null);
 
 $route->group("/workout-days");
 $route->post("/", "WorkoutDays:insert");
 $route->get("/list/{workout_id}", "WorkoutDays:listByWorkout");
-//http://localhost/tranify/api/workout-days/list/1
+
 $route->get("/{workout_day_id}", "WorkoutDays:listById");
-//http://localhost/tranify/api/workout-days/1
+
 $route->get("/list/{workout_id}/paginator/{page}/{per_page}", "WorkoutDays:listPaginator");
 $route->put("/{workout_day_id}", "WorkoutDays:update");
 $route->delete("/{workout_day_id}", "WorkoutDays:delete");
@@ -114,7 +112,6 @@ $route->delete(
 
 $route->group(null);
 
-// FAQs
 $route->group("/faqs");
 
 $route->group(null);
@@ -127,10 +124,8 @@ $route->group(null);
 
 $route->dispatch();
 
-/** ERROR REDIRECT */
 if ($route->error()) {
     header('Content-Type: application/json; charset=UTF-8');
-    //http_response_code(404);
 
     echo json_encode([
         "code" => 404,

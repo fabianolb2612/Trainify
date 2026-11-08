@@ -35,9 +35,8 @@ abstract class Model
                 return false;
             }
 
-            // Hidrata o objeto atual com base no resultado
             foreach ($result as $column => $value) {
-                $property = $this->snakeToCamel($column); // ex.: category_id -> categoryId
+                $property = $this->snakeToCamel($column); 
                 $setter = 'set' . ucfirst($property);
 
                 if (method_exists($this, $setter)) {
@@ -45,7 +44,6 @@ abstract class Model
                     continue;
                 }
 
-                // fallback caso não tenha setter
                 if (property_exists($this, $property)) {
                     $this->{$property} = $value;
                 }
@@ -131,7 +129,7 @@ abstract class Model
                 return false;
             }
 
-            $columns = array_keys($payload); // snake_case
+            $columns = array_keys($payload); 
             $placeholders = array_map(fn($col) => ':' . $col, $columns);
 
             $sql = sprintf(
@@ -154,7 +152,6 @@ abstract class Model
                 return false;
             }
 
-            // Atualiza id no objeto (se houver setter)
             $newId = (int)Connect::getInstance()->lastInsertId();
             if (method_exists($this, 'setId')) {
                 $this->setId($newId);
@@ -263,7 +260,6 @@ abstract class Model
 
             $value = $this->{$getter}();
 
-            // ignora null para permitir update parcial
             if ($value === null) {
                 continue;
             }

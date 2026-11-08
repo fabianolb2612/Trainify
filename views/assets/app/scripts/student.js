@@ -1,10 +1,6 @@
-/**
- * TrainiFy - student.js
- * Página individual do aluno.
- */
-
 import Student from "../../_common/classes/Student.js";
 import StudentService from "../../_common/services/StudentService.js";
+import StudentImages from "../../_common/classes/StudentImages.js";
 import SessionStorage from "../../_common/scripts/storage.js";
 import StudentWorkouts from "./student-workouts.js";
 import "../../_common/prototypes/test-prototypes.js";
@@ -13,20 +9,15 @@ import {
     createFormController
 } from "../../_common/prototypes/FormController.js";
 
-import {
-    createToast
-} from "../../_common/prototypes/Toast.js";
-
 
 const studentFormController =
     createFormController();
 
-const studentToast =
-    createToast();
-
-
 const studentService =
     new StudentService();
+
+const studentImages =
+    new StudentImages();
 
 const storage =
     new SessionStorage();
@@ -35,10 +26,6 @@ const storage =
 let currentStudent = null;
 let workoutsManager = null;
 
-
-/* =========================================================
-   INICIALIZAÇÃO
-========================================================= */
 
 document.addEventListener(
     "DOMContentLoaded",
@@ -87,10 +74,6 @@ document.addEventListener(
 );
 
 
-/* =========================================================
-   SERVIÇOS
-========================================================= */
-
 function configureServices() {
 
     const token =
@@ -110,14 +93,14 @@ function configureServices() {
         token
     );
 
+    studentImages.setAuthToken(
+        token
+    );
+
 
     return true;
 }
 
-
-/* =========================================================
-   ALUNO
-========================================================= */
 
 async function loadStudent(studentId) {
 
@@ -134,10 +117,7 @@ async function loadStudent(studentId) {
             response.status !== "success"
         ) {
 
-            studentToast.showResponse(
-                response,
-                "Não foi possível carregar o aluno."
-            );
+            alert(response?.message || "Não foi possível carregar o aluno.");
 
             window.location.href =
                 "students.html";
@@ -162,7 +142,20 @@ async function loadStudent(studentId) {
             });
 
 
-        await workoutsManager.load();
+        if (workoutsManager) {
+            try {
+                await workoutsManager.load();
+            } catch (errW) {
+                console.error("Erro ao carregar treinos:", errW);
+            }
+        }
+
+        try {
+            await loadStudentGallery(currentStudent.id);
+            initStudentGalleryActions(currentStudent.id);
+        } catch (errG) {
+            console.error("Erro ao carregar galeria de fotos:", errG);
+        }
 
     } catch (error) {
 
@@ -171,12 +164,7 @@ async function loadStudent(studentId) {
             error
         );
 
-
-        studentToast.showError(
-            error.message ||
-            "Erro ao carregar os dados do aluno."
-        );
-
+        alert(error.message || "Erro ao carregar os dados do aluno.");
 
         setTimeout(
             () => {
@@ -344,6 +332,34 @@ function renderStudentProfile(student) {
 
         </div>
 
+        <!-- ── GALERIA DE EVOLUÇÃO DO ALUNO ── -->
+        <div class="card" style="margin-top:var(--space-lg);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-md);">
+                <h3>📷 Fotos de Evolução / Acompanhamento</h3>
+                <div>
+                    <label for="studentGalleryInput" class="btn btn-primary btn-sm" style="cursor:pointer;">
+                        ➕ Adicionar Fotos
+                    </label>
+                    <input 
+                        type="file" 
+                        id="studentGalleryInput" 
+                        multiple 
+                        accept="image/jpeg, image/png, image/webp" 
+                        style="display:none;" 
+                    />
+                </div>
+            </div>
+
+            <div 
+                id="studentGalleryGrid" 
+                style="display:grid;grid-template-columns:repeat(auto-fill, minmax(130px, 1fr));gap:16px;"
+            >
+                <p style="color:var(--clr-grey-500);grid-column:1/-1;text-align:center;">
+                    Carregando galeria...
+                </p>
+            </div>
+        </div>
+
         <div id="workoutSection"></div>
     `;
 }
@@ -366,10 +382,224 @@ function infoBlock(label, value) {
     `;
 }
 
+async function loadStudentGallery(studentId) {
 
-/* =========================================================
-   AÇÕES
-========================================================= */
+    const grid =
+        document.getElementById(
+            "studentGalleryGrid"
+        );
+
+    if (!grid || !studentId) {
+        return;
+    }
+
+    try {
+
+        const response =
+            await studentImages.list(studentId);
+
+        const images =
+            Array.isArray(response?.data)
+                ? response.data
+                : Array.isArray(response)
+                    ? response
+                    : [];
+
+        if (images.length === 0) {
+
+            grid.innerHTML = `
+                <p style="color: var(--clr-grey-500); grid-column: 1 / -1; text-align: center; padding: 20px 0;">
+                    Nenhuma foto de evolução cadastrada para este aluno.
+                </p>`;
+
+            return;
+        }
+
+        grid.innerHTML =
+            images.map(img => {
+
+                const rawPath =
+                    img.image_path ||
+                    img.path ||
+                    "";
+
+                let srcUrl = rawPath;
+
+                if (
+                    !rawPath.startsWith("http") &&
+                    !rawPath.startsWith("blob:")
+                ) {
+
+                    const clean =
+                        rawPath.replace(/^\/+/, "");
+
+                    srcUrl =
+                        clean.startsWith("trainify/")
+                            ? `/${clean}`
+                            : `/trainify/${clean}`;
+                }
+
+                return `
+                    <div class="gallery-item" style="position: relative; border-radius: 8px; overflow: hidden; height: 120px; background: #1a1a1a;">
+                        <img 
+                            src="${srcUrl}" 
+                            alt="${img.alt_text || 'Foto de evolução'}" 
+                            style="width: 100%; height: 100%; object-fit: cover; display: block;" 
+                            onerror="this.style.opacity='0.3';"
+                        />
+                        <button 
+                            type="button" 
+                            class="btn-delete-student-img" 
+                            data-id="${img.id}"
+                            title="Excluir imagem"
+                            style="position: absolute; top: 6px; right: 6px; background: rgba(220, 38, 38, 0.85); color: #fff; border: none; border-radius: 4px; width: 26px; height: 26px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; transition: background 0.2s;"
+                        >
+                            🗑️
+                        </button>
+                    </div>
+                `;
+
+            }).join("");
+
+        bindStudentGalleryDeleteEvents(studentId);
+
+    } catch (error) {
+
+        console.error(
+            "ERRO AO CARREGAR GALERIA DO ALUNO:",
+            error
+        );
+
+        grid.innerHTML = `
+            <p style="color: var(--color-danger, #ef4444); grid-column: 1 / -1; text-align: center;">
+                Erro ao carregar fotos de evolução.
+            </p>`;
+    }
+}
+
+
+function initStudentGalleryActions(studentId) {
+
+    const galleryInput =
+        document.getElementById(
+            "studentGalleryInput"
+        );
+
+    if (!galleryInput) {
+        return;
+    }
+
+    const newGalleryInput =
+        galleryInput.cloneNode(true);
+
+    galleryInput.parentNode.replaceChild(
+        newGalleryInput,
+        galleryInput
+    );
+
+    newGalleryInput.addEventListener(
+        "change",
+        async (event) => {
+
+            const files =
+                event.target.files;
+
+            if (!files || files.length === 0) {
+                return;
+            }
+
+            try {
+
+                const response =
+                    await studentImages.upload(
+                        studentId,
+                        files
+                    );
+
+                if (
+                    response?.status === "success" ||
+                    response?.code === 201 ||
+                    response?.code === 200
+                ) {
+
+                    await loadStudentGallery(studentId);
+
+                } else {
+
+                    alert(response?.message || "Erro ao enviar imagem(ns).");
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "ERRO NO UPLOAD DA GALERIA DO ALUNO:",
+                    error
+                );
+
+                alert(error.message || "Erro ao enviar imagem(ns).");
+
+            } finally {
+
+                newGalleryInput.value = "";
+            }
+        }
+    );
+}
+
+
+function bindStudentGalleryDeleteEvents(studentId) {
+
+    document.querySelectorAll(".btn-delete-student-img").forEach(btn => {
+
+        btn.addEventListener("click", async () => {
+
+            const imageId =
+                btn.dataset.id;
+
+            if (!imageId) {
+                return;
+            }
+
+            const confirmed =
+                confirm("Deseja realmente remover esta foto de evolução?");
+
+            if (!confirmed) {
+                return;
+            }
+
+            try {
+
+                const response =
+                    await studentImages.deleteImage(
+                        studentId,
+                        imageId
+                    );
+
+                if (
+                    response?.status === "success" ||
+                    response?.code === 200
+                ) {
+
+                    await loadStudentGallery(studentId);
+
+                } else {
+
+                    alert(response?.message || "Não foi possível remover a foto.");
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "ERRO AO DELETAR IMAGEM DA GALERIA DO ALUNO:",
+                    error
+                );
+
+                alert(error.message || "Erro ao remover a imagem.");
+            }
+        });
+    });
+}
+
 
 function initStudentActions() {
 
@@ -405,9 +635,7 @@ function initStudentActions() {
 
                     case "export-student-pdf":
 
-                        studentToast.showWarning(
-                            "A exportação do PDF será integrada posteriormente."
-                        );
+                        alert("A exportação do PDF será integrada posteriormente.");
 
                         break;
 
@@ -435,8 +663,18 @@ function initStudentActions() {
 
 
                         if (workoutsManager) {
+                            try {
+                                await workoutsManager.load();
+                            } catch (errW) {
+                                console.error(errW);
+                            }
+                        }
 
-                            await workoutsManager.load();
+                        try {
+                            await loadStudentGallery(currentStudent.id);
+                            initStudentGalleryActions(currentStudent.id);
+                        } catch (errG) {
+                            console.error(errG);
                         }
 
                         break;
@@ -462,20 +700,11 @@ function initStudentActions() {
                     error
                 );
 
-
-                studentToast.showError(
-                    error.message ||
-                    "Não foi possível executar a ação."
-                );
+                alert(error.message || "Não foi possível executar a ação.");
             }
         }
     );
 }
-
-
-/* =========================================================
-   EDIÇÃO DO ALUNO
-========================================================= */
 
 function editStudent() {
 
@@ -768,171 +997,74 @@ function trainingLevelSelect(selected) {
 
 
 async function handleEditStudentSubmit(event) {
-
     event.preventDefault();
-
-
-    const form =
-        event.currentTarget;
-
-
-    const button =
-        document.getElementById(
-            "updateStudentBtn"
-        );
-
+    const form = event.currentTarget;
+    const button = document.getElementById("updateStudentBtn");
 
     try {
+        const data = studentFormController.serialize(form);
 
-        const data =
-            studentFormController.serialize(
-                form
-            );
-
-
-        if (
-            !studentFormController.validateRequired(
-                form,
-                [
-                    "name",
-                    "training_level_id"
-                ]
-            )
-        ) {
-
-            studentToast.showWarning(
-                "Preencha os campos obrigatórios."
-            );
-
+        if (!studentFormController.validateRequired(form, ["name", "training_level_id"])) {
+            alert("Preencha os campos obrigatórios.");
             return;
         }
 
+        const trainingLevelId = Number(data.training_level_id);
+        const goalId = data.goal_id ? Number(data.goal_id) : null;
 
-        const name =
-            data.name?.trim();
-
-
-        const student =
-            new Student({
-
-                name,
-
-                email:
-                    data.email?.trim() ||
-                    null,
-
-                phone:
-                    data.phone?.trim() ||
-                    null,
-
-                birthdate:
-                    data.birthdate ||
-                    null,
-
-                gym:
-                    data.gym?.trim() ||
-                    null,
-
-                notes:
-                    data.notes?.trim() ||
-                    null,
-
-                trainingLevelId:
-                    Number(
-                        data.training_level_id
-                    ),
-
-                goalId:
-                    data.goal_id
-                        ? Number(
-                            data.goal_id
-                        )
-                        : null
-            });
-
+        const student = new Student({
+            name: data.name?.trim(),
+            email: data.email?.trim() || null,
+            phone: data.phone?.trim() || null,
+            birthdate: data.birthdate || null,
+            gym: data.gym?.trim() || null,
+            notes: data.notes?.trim() || null,
+            trainingLevelId: !isNaN(trainingLevelId) ? trainingLevelId : null,
+            goalId: goalId && !isNaN(goalId) ? goalId : null
+        });
 
         button.disabled = true;
+        button.textContent = "Salvando...";
 
-        button.textContent =
-            "Salvando...";
+        const response = await studentService.update(currentStudent.id, student);
 
-
-        const response =
-            await studentService.update(
-                currentStudent.id,
-                student
-            );
-
-
-        if (
-            !response ||
-            response.status !== "success"
-        ) {
-
-            studentToast.showResponse(
-                response,
-                "Não foi possível atualizar o aluno."
-            );
-
+        if (!response || response.status !== "success") {
+            alert(response?.message || "Não foi possível atualizar o aluno.");
             button.disabled = false;
-
-            button.textContent =
-                "Salvar alterações";
-
+            button.textContent = "Salvar alterações";
             return;
         }
 
+        currentStudent = response.data || student;
 
-        currentStudent =
-            response.data ||
-            student;
+        renderStudentProfile(currentStudent);
 
+        workoutsManager = new StudentWorkouts({
+            student: currentStudent,
+            storage
+        });
 
-        studentToast.showSuccess(
-            response.message ||
-            "Aluno atualizado com sucesso!"
-        );
+        if (workoutsManager) {
+            try {
+                await workoutsManager.load();
+            } catch (errW) {
+                console.error(errW);
+            }
+        }
 
-
-        renderStudentProfile(
-            currentStudent
-        );
-
-
-        workoutsManager =
-            new StudentWorkouts({
-                student: currentStudent,
-                storage
-            });
-
-
-        await workoutsManager.load();
-
+        try {
+            await loadStudentGallery(currentStudent.id);
+            initStudentGalleryActions(currentStudent.id);
+        } catch (errG) {
+            console.error(errG);
+        }
     } catch (error) {
-
-        console.error(
-            "ERRO AO ATUALIZAR ALUNO:",
-            error
-        );
-
-
-        studentToast.showError(
-            error.message ||
-            "Erro ao atualizar aluno."
-        );
-
-
+        console.error("ERRO AO ATUALIZAR ALUNO:", error);
+        alert(error.message || "Erro ao atualizar aluno.");
         button.disabled = false;
-
-        button.textContent =
-            "Salvar alterações";
+        button.textContent = "Salvar alterações";
     }
 }
-
-
-/* =========================================================
-   NOVO ALUNO
-========================================================= */
 
 function renderNewStudentForm() {
 
@@ -1221,9 +1353,7 @@ async function handleNewStudentSubmit(event) {
             )
         ) {
 
-            studentToast.showWarning(
-                "Preencha os campos obrigatórios."
-            );
+            alert("Preencha os campos obrigatórios.");
 
             return;
         }
@@ -1293,10 +1423,7 @@ async function handleNewStudentSubmit(event) {
             response.status !== "success"
         ) {
 
-            studentToast.showResponse(
-                response,
-                "Não foi possível cadastrar o aluno."
-            );
+            alert(response?.message || "Não foi possível cadastrar o aluno.");
 
             button.disabled = false;
 
@@ -1307,20 +1434,20 @@ async function handleNewStudentSubmit(event) {
         }
 
 
-        studentToast.showSuccess(
-            response.message ||
-            "Aluno cadastrado com sucesso!"
-        );
+        const createdStudent =
+            response.data;
 
 
-        button.textContent =
-            "Aluno cadastrado!";
+        if (createdStudent?.id) {
 
+            window.location.href =
+                `student.html?id=${createdStudent.id}`;
 
-        setTimeout(
-            () => window.history.back(),
-            1000
-        );
+        } else {
+
+            window.location.href =
+                "students.html";
+        }
 
     } catch (error) {
 
@@ -1329,12 +1456,7 @@ async function handleNewStudentSubmit(event) {
             error
         );
 
-
-        studentToast.showError(
-            error.message ||
-            "Erro ao cadastrar aluno."
-        );
-
+        alert(error.message || "Erro ao cadastrar aluno.");
 
         button.disabled = false;
 
@@ -1343,47 +1465,29 @@ async function handleNewStudentSubmit(event) {
     }
 }
 
-
-/* =========================================================
-   EXCLUSÃO
-========================================================= */
-
 async function confirmDelete() {
 
-    if (
-        !confirm(
-            "Remover este aluno? Esta ação não pode ser desfeita."
-        )
-    ) {
+    if (!currentStudent) {
+        return;
+    }
+
+
+    const confirmed =
+        confirm(
+            `Tem certeza que deseja remover o aluno "${currentStudent.name}"?\n\nEsta ação apagará todos os treinos e fotos de evolução vinculados.`
+        );
+
+
+    if (!confirmed) {
         return;
     }
 
 
     try {
 
-        const params =
-            new URLSearchParams(
-                window.location.search
-            );
-
-
-        const studentId =
-            params.get("id");
-
-
-        if (!studentId) {
-
-            studentToast.showError(
-                "Não foi possível identificar o aluno."
-            );
-
-            return;
-        }
-
-
         const response =
-            await studentService.remove(
-                studentId
+            await studentService.delete(
+                currentStudent.id
             );
 
 
@@ -1392,19 +1496,10 @@ async function confirmDelete() {
             response.status !== "success"
         ) {
 
-            studentToast.showResponse(
-                response,
-                "Não foi possível remover o aluno."
-            );
+            alert(response?.message || "Não foi possível remover o aluno.");
 
             return;
         }
-
-
-        studentToast.showSuccess(
-            response.message ||
-            "Aluno removido com sucesso!"
-        );
 
 
         setTimeout(
@@ -1414,7 +1509,7 @@ async function confirmDelete() {
                     "students.html";
 
             },
-            800
+            500
         );
 
     } catch (error) {
@@ -1424,87 +1519,7 @@ async function confirmDelete() {
             error
         );
 
-
-        studentToast.showError(
-            error.message ||
-            "Erro ao remover aluno."
-        );
-    }
-}
-
-
-/* =========================================================
-   UTILITÁRIOS
-========================================================= */
-
-function showFormMessage(
-    message,
-    type = "error"
-) {
-
-    const element =
-        document.getElementById(
-            "studentFormMessage"
-        );
-
-
-    if (!element) {
-        return;
-    }
-
-
-    const success =
-        type === "success";
-
-
-    element.innerHTML = `
-        <div
-            style="
-                padding:12px 16px;
-                border-radius:8px;
-                background:${
-                    success
-                        ? "rgba(34,197,94,.12)"
-                        : "rgba(239,68,68,.12)"
-                };
-                color:${
-                    success
-                        ? "#4ade80"
-                        : "#f87171"
-                };
-            "
-        >
-            ${escapeHtml(message)}
-        </div>
-    `;
-}
-
-
-function fmtDate(date) {
-
-    if (!date) {
-        return "—";
-    }
-
-
-    try {
-
-        return new Date(
-            date +
-            (
-                /^\d{4}-\d{2}-\d{2}$/.test(
-                    date
-                )
-                    ? "T00:00:00"
-                    : ""
-            )
-        ).toLocaleDateString(
-            "pt-BR"
-        );
-
-    } catch {
-
-        return date;
+        alert(error.message || "Erro ao remover o aluno.");
     }
 }
 
@@ -1514,50 +1529,55 @@ function initials(name = "") {
     const parts =
         name
             .trim()
-            .split(/\s+/);
+            .split(/\s+/)
+            .filter(Boolean);
 
-
-    if (!parts[0]) {
-        return "??";
+    if (!parts.length) {
+        return "AL";
     }
 
-
-    return (
+    const res =
         parts.length > 1
-            ? parts[0][0] +
-              parts[parts.length - 1][0]
-            : parts[0].slice(0, 2)
-    ).toUpperCase();
+            ? parts[0][0] + parts[parts.length - 1][0]
+            : parts[0].slice(0, 2);
+
+    return res.toUpperCase();
 }
 
 
-function escapeHtml(value = "") {
+function fmtDate(isoStr) {
 
-    return String(value)
-        .replaceAll(
-            "&",
-            "&amp;"
-        )
-        .replaceAll(
-            "<",
-            "&lt;"
-        )
-        .replaceAll(
-            ">",
-            "&gt;"
-        )
-        .replaceAll(
-            '"',
-            "&quot;"
-        )
-        .replaceAll(
-            "'",
-            "&#039;"
-        );
+    if (!isoStr) {
+        return "—";
+    }
+
+    const parts =
+        isoStr.split("T")[0].split("-");
+
+    if (parts.length !== 3) {
+        return isoStr;
+    }
+
+    return `${parts[2]}/${parts[1]}/${parts[0]}`;
 }
 
 
-function escapeAttribute(value = "") {
+function escapeHtml(str) {
 
-    return escapeHtml(value);
+    if (str === null || str === undefined) {
+        return "";
+    }
+
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+function escapeAttribute(str) {
+
+    return escapeHtml(str);
 }

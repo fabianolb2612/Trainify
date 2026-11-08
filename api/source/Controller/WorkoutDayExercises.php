@@ -6,9 +6,6 @@ use Source\Models\WorkoutDayExercise;
 
 class WorkoutDayExercises extends Api
 {
-    /**
-     * Cadastra um exercício dentro de um dia de treino.
-     */
     public function insert(array $data): void
     {
         if (!$this->authToken(2)) {
@@ -35,9 +32,6 @@ class WorkoutDayExercises extends Api
 
         $workoutDayExercise = new WorkoutDayExercise();
 
-        /*
-         * Verifica se o dia pertence ao treinador.
-         */
         if (
             !$workoutDayExercise->workoutDayBelongsToUser(
                 (int)$data["workout_day_id"],
@@ -54,9 +48,6 @@ class WorkoutDayExercises extends Api
             return;
         }
 
-        /*
-         * Verifica se o exercício existe.
-         */
         if (
             !$workoutDayExercise->exerciseExists(
                 (int)$data["exercise_id"]
@@ -118,9 +109,6 @@ class WorkoutDayExercises extends Api
         )->back($response);
     }
 
-    /**
-     * Lista os exercícios de um dia de treino.
-     */
     public function listByWorkoutDay(array $data): void
     {
         if (!$this->authToken(2)) {
@@ -184,9 +172,6 @@ class WorkoutDayExercises extends Api
         )->back($response);
     }
 
-    /**
-     * Busca um exercício específico dentro de um dia.
-     */
     public function listById(array $data): void
     {
         if (!$this->authToken(2)) {
@@ -245,9 +230,6 @@ class WorkoutDayExercises extends Api
         )->back($response);
     }
 
-    /**
-     * Atualiza um exercício dentro de um dia.
-     */
     public function update(array $data): void
     {
         if (!$this->authToken(2)) {
@@ -300,10 +282,6 @@ class WorkoutDayExercises extends Api
             return;
         }
 
-        /*
-         * Se o exercício estiver sendo alterado,
-         * verifica se ele existe.
-         */
         if (
             isset($data["exercise_id"]) &&
             $data["exercise_id"] !== ""
@@ -388,9 +366,6 @@ class WorkoutDayExercises extends Api
         )->back($response);
     }
 
-    /**
-     * Exclui um exercício de um dia.
-     */
     public function delete(array $data): void
     {
         if (!$this->authToken(2)) {
@@ -449,9 +424,6 @@ class WorkoutDayExercises extends Api
         )->back(null);
     }
 
-    /**
-     * Valida os dados recebidos.
-     */
     private function validate(
         array $data,
         bool $requireAll

@@ -1,8 +1,3 @@
-/**
- * TrainiFy - student-workouts.js
- * Gerenciamento dos treinos do aluno.
- */
-
 import Workout from "../../_common/classes/Workout.js";
 import WorkoutService from "../../_common/services/WorkoutService.js";
 import WorkoutDayService from "../../_common/services/WorkoutDayService.js";
@@ -19,13 +14,6 @@ import {
     createToast
 } from "../../_common/prototypes/Toast.js";
 
-
-/*
- * Protótipos reutilizáveis.
- *
- * Os objetos são criados com Object.create(),
- * demonstrando programação prototipal.
- */
 const workoutFormController =
     createFormController();
 
@@ -819,21 +807,10 @@ export default class StudentWorkouts {
 
         const form =
             event.currentTarget;
-
-
-        /*
-         * Utiliza o protótipo FormController
-         * para transformar o formulário em objeto.
-         */
         const data =
             workoutFormController.serialize(
                 form
             );
-
-
-        /*
-         * Validação utilizando o protótipo.
-         */
         if (
             !workoutFormController.validateRequired(
                 form,
@@ -933,25 +910,10 @@ export default class StudentWorkouts {
                 return;
             }
 
-
-            /*
-             * Fecha o modal após a criação/edição.
-             */
             this.closeModal();
 
-
-            /*
-             * Recarrega os treinos pela API.
-             *
-             * Isso atualiza a lista sem precisar
-             * atualizar a página inteira.
-             */
             await this.load();
 
-
-            /*
-             * Mostra a mensagem de sucesso.
-             */
             workoutToast.showSuccess(
                 workout
                     ? "Treino atualizado com sucesso!"
@@ -1373,11 +1335,6 @@ export default class StudentWorkouts {
             `form-message ${type}`;
     }
 }
-
-
-/* =========================================================
-   UTILITÁRIOS
-========================================================= */
 
 function escapeHtml(value = "") {
 

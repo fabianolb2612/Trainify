@@ -1,11 +1,3 @@
-/**
- * TrainiFy - API Helper
- * views/assets/_common/scripts/api.js
- *
- * Provides a centralized, reusable interface for all HTTP requests.
- * Business logic stays in the backend — this layer only handles transport.
- */
-
 const API_BASE = '/api';
 
 /**
@@ -35,7 +27,6 @@ async function apiRequest(endpoint, method = 'GET', body = null, customHeaders =
   try {
     const response = await fetch(`${API_BASE}/${endpoint}`, options);
 
-    // Handle 401 - token expired or invalid
     if (response.status === 401) {
       Auth.logout();
       return { ok: false, status: 401, data: { message: 'Sessão expirada. Faça login novamente.' } };
@@ -61,7 +52,6 @@ async function apiRequest(endpoint, method = 'GET', body = null, customHeaders =
   }
 }
 
-/* ── Shorthand helpers ───────────────────────────── */
 const api = {
   get:    (endpoint)              => apiRequest(endpoint, 'GET'),
   post:   (endpoint, body)        => apiRequest(endpoint, 'POST', body),
@@ -70,20 +60,16 @@ const api = {
   delete: (endpoint)              => apiRequest(endpoint, 'DELETE'),
 };
 
-/* ── Auth Utilities ─────────────────────────────── */
 const Auth = {
-  /** Save token and user data after successful login */
   setSession(token, user) {
     localStorage.setItem('trainify_token', token);
     localStorage.setItem('trainify_user', JSON.stringify(user));
   },
 
-  /** Retrieve stored token */
   getToken() {
     return localStorage.getItem('trainify_token');
   },
 
-  /** Retrieve stored user object */
   getUser() {
     try {
       return JSON.parse(localStorage.getItem('trainify_user'));
@@ -92,25 +78,21 @@ const Auth = {
     }
   },
 
-  /** Check if a session exists */
   isLoggedIn() {
     return !!this.getToken();
   },
 
-  /** Check if logged-in user is admin */
   isAdmin() {
     const user = this.getUser();
     return user && user.role === 'admin';
   },
 
-  /** Clear session and redirect to login */
   logout() {
     localStorage.removeItem('trainify_token');
     localStorage.removeItem('trainify_user');
     window.location.href = '/views/public/login.html';
   },
 
-  /** Guard: redirect to login if not authenticated */
   requireAuth() {
     if (!this.isLoggedIn()) {
       window.location.href = '/views/public/login.html';
@@ -119,7 +101,6 @@ const Auth = {
     return true;
   },
 
-  /** Guard: redirect to app if not admin */
   requireAdmin() {
     if (!this.isAdmin()) {
       window.location.href = '/views/app/dashboard.html';
@@ -129,7 +110,6 @@ const Auth = {
   },
 };
 
-/* ── Toast Notifications ────────────────────────── */
 const Toast = {
   _container: null,
 
@@ -165,9 +145,7 @@ const Toast = {
   warning: (msg) => Toast.show(msg, 'warning'),
 };
 
-/* ── DOM Helpers ─────────────────────────────────── */
 const DOM = {
-  /** Show loading state on a button */
   setLoading(btn, loading = true, originalText = '') {
     if (loading) {
       btn.disabled = true;
@@ -179,7 +157,6 @@ const DOM = {
     }
   },
 
-  /** Fill element with error state */
   showError(container, message) {
     container.innerHTML = `
       <div style="text-align:center;padding:var(--space-xl);color:var(--clr-grey-300);">
@@ -188,7 +165,6 @@ const DOM = {
       </div>`;
   },
 
-  /** Render empty state */
   showEmpty(container, message = 'Nenhum dado encontrado.') {
     container.innerHTML = `
       <div style="text-align:center;padding:var(--space-xl);color:var(--clr-grey-500);">

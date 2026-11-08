@@ -9,47 +9,53 @@ class Api
 {
     protected $userAuthId = null;
     protected array $response = [];
+
     public function authToken(int $typeId): bool
-{
-    $header = getallheaders();
+    {
+        $authHeader = $_SERVER["HTTP_AUTHORIZATION"] 
+                   ?? $_SERVER["REDIRECT_HTTP_AUTHORIZATION"] 
+                   ?? null;
 
-    $token = $header["token"] ?? $header["Authorization"] ?? $header["authorization"] ?? null;
+        if (!$authHeader) {
+            $headers = getallheaders();
+            $headers = array_change_key_case($headers, CASE_LOWER);
+            $authHeader = $headers["authorization"] ?? $headers["token"] ?? null;
+        }
 
-    if (!$token) {
-        return false;
+        if (!$authHeader) {
+            return false;
+        }
+
+        $token = trim($authHeader);
+
+        if (str_starts_with($token, "Bearer ")) {
+            $token = substr($token, 7);
+        }
+
+        $token = trim($token);
+
+        $jwt = new JWTToken();
+        $jwtToken = $jwt->decode($token);
+
+        if (!$jwtToken) {
+            return false;
+        }
+
+        $user = new User();
+
+        if (!$user->permissionVerify($jwtToken->data->email, $typeId)) {
+            return false;
+        }
+
+        $this->userAuthId = $jwtToken->data->id;
+
+        return true;
     }
 
-    $token = trim($token);
-
-    if (str_starts_with($token, "Bearer ")) {
-        $token = substr($token, 7);
-    }
-
-    $token = trim($token);
-
-    $jwt = new JWTToken();
-
-    $jwtToken = $jwt->decode($token);
-
-    if (!$jwtToken) {
-        return false;
-    }
-
-    $user = new User();
-
-    if (!$user->permissionVerify($jwtToken->data->email, $typeId)) {
-        return false;
-    }
-
-    $this->userAuthId = $jwtToken->data->id;
-
-    return true;
-}
-
-    protected function call (int $code, ?string $status = null, ?string $message = null, ?string $type = null): Api
+    protected function call(int $code, ?string $status = null, ?string $message = null, ?string $type = null): Api
     {
         http_response_code($code);
-        if(!empty($status)){
+        if (!empty($status)) {
             $this->response = [
                 "code" => $code,
                 "type" => $type,
@@ -61,17 +67,16 @@ class Api
     }
 
     protected function back(object|array|null $data = null): Api
-{
-    header("Content-Type: application/json");
+    {
+        header("Content-Type: application/json");
 
-    $this->response["data"] = $data;
+        $this->response["data"] = $data;
 
-    echo json_encode(
-        $this->response,
-        JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
-    );
+        echo json_encode(
+            $this->response,
+            JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+        );
 
-    return $this;
-}
-
+        return $this;
+    }
 }

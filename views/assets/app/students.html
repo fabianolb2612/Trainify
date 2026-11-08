@@ -27,7 +27,19 @@
       </nav>
       <div class="sidebar-footer">
         <div class="user-widget">
-          <div class="user-avatar" id="sidebarUserInitials">PT</div>
+          <div
+            class="user-avatar"
+            id="sidebarUserAvatarContainer"
+            style="position: relative; width: 40px; height: 40px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background-color: var(--color-primary, #4f46e5); color: #fff; font-weight: bold;"
+          >
+            <span id="sidebarUserInitials">PT</span>
+            <img
+              id="sidebarUserImg"
+              src=""
+              alt="Foto de Perfil"
+              style="display: none; width: 100%; height: 100%; object-fit: cover;"
+            />
+          </div>
           <div class="user-info">
             <div class="user-name" id="sidebarUserName">Personal Trainer</div>
             <div class="user-role">Treinador</div>

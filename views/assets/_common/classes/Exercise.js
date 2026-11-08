@@ -1,8 +1,3 @@
-/**
- * TrainiFy - Exercise.js
- * Entidade que representa um exercício do catálogo.
- */
-
 export default class Exercise {
 
     #id;
@@ -26,7 +21,6 @@ export default class Exercise {
         this.active = active;
     }
 
-    // ID
     get id() {
         return this.#id;
     }
@@ -34,8 +28,6 @@ export default class Exercise {
     set id(value) {
         this.#id = value !== null ? Number(value) : null;
     }
-
-    // Nome
     get name() {
         return this.#name;
     }
@@ -53,7 +45,6 @@ export default class Exercise {
         this.#name = String(value).trim();
     }
 
-    // Descrição
     get description() {
         return this.#description;
     }
@@ -64,7 +55,6 @@ export default class Exercise {
             : "";
     }
 
-    // Grupo muscular
     get muscleGroup() {
         return this.#muscleGroup;
     }
@@ -75,7 +65,6 @@ export default class Exercise {
             : "";
     }
 
-    // Status
     get active() {
         return this.#active;
     }
@@ -84,10 +73,7 @@ export default class Exercise {
         this.#active = Number(value);
     }
 
-    /**
-     * Converte a entidade para o formato
-     * esperado pela API.
-     */
+  
     toPayload() {
         return {
             name: this.#name,
@@ -95,11 +81,7 @@ export default class Exercise {
             muscle_group: this.#muscleGroup
         };
     }
-
-    /**
-     * Cria uma instância de Exercise a partir
-     * dos dados retornados pela API.
-     */
+    
     static fromJSON(data = {}) {
 
         return new Exercise({

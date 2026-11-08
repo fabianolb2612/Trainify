@@ -1,8 +1,3 @@
-/**
- * TrainiFy - admin-users.js
- * Static version: hardcoded mock users list.
- */
-
 const MOCK_USERS = [
   { id:'1', name:'João Dorea',    email:'joao@email.com',    phone:'(51)99111-0001', role:'trainer', status:'active',   createdAt:'10/01/2025' },
   { id:'2', name:'Maria Santos',  email:'maria@email.com',   phone:'(51)99111-0002', role:'trainer', status:'active',   createdAt:'15/01/2025' },

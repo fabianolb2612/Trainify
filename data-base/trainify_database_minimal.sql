@@ -166,7 +166,20 @@ VALUES
 
   (8, 2, 3, 1, 'Juliana Neves', 'ju.neves@email.com', '(51) 99111-0008', '1991-12-01',
    'BioFit', 'Experiência avançada em crossfit. Quer focar em hipertrofia isolada.', 1);
-
+CREATE TABLE IF NOT EXISTS `student_images` (
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `student_id` INT NOT NULL,
+    `image_path` VARCHAR(255) NOT NULL,
+    `alt_text` VARCHAR(255) DEFAULT NULL,
+    `position` SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `idx_student_images_student_id` (`student_id`),
+    CONSTRAINT `fk_student_images_students`
+        FOREIGN KEY (`student_id`) REFERENCES `students` (`id`)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE `workouts` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `user_id` INT NOT NULL,

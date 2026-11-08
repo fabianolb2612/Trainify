@@ -1,7 +1,6 @@
 import HttpClientBase from "./HttpClientBase.js";
 
 export default class Users extends HttpClientBase {
-
     async login(email, password) {
         return this.postForm("/users/login", {
             email,
@@ -40,7 +39,11 @@ export default class Users extends HttpClientBase {
     }
 
     async update(data) {
-        return this.putForm("/users/update", data);
+        return this.put("/users/update", data);
+    }
+
+    async uploadPhoto(formData) {
+        return this.post("/users/photo", formData);
     }
 
     async updateAdmin(data) {

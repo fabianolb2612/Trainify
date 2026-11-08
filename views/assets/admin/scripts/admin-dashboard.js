@@ -1,8 +1,3 @@
-/**
- * TrainiFy - admin-dashboard.js
- * Static version: hardcoded mock data.
- */
-
 const MOCK_ADMIN_STATS = {
   totalUsers: 142,
   totalStudents: 980,

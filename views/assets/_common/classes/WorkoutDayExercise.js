@@ -8,7 +8,6 @@ export default class WorkoutDayExercise {
     #restSeconds;
     #order;
     #notes;
-
     #exerciseName;
     #exerciseDescription;
 

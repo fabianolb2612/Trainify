@@ -43,10 +43,6 @@ function initLoginForm() {
         button.textContent = "Entrando...";
 
         try {
-            /*
-             * Chamada para:
-             * POST /users/login
-             */
             let result;
 
         if (email === "admin@trainify.com.br") {
@@ -132,10 +128,6 @@ function initRegisterForm() {
         const password = form.password.value;
         const passwordConfirm = form.passwordConfirm.value;
 
-        /* =========================================
-           Validações frontend
-           ========================================= */
-
         if (!name || !email || !password || !passwordConfirm) {
             showAlert(
                 alertEl,
@@ -165,14 +157,6 @@ function initRegisterForm() {
 
             return;
         }
-
-        /*
-         * passwordConfirm NÃO é enviado para a API.
-         *
-         * Ele existe somente para a validação
-         * do formulário no frontend.
-         */
-
         const data = {
             name,
             email,
@@ -185,11 +169,6 @@ function initRegisterForm() {
         button.textContent = "Criando conta...";
 
         try {
-            /*
-             * Chamada para:
-             *
-             * POST /users/register
-             */
             const result = await users.register(data);
 
             if (

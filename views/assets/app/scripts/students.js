@@ -1,8 +1,3 @@
-/**
- * TrainiFy - students.js
- * Lista de alunos integrada com a API.
- */
-
 import StudentService from "../../_common/services/StudentService.js";
 import SessionStorage from "../../_common/scripts/storage.js";
 
@@ -31,9 +26,6 @@ const PER_PAGE = 6;
 let studentsBootstrapped = false;
 
 
-/**
- * Inicialização da página
- */
 async function bootstrapStudentsPage() {
     if (studentsBootstrapped) {
         return;
@@ -49,7 +41,6 @@ async function bootstrapStudentsPage() {
             return;
         }
 
-        // O endpoint /students é protegido por JWT.
         studentService.setAuthToken(token);
 
         await loadStudents();
@@ -72,10 +63,6 @@ async function bootstrapStudentsPage() {
     }
 }
 
-
-/**
- * Busca os alunos na API.
- */
 async function loadStudents() {
     showLoading();
 
@@ -102,10 +89,6 @@ async function loadStudents() {
     renderTable(filtered);
 }
 
-
-/**
- * Atualiza os cards de estatísticas.
- */
 function updateStats() {
     const total = students.length;
 
@@ -133,9 +116,6 @@ function updateStats() {
 }
 
 
-/**
- * Configura os eventos da tabela.
- */
 function initStudentActions() {
     const tbody = document.getElementById(
         "studentsTableBody"
@@ -190,9 +170,6 @@ document.addEventListener("click", event => {
     window.location.href = `student.html?id=${studentId}`;
 });
 
-/**
- * Renderiza a tabela.
- */
 function renderTable(list) {
     const tbody =
         document.getElementById("studentsTableBody");
@@ -302,10 +279,6 @@ function renderTable(list) {
     renderPagination(list.length);
 }
 
-
-/**
- * Renderiza paginação.
- */
 function renderPagination(total) {
     const container =
         document.getElementById("pagination");
@@ -346,20 +319,12 @@ function renderPagination(total) {
         ).join("");
 }
 
-
-/**
- * Troca de página.
- */
 function goToPage(page) {
     currentPage = page;
 
     renderTable(filtered);
 }
 
-
-/**
- * Inicializa os filtros.
- */
 function initFilters() {
     const search =
         document.getElementById("searchInput");
@@ -448,11 +413,6 @@ function initFilters() {
     );
 }
 
-
-/**
- * Pesquisa da barra superior.
- * É chamada pelo app-layout.js.
- */
 function onTopbarSearch(q) {
     const search =
         document.getElementById("searchInput");
@@ -469,9 +429,6 @@ function onTopbarSearch(q) {
 }
 
 
-/**
- * Mostra loading na tabela.
- */
 function showLoading() {
     const tbody =
         document.getElementById(
@@ -497,10 +454,6 @@ function showLoading() {
     `;
 }
 
-
-/**
- * Mostra mensagem na tabela.
- */
 function showTableMessage(message) {
     const tbody =
         document.getElementById(
@@ -528,10 +481,6 @@ function showTableMessage(message) {
 }
 
 
-/**
- * Converte diferentes formatos de nível
- * para o valor usado pelo filtro.
- */
 function normalizeLevel(level) {
 
     if (!level) {
@@ -574,9 +523,6 @@ function normalizeLevel(level) {
 }
 
 
-/**
- * Retorna o nome amigável do nível.
- */
 function getLevelLabel(level) {
 
     if (!level) {
@@ -593,9 +539,6 @@ function getLevelLabel(level) {
 }
 
 
-/**
- * Gera iniciais do aluno.
- */
 function initials(name = "") {
 
     const parts =
@@ -613,10 +556,6 @@ function initials(name = "") {
     ).toUpperCase();
 }
 
-
-/**
- * Define texto de um elemento.
- */
 function setEl(id, value) {
 
     const element =
@@ -627,10 +566,6 @@ function setEl(id, value) {
     }
 }
 
-
-/**
- * Debounce para pesquisa.
- */
 function debounce(fn, ms) {
 
     let timeout;
@@ -647,9 +582,6 @@ function debounce(fn, ms) {
 }
 
 
-/**
- * Inicialização da página.
- */
 document.addEventListener(
     "DOMContentLoaded",
     bootstrapStudentsPage

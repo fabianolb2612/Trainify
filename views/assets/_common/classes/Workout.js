@@ -33,11 +33,6 @@ export default class Workout {
         this.active = active;
     }
 
-
-    // =========================
-    // GETTERS E SETTERS
-    // =========================
-
     get id() {
         return this.#id;
     }
@@ -130,12 +125,6 @@ export default class Workout {
     set active(value) {
         this.#active = Number(value);
     }
-
-
-    // =========================
-    // PAYLOAD PARA API
-    // =========================
-
     toPayload() {
 
     const payload = {
@@ -158,12 +147,6 @@ export default class Workout {
 
     return payload;
 }
-
-
-    // =========================
-    // CONVERTER RESPOSTA DA API
-    // =========================
-
     static fromJSON(data = {}) {
 
         return new Workout({

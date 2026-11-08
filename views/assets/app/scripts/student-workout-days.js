@@ -1,8 +1,3 @@
-/**
- * TrainiFy - student-workout-days.js
- * Gerenciamento dos dias dos treinos.
- */
-
 import WorkoutDay
     from "../../_common/classes/WorkoutDay.js";
 

@@ -1,8 +1,3 @@
-/**
- * TrainiFy - admin-faq.js
- * Static FAQ management mock page.
- */
-
 const MOCK_FAQS = [
   { id: '1', question: 'O TrainiFy é gratuito?', answer: 'Sim! O TrainiFy é gratuito e permite cadastrar até 5 alunos, criar treinos básicos e usar o dashboard com todos os recursos essenciais para organizar sua rotina.', status: 'published' },
   { id: '2', question: 'Preciso instalar algum aplicativo?', answer: 'Não. O TrainiFy é uma plataforma web responsiva que funciona diretamente no navegador — no computador, tablet ou celular. Sem instalação, sem download.', status: 'published' },

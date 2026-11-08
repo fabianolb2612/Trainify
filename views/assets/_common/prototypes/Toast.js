@@ -1,10 +1,3 @@
-/**
- * TrainiFy - Toast.js
- * Protótipo reutilizável para mensagens do sistema.
- *
- * Utiliza Object.create() em vez de class.
- */
-
 const ToastPrototype = {
 
     show(message, type = "success", duration = 3500) {
@@ -134,11 +127,6 @@ const ToastPrototype = {
                 ""
             ).toLowerCase();
 
-
-        /*
-         * Status de sucesso utilizados
-         * pela API do TrainiFy.
-         */
         const successStatuses = [
             "success",
             "created",
@@ -147,19 +135,11 @@ const ToastPrototype = {
             "ok"
         ];
 
-
-        /*
-         * Status de aviso.
-         */
         const warningStatuses = [
             "warning",
             "pending"
         ];
 
-
-        /*
-         * Status de erro.
-         */
         const errorStatuses = [
             "error",
             "failed",
@@ -211,12 +191,6 @@ const ToastPrototype = {
             return;
         }
 
-
-        /*
-         * Resposta inesperada:
-         * nunca deixamos o erro desaparecer
-         * silenciosamente.
-         */
         this.showError(
             response.message ||
             fallbackMessage
@@ -527,11 +501,6 @@ const ToastPrototype = {
     }
 };
 
-
-/**
- * Cria um novo objeto utilizando
- * ToastPrototype como protótipo.
- */
 export function createToast() {
 
     return Object.create(

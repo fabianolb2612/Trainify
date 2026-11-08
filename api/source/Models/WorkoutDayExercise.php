@@ -130,9 +130,6 @@ class WorkoutDayExercise extends Model
         $this->notes = $notes;
     }
 
-    /**
-     * Verifica se o dia de treino pertence ao treinador autenticado.
-     */
     public function workoutDayBelongsToUser(
         int $workoutDayId,
         int $userId
@@ -167,9 +164,6 @@ class WorkoutDayExercise extends Model
         return $stmt->rowCount() > 0;
     }
 
-    /**
-     * Verifica se o exercício existe.
-     */
     public function exerciseExists(int $exerciseId): bool
     {
         $query = "
@@ -192,9 +186,7 @@ class WorkoutDayExercise extends Model
         return $stmt->rowCount() > 0;
     }
 
-    /**
-     * Lista todos os exercícios de um determinado dia.
-     */
+
     public function listAllByWorkoutDayId(
         int $workoutDayId,
         int $userId
@@ -258,9 +250,6 @@ class WorkoutDayExercise extends Model
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Busca um exercício específico dentro de um dia.
-     */
     public function listByIdAndUserId(
         int $id,
         int $userId
@@ -322,9 +311,6 @@ class WorkoutDayExercise extends Model
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Atualiza um exercício dentro do dia.
-     */
     public function updateByIdAndUserId(
         int $id,
         int $userId
@@ -394,9 +380,6 @@ class WorkoutDayExercise extends Model
         return true;
     }
 
-    /**
-     * Remove um exercício do dia.
-     */
     public function deleteByIdAndUserId(
         int $id,
         int $userId

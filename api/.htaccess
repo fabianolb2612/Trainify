@@ -1,5 +1,11 @@
 RewriteEngine On
 
+# Força o Apache a repassar o cabeçalho Authorization
+RewriteCond %{HTTP:Authorization} ^(.*)
+RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
+CGIPassAuth On
+
+# Suas regras de roteamento originais
 RewriteCond %{SCRIPT_FILENAME} !-f
 RewriteCond %{SCRIPT_FILENAME} !-d
 RewriteRule ^(.*)$ index.php?route=/$1 [L,QSA]

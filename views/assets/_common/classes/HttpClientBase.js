@@ -28,7 +28,9 @@ export default class HttpClientBase {
 
         const formData = new FormData();
         Object.entries(data).forEach(([key, value]) => {
-            formData.append(key, value);
+            if (value !== undefined && value !== null) {
+                formData.append(key, value);
+            }
         });
         return formData;
     }
@@ -69,102 +71,85 @@ export default class HttpClientBase {
         return url;
     }
 
-    async #fetchWithConfig(endpoint, config, params = {}) {
-    const { _isFormData, ...fetchConfig } = config;
+    async #fetchWithConfig(endpoint, config = {}, params = {}) {
+        const { _isFormData, ...fetchConfig } = config;
 
-    try {
-        const url = this.#buildUrl(endpoint, params);
+        try {
+            const url = this.#buildUrl(endpoint, params);
 
-        const headers = {
-            ...this.#defaultHeaders,
-            ...fetchConfig.headers
-        };
+            const headers = {
+                ...this.#defaultHeaders,
+                ...fetchConfig.headers
+            };
 
-        if (_isFormData) {
-            delete headers["Content-Type"];
-        }
-
-        const response = await fetch(url, {
-            ...fetchConfig,
-            headers
-        });
-
-        const contentType = response.headers.get("content-type");
-
-        if (contentType && contentType.includes("application/json")) {
-            return await response.json();
-        }
-
-        const text = await response.text();
-
-        if (!response.ok) {
-            throw new Error(
-                `HTTP error! status: ${response.status} - ${text}`
-            );
-        }
-
-        if (text.trim() !== "") {
-            try {
-                return JSON.parse(text);
-            } catch {
-                return text;
+            if (_isFormData) {
+                delete headers["Content-Type"];
             }
+
+            const response = await fetch(url, {
+                ...fetchConfig,
+                headers
+            });
+
+            const contentType = response.headers.get("content-type");
+            let data = null;
+
+            if (contentType && contentType.includes("application/json")) {
+                data = await response.json();
+            } else {
+                data = await response.text();
+            }
+
+            if (!response.ok) {
+                const errorMessage = (typeof data === "object" && data?.message)
+                    ? data.message
+                    : `Erro HTTP: ${response.status}`;
+                throw new Error(errorMessage);
+            }
+
+            return data;
+        } catch (error) {
+            console.error(`Erro na requisição para ${endpoint}:`, error);
+            throw error;
         }
-
-        return text;
-
-    } catch (error) {
-        throw new Error(
-            `Request failed: ${error.message}`
-        );
     }
-}
 
     async get(endpoint, params = {}, headers = {}) {
-        return this.#fetchWithConfig(endpoint, {
-            method: "GET",
-            headers
-        }, params);
+        return this.#fetchWithConfig(endpoint, { method: "GET", headers }, params);
     }
 
-    async post(endpoint, data = {}, params = {}) {
-        const isFormData = data instanceof FormData;
-
-        return this.#fetchWithConfig(endpoint, {
+    async post(endpoint, body = {}, params = {}, headers = {}) {
+        const isFormData = body instanceof FormData;
+        const config = {
             method: "POST",
-            body: isFormData ? data : JSON.stringify(data),
+            headers,
+            body: isFormData ? body : JSON.stringify(body),
             _isFormData: isFormData
-        }, params);
+        };
+        return this.#fetchWithConfig(endpoint, config, params);
     }
 
-    async postForm(endpoint, data = {}, params = {}) {
-        return this.post(endpoint, this.toFormData(data), params);
-    }
-
-    async put(endpoint, data = {}, params = {}) {
-        const isFormData = data instanceof FormData;
-
-        return this.#fetchWithConfig(endpoint, {
+    async put(endpoint, body = {}, params = {}, headers = {}) {
+        const isFormData = body instanceof FormData;
+        const config = {
             method: "PUT",
-            body: isFormData ? data : JSON.stringify(data),
+            headers,
+            body: isFormData ? body : JSON.stringify(body),
             _isFormData: isFormData
-        }, params);
+        };
+        return this.#fetchWithConfig(endpoint, config, params);
     }
 
-    async putForm(endpoint, data = {}, params = {}) {
-        const body = this.toUrlSearchParams(data);
-        return this.#fetchWithConfig(endpoint, {
-            method: "PUT",
-            body: body.toString(),
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            }
-        }, params);
+    async delete(endpoint, params = {}, headers = {}) {
+        return this.#fetchWithConfig(endpoint, { method: "DELETE", headers }, params);
     }
+    async postForm(endpoint, body = {}, params = {}, headers = {}) {
+    const formData = this.toFormData(body);
+    return this.post(endpoint, formData, params, headers);
+}
 
-    async delete(endpoint, params = {}) {
-        return this.#fetchWithConfig(endpoint, {
-            method: "DELETE"
-        }, params);
-    }
+    async putForm(endpoint, body = {}, params = {}, headers = {}) {
+    const formData = this.toFormData(body);
+    return this.put(endpoint, formData, params, headers);
+}
 }

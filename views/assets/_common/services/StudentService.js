@@ -67,34 +67,39 @@ export default class StudentService extends HttpClientBase {
         return response;
     }
 
-    async update(id, student) {
+   async update(id, student) {
+    const studentObject =
+        student instanceof Student
+            ? student
+            : new Student(student);
 
-        const studentObject =
-            student instanceof Student
-                ? student
-                : new Student(student);
+    const payload = {
+        student_id: Number(id),
+        id: Number(id),
+        ...studentObject.toPayload()
+    };
+    const response = await this.put(
+        `/students/${id}`,
+        payload
+    );
 
-        const payload = {
-            student_id: id,
-            ...studentObject.toPayload()
-        };
-
-        const response = await this.putForm(
-            `/students/${id}`,
-            payload
-        );
-
-        if (response?.data) {
-            response.data =
-                Student.fromJSON(response.data);
-        }
-
-        return response;
+    if (response?.data) {
+        response.data = Student.fromJSON(response.data);
     }
 
+    return response;
+}
+
     async remove(id) {
-        return this.delete(
+        return super.delete(
             `/students/${id}`
         );
+    }
+
+    async delete(id) {
+        if (typeof id === "number" || (typeof id === "string" && !id.includes("/"))) {
+            return super.delete(`/students/${id}`);
+        }
+        return super.delete(id);
     }
 }

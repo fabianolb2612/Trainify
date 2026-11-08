@@ -11,11 +11,7 @@ const storage = new SessionStorage();
 
 
 let originalProfile = null;
-
-
-/* =========================================================
-   INICIALIZAÇÃO
-========================================================= */
+let selectedPhotoFile = null;
 
 document.addEventListener("DOMContentLoaded", async () => {
 
@@ -34,11 +30,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     await loadProfile();
 });
-
-
-/* =========================================================
-   CARREGAR PERFIL
-========================================================= */
 
 async function loadProfile() {
 
@@ -81,11 +72,6 @@ async function loadProfile() {
         );
     }
 }
-
-
-/* =========================================================
-   PREENCHER PERFIL
-========================================================= */
 
 function populateProfile(profile) {
 
@@ -138,7 +124,8 @@ function populateProfile(profile) {
     }
 
 
-    setAvatarInitials(
+    updateAvatarDisplay(
+        profile.photo,
         profile.name
     );
 
@@ -147,14 +134,98 @@ function populateProfile(profile) {
     );
 
     updateSidebar(
-        profile.name
+        profile.name,
+        profile.photo
     );
 }
 
+function updateAvatarDisplay(photo, name = "") {
 
-/* =========================================================
-   ESTATÍSTICAS
-========================================================= */
+    const initialsElement =
+        document.getElementById(
+            "profileAvatarInitials"
+        );
+
+    const imgElement =
+        document.getElementById(
+            "profileAvatarImg"
+        );
+
+
+    if (photo) {
+
+        let photoUrl = photo;
+
+        if (
+            !photo.startsWith("blob:") &&
+            !photo.startsWith("http")
+        ) {
+
+            const cleanPath =
+                photo
+                    .replace(/^\/+/, "")
+                    .replace(/^views\//, "")
+                    .replace(/^uploads\//, "");
+
+            photoUrl =
+                `/trainify/uploads/${cleanPath}`;
+        }
+
+
+        if (imgElement) {
+
+            imgElement.src =
+                photoUrl;
+
+            imgElement.style.display =
+                "block";
+
+            imgElement.onerror = () => {
+
+                console.warn(
+                    "Foto não encontrada no caminho:",
+                    photoUrl
+                );
+
+                imgElement.style.display =
+                    "none";
+
+                if (initialsElement) {
+
+                    initialsElement.style.display =
+                        "flex";
+                }
+            };
+        }
+
+        if (initialsElement) {
+
+            initialsElement.style.display =
+                "none";
+        }
+
+    } else {
+
+        if (imgElement) {
+
+            imgElement.style.display =
+                "none";
+
+            imgElement.src =
+                "";
+        }
+
+        if (initialsElement) {
+
+            initialsElement.style.display =
+                "flex";
+        }
+
+        setAvatarInitials(
+            name
+        );
+    }
+}
 
 async function loadProfileStats() {
 
@@ -217,11 +288,6 @@ async function loadProfileStats() {
     }
 }
 
-
-/* =========================================================
-   AÇÕES DO PERFIL
-========================================================= */
-
 function initProfileActions() {
 
     const form =
@@ -242,6 +308,30 @@ function initProfileActions() {
         );
 
 
+    const photoInput =
+        document.getElementById(
+            "profilePhotoInput"
+        );
+
+
+    const changePhotoBtn =
+        document.getElementById(
+            "changePhotoBtn"
+        );
+
+
+    const confirmPhotoBtn =
+        document.getElementById(
+            "confirmPhotoBtn"
+        );
+
+
+    const cancelPhotoPreviewBtn =
+        document.getElementById(
+            "cancelPhotoPreviewBtn"
+        );
+
+
     form?.addEventListener(
         "submit",
         handleProfileSubmit
@@ -258,12 +348,287 @@ function initProfileActions() {
         "click",
         handleAccountDelete
     );
+
+
+    changePhotoBtn?.addEventListener(
+        "click",
+        () => {
+
+            if (changePhotoBtn.tagName !== "LABEL") {
+
+                photoInput?.click();
+            }
+        }
+    );
+
+    photoInput?.addEventListener(
+        "change",
+        handlePhotoSelect
+    );
+
+    confirmPhotoBtn?.addEventListener(
+        "click",
+        handlePhotoUpload
+    );
+
+    cancelPhotoPreviewBtn?.addEventListener(
+        "click",
+        handlePhotoPreviewCancel
+    );
+}
+
+function handlePhotoSelect(event) {
+
+    const file =
+        event.target.files?.[0];
+
+    if (!file) {
+        return;
+    }
+
+
+    const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+
+        showToast(
+            "Selecione uma imagem válida (JPG, PNG ou WEBP).",
+            "error"
+        );
+
+        event.target.value = "";
+
+        return;
+    }
+
+
+    const maxSize =
+        5 * 1024 * 1024; // 5MB
+
+    if (file.size > maxSize) {
+
+        showToast(
+            "A foto excede o tamanho máximo de 5MB.",
+            "error"
+        );
+
+        event.target.value = "";
+
+        return;
+    }
+
+
+    selectedPhotoFile = file;
+
+    const previewUrl =
+        URL.createObjectURL(file);
+
+    updateAvatarDisplay(
+        previewUrl,
+        originalProfile?.name || ""
+    );
+
+    togglePhotoActionButtons(true);
 }
 
 
-/* =========================================================
-   SALVAR ALTERAÇÕES
-========================================================= */
+async function handlePhotoUpload() {
+
+    if (!selectedPhotoFile) {
+        showToast(
+            "Selecione uma foto primeiro.",
+            "error"
+        );
+        return;
+    }
+
+
+    const confirmPhotoBtn =
+        document.getElementById(
+            "confirmPhotoBtn"
+        );
+
+
+    try {
+
+        setButtonLoading(
+            confirmPhotoBtn,
+            true,
+            "Enviando..."
+        );
+
+
+        const formData =
+            new FormData();
+
+        formData.append(
+            "photo",
+            selectedPhotoFile
+        );
+
+        const response =
+            await users.uploadPhoto(formData);
+
+
+        console.log(
+            "RESPOSTA UPLOAD FOTO:",
+            response
+        );
+
+
+        if (
+            response?.status !== "success" &&
+            response?.status !== 200 &&
+            response?.code !== 200
+        ) {
+
+            throw new Error(
+                response?.message ||
+                "Não foi possível enviar a foto."
+            );
+        }
+
+
+        const uploadedPhoto =
+            response.data?.photo ||
+            response.photo ||
+            response.data?.filename ||
+            response.data?.user?.photo;
+
+
+        if (uploadedPhoto) {
+
+            originalProfile.photo =
+                uploadedPhoto;
+
+            const currentUser =
+                storage.getUser() || {};
+
+            currentUser.photo =
+                uploadedPhoto;
+
+            storage.saveSession(
+                storage.getToken(),
+                currentUser
+            );
+
+            updateAvatarDisplay(
+                uploadedPhoto,
+                originalProfile.name
+            );
+
+            updateSidebar(
+                originalProfile.name,
+                uploadedPhoto
+            );
+        }
+
+
+        showToast(
+            "Foto de perfil atualizada com sucesso!",
+            "success"
+        );
+
+        selectedPhotoFile = null;
+
+        togglePhotoActionButtons(false);
+
+    } catch (error) {
+
+        console.error(
+            "ERRO NO UPLOAD DA FOTO:",
+            error
+        );
+
+        showToast(
+            error.message ||
+            "Erro ao enviar a foto de perfil.",
+            "error"
+        );
+
+        handlePhotoPreviewCancel();
+
+    } finally {
+
+        setButtonLoading(
+            confirmPhotoBtn,
+            false,
+            "✓ Salvar Foto"
+        );
+    }
+}
+
+function handlePhotoPreviewCancel() {
+
+    selectedPhotoFile = null;
+
+    const photoInput =
+        document.getElementById(
+            "profilePhotoInput"
+        );
+
+    if (photoInput) {
+        photoInput.value = "";
+    }
+
+    updateAvatarDisplay(
+        originalProfile?.photo,
+        originalProfile?.name
+    );
+
+    updateSidebar(
+        originalProfile?.name,
+        originalProfile?.photo
+    );
+
+
+    togglePhotoActionButtons(false);
+}
+
+
+function togglePhotoActionButtons(isConfirmMode) {
+
+    const changePhotoBtn =
+        document.getElementById(
+            "changePhotoBtn"
+        );
+
+    const photoPreviewActions =
+        document.getElementById(
+            "photoPreviewActions"
+        );
+
+
+    if (isConfirmMode) {
+
+        if (changePhotoBtn) {
+            changePhotoBtn.style.display =
+                "none";
+        }
+
+        if (photoPreviewActions) {
+            photoPreviewActions.style.display =
+                "flex";
+        }
+
+    } else {
+
+        if (changePhotoBtn) {
+            changePhotoBtn.style.display =
+                "inline-block";
+        }
+
+        if (photoPreviewActions) {
+            photoPreviewActions.style.display =
+                "none";
+        }
+    }
+}
+
 
 async function handleProfileSubmit(event) {
 
@@ -366,10 +731,6 @@ async function handleProfileSubmit(event) {
         }
 
 
-        /*
-         * A API retorna os dados atualizados
-         * do usuário.
-         */
         const updatedUser =
             response.data;
 
@@ -378,10 +739,6 @@ async function handleProfileSubmit(event) {
             storage.getToken();
 
 
-        /*
-         * Atualiza os dados da sessão
-         * mantendo o token atual.
-         */
         storage.saveSession(
             token,
             {
@@ -400,7 +757,8 @@ async function handleProfileSubmit(event) {
                     updatedUser.email || "",
 
                 photo:
-                    updatedUser.photo || null,
+                    updatedUser.photo ||
+                    originalProfile.photo,
 
                 cref:
                     updatedUser.cref || "",
@@ -420,10 +778,6 @@ async function handleProfileSubmit(event) {
         );
 
 
-        /*
-         * Atualiza o perfil usado
-         * pelo botão Cancelar.
-         */
         originalProfile = {
 
             id:
@@ -441,7 +795,8 @@ async function handleProfileSubmit(event) {
                 updatedUser.email || "",
 
             photo:
-                updatedUser.photo || null,
+                updatedUser.photo ||
+                originalProfile.photo,
 
             cref:
                 updatedUser.cref || "",
@@ -501,10 +856,6 @@ async function handleProfileSubmit(event) {
 }
 
 
-/* =========================================================
-   CANCELAR ALTERAÇÕES
-========================================================= */
-
 function handleProfileCancel() {
 
     if (!originalProfile) {
@@ -523,10 +874,6 @@ function handleProfileCancel() {
     );
 }
 
-
-/* =========================================================
-   EXCLUIR CONTA
-========================================================= */
 
 async function handleAccountDelete() {
 
@@ -592,9 +939,6 @@ async function handleAccountDelete() {
         }
 
 
-        /*
-         * Remove a sessão local.
-         */
         storage.clearSession();
 
 
@@ -603,9 +947,6 @@ async function handleAccountDelete() {
         );
 
 
-        /*
-         * Volta para o login.
-         */
         window.location.href =
             "../public/login.html";
 
@@ -639,11 +980,6 @@ async function handleAccountDelete() {
     }
 }
 
-
-/* =========================================================
-   VALOR DOS CAMPOS
-========================================================= */
-
 function setValue(id, value) {
 
     const element =
@@ -674,11 +1010,6 @@ function setValue(id, value) {
             value ?? "";
     }
 }
-
-
-/* =========================================================
-   INICIAIS DO AVATAR
-========================================================= */
 
 function setAvatarInitials(name = "") {
 
@@ -723,11 +1054,6 @@ function setAvatarInitials(name = "") {
         initials.toUpperCase();
 }
 
-
-/* =========================================================
-   TOPBAR
-========================================================= */
-
 function updateTopbar(name = "") {
 
     const element =
@@ -751,12 +1077,7 @@ function updateTopbar(name = "") {
         firstName || "";
 }
 
-
-/* =========================================================
-   SIDEBAR
-========================================================= */
-
-function updateSidebar(name = "") {
+function updateSidebar(name = "", photo = null) {
 
     const nameElement =
         document.getElementById(
@@ -770,6 +1091,12 @@ function updateSidebar(name = "") {
         );
 
 
+    const imgElement =
+        document.getElementById(
+            "sidebarUserImg"
+        );
+
+
     if (nameElement) {
 
         nameElement.textContent =
@@ -778,43 +1105,102 @@ function updateSidebar(name = "") {
     }
 
 
-    if (initialsElement) {
+    if (photo) {
 
-        const parts =
-            name
-                .trim()
-                .split(/\s+/)
-                .filter(Boolean);
+        let photoUrl = photo;
 
+        if (
+            !photo.startsWith("blob:") &&
+            !photo.startsWith("http")
+        ) {
 
-        if (!parts.length) {
+            const cleanPath =
+                photo
+                    .replace(/^\/+/, "")
+                    .replace(/^views\//, "")
+                    .replace(/^uploads\//, "");
 
-            initialsElement.textContent =
-                "PT";
-
-            return;
+            photoUrl =
+                `/trainify/uploads/${cleanPath}`;
         }
 
 
-        const initials =
+        if (imgElement) {
 
-            parts.length > 1
+            imgElement.src =
+                photoUrl;
 
-                ? parts[0][0] +
-                  parts[parts.length - 1][0]
+            imgElement.style.display =
+                "block";
 
-                : parts[0].slice(0, 2);
+            imgElement.onerror = () => {
+
+                imgElement.style.display =
+                    "none";
+
+                if (initialsElement) {
+
+                    initialsElement.style.display =
+                        "inline-block";
+                }
+            };
+        }
+
+        if (initialsElement) {
+
+            initialsElement.style.display =
+                "none";
+        }
+
+    } else {
+
+        if (imgElement) {
+
+            imgElement.style.display =
+                "none";
+
+            imgElement.src =
+                "";
+        }
+
+        if (initialsElement) {
+
+            initialsElement.style.display =
+                "inline-block";
 
 
-        initialsElement.textContent =
-            initials.toUpperCase();
+            const parts =
+                name
+                    .trim()
+                    .split(/\s+/)
+                    .filter(Boolean);
+
+
+            if (!parts.length) {
+
+                initialsElement.textContent =
+                    "PT";
+
+                return;
+            }
+
+
+            const initials =
+
+                parts.length > 1
+
+                    ? parts[0][0] +
+                      parts[parts.length - 1][0]
+
+                    : parts[0].slice(0, 2);
+
+
+            initialsElement.textContent =
+                initials.toUpperCase();
+        }
     }
 }
 
-
-/* =========================================================
-   LOADING DOS BOTÕES
-========================================================= */
 
 function setButtonLoading(
     button,
@@ -829,10 +1215,6 @@ function setButtonLoading(
 
     if (loading) {
 
-        /*
-         * Guarda o texto original somente
-         * na primeira vez.
-         */
         if (!button.dataset.originalText) {
 
             button.dataset.originalText =
@@ -854,11 +1236,6 @@ function setButtonLoading(
             loadingText;
     }
 }
-
-
-/* =========================================================
-   TOAST
-========================================================= */
 
 function showToast(
     message,

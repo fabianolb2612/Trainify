@@ -3,9 +3,7 @@ import AuthGuard from "../../_common/scripts/auth-guard.js";
 
 const storage = new SessionStorage();
 
-// =========================================
-// PROTEÇÃO DO PAINEL ADMIN
-// =========================================
+
 
 const guard = new AuthGuard(
   "../public/login.html",
@@ -14,13 +12,9 @@ const guard = new AuthGuard(
 );
 
 if (!guard.protect()) {
-  // Usuário não autenticado ou não é admin.
-  // O AuthGuard já faz o redirecionamento.
+
 }
 
-// =========================================
-// INICIALIZAÇÃO
-// =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
   setActiveAdminNav();
@@ -29,9 +23,6 @@ document.addEventListener("DOMContentLoaded", () => {
   initAdminLogout();
 });
 
-// =========================================
-// MENU ATIVO
-// =========================================
 
 function setActiveAdminNav() {
   const page = window.location.pathname.split("/").pop();
@@ -46,9 +37,6 @@ function setActiveAdminNav() {
     });
 }
 
-// =========================================
-// SIDEBAR MOBILE
-// =========================================
 
 function initAdminSidebar() {
   const sidebar = document.getElementById("adminSidebar");
@@ -70,9 +58,6 @@ function initAdminSidebar() {
   });
 }
 
-// =========================================
-// DADOS DO ADMIN LOGADO
-// =========================================
 
 function populateAdminUser() {
   const user = storage.getUser();
@@ -85,14 +70,11 @@ function populateAdminUser() {
 
   const parts = name.trim().split(" ");
 
-  // Nome no topo
   const el = document.getElementById("adminUserName");
 
   if (el) {
     el.textContent = parts[0];
   }
-
-  // Iniciais
   const av = document.getElementById("adminAvatarInitials");
 
   if (av) {
@@ -105,10 +87,6 @@ function populateAdminUser() {
   }
 }
 
-// =========================================
-// LOGOUT
-// =========================================
-
 function initAdminLogout() {
   document
     .querySelectorAll('[data-action="logout"]')
@@ -117,10 +95,8 @@ function initAdminLogout() {
       btn.addEventListener("click", event => {
         event.preventDefault();
 
-        // Apaga token + usuário
         storage.clearSession();
 
-        // Volta para login
         window.location.href = "../public/login.html";
       });
 

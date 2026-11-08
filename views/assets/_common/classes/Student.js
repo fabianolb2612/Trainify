@@ -10,8 +10,6 @@ export default class Student {
     #gym;
     #notes;
     #active;
-
-    // Dados vindos dos JOINs da API
     #trainingLevel;
     #goal;
 
@@ -46,7 +44,7 @@ export default class Student {
         this.#goal = goal;
     }
 
-    // ID
+
     get id() {
         return this.#id;
     }
@@ -66,7 +64,7 @@ export default class Student {
         this.#id = number;
     }
 
-    // User ID
+
     get userId() {
         return this.#userId;
     }
@@ -86,7 +84,6 @@ export default class Student {
         this.#userId = number;
     }
 
-    // Training Level
     get trainingLevelId() {
         return this.#trainingLevelId;
     }
@@ -108,7 +105,6 @@ export default class Student {
         this.#trainingLevelId = number;
     }
 
-    // Goal
     get goalId() {
         return this.#goalId;
     }
@@ -130,7 +126,6 @@ export default class Student {
         this.#goalId = number;
     }
 
-    // Name
     get name() {
         return this.#name;
     }
@@ -143,7 +138,6 @@ export default class Student {
         this.#name = value.trim();
     }
 
-    // Email
     get email() {
         return this.#email;
     }
@@ -161,7 +155,6 @@ export default class Student {
         this.#email = value.trim();
     }
 
-    // Phone
     get phone() {
         return this.#phone;
     }
@@ -172,7 +165,6 @@ export default class Student {
             : String(value).trim();
     }
 
-    // Birthdate
     get birthdate() {
         return this.#birthdate;
     }
@@ -182,8 +174,6 @@ export default class Student {
             ? null
             : String(value).trim();
     }
-
-    // Gym
     get gym() {
         return this.#gym;
     }
@@ -194,7 +184,6 @@ export default class Student {
             : String(value).trim();
     }
 
-    // Notes
     get notes() {
         return this.#notes;
     }
@@ -205,7 +194,6 @@ export default class Student {
             : String(value).trim();
     }
 
-    // Active
     get active() {
         return this.#active;
     }
@@ -214,7 +202,6 @@ export default class Student {
         this.#active = Number(value) === 1 ? 1 : 0;
     }
 
-    // Campos retornados pelos JOINs
     get trainingLevel() {
         return this.#trainingLevel;
     }
@@ -223,10 +210,6 @@ export default class Student {
         return this.#goal;
     }
 
-    /**
-     * Converte o objeto JavaScript para o formato
-     * esperado pela API.
-     */
   toJSON() {
     return {
         id: this.id,
@@ -256,11 +239,6 @@ toPayload() {
     };
 }
 
-
-    /**
-     * Cria um objeto Student a partir
-     * de uma resposta da API.
-     */
     static fromJSON(data = {}) {
         return new Student({
             id: data.id,
@@ -274,8 +252,6 @@ toPayload() {
             gym: data.gym,
             notes: data.notes,
             active: data.active,
-
-            // Dados provenientes dos JOINs
             trainingLevel: data.training_level,
             goal: data.goal
         });

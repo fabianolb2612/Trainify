@@ -1,8 +1,3 @@
-/**
- * TrainiFy - WorkoutDay.js
- * Entidade que representa um dia de treino.
- */
-
 export default class WorkoutDay {
 
     #id;
@@ -26,7 +21,6 @@ export default class WorkoutDay {
         this.active = active;
     }
 
-    // ID
     get id() {
         return this.#id;
     }
@@ -34,8 +28,6 @@ export default class WorkoutDay {
     set id(value) {
         this.#id = value !== null ? Number(value) : null;
     }
-
-    // Workout ID
     get workoutId() {
         return this.#workoutId;
     }
@@ -44,7 +36,6 @@ export default class WorkoutDay {
         this.#workoutId = value !== null ? Number(value) : null;
     }
 
-    // Nome
     get name() {
         return this.#name;
     }
@@ -62,7 +53,6 @@ export default class WorkoutDay {
         this.#name = String(value).trim();
     }
 
-    // Ordem de exibição
     get displayOrder() {
         return this.#displayOrder;
     }
@@ -71,7 +61,6 @@ export default class WorkoutDay {
         this.#displayOrder = Number(value) || 0;
     }
 
-    // Status
     get active() {
         return this.#active;
     }
@@ -80,9 +69,6 @@ export default class WorkoutDay {
         this.#active = Number(value);
     }
 
-    /**
-     * Converte a entidade para o formato esperado pela API.
-     */
     toPayload() {
         return {
             workout_id: this.#workoutId,
@@ -90,11 +76,6 @@ export default class WorkoutDay {
             display_order: this.#displayOrder
         };
     }
-
-    /**
-     * Cria uma instância de WorkoutDay a partir
-     * dos dados retornados pela API.
-     */
     static fromJSON(data = {}) {
 
         return new WorkoutDay({

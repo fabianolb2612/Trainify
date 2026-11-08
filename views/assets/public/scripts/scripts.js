@@ -1,13 +1,8 @@
-/* =====================================================
-   Running Power — Interactive Scripts
-   ===================================================== */
 
-// http://localhost:8080/acme-3am/api/faqs/category/6
 async function fetchFAQs() {
   const response = await fetch("http://localhost:8080/acme-3am/api/faqs/category/1");
-  //console.log(response);
+
   const faqs = await response.json();
-  //console.log(faqs.data);
   const listFaqs = document.querySelector("#list-faqs");
 
   faqs.data.forEach(faq => {
@@ -27,7 +22,6 @@ async function fetchFAQs() {
     listFaqs.appendChild(faqItem);
   });
 
-  // Inicializa os ícones Lucide nos novos elementos
   if (typeof lucide !== 'undefined') {
     lucide.createIcons();
   }
@@ -45,7 +39,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initHeaderScroll();
 });
 
-/* ---- Scroll-triggered animations ---- */
 function initScrollAnimations() {
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (prefersReducedMotion) return;
@@ -64,7 +57,6 @@ function initScrollAnimations() {
   document.querySelectorAll('.animate-on-scroll').forEach((el) => observer.observe(el));
 }
 
-/* ---- Mobile Menu ---- */
 function initMobileMenu() {
   const btn = document.getElementById('mobile-menu-btn');
   const menu = document.getElementById('mobile-menu');
@@ -96,12 +88,10 @@ function initMobileMenu() {
   });
 }
 
-/* ---- FAQ Accordion ---- */
 function initFAQ() {
   const listFaqs = document.querySelector("#list-faqs");
   if (!listFaqs) return;
 
-  // Event delegation: escuta cliques no <dl> para capturar botões adicionados dinamicamente
   listFaqs.addEventListener("click", (e) => {
     const btn = e.target.closest(".faq-question");
     if (!btn) return;
@@ -120,7 +110,6 @@ function initFAQ() {
 
 }
 
-/* ---- Smooth Scroll for anchor links ---- */
 function initSmoothScroll() {
   document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     anchor.addEventListener('click', (e) => {
@@ -137,7 +126,6 @@ function initSmoothScroll() {
   });
 }
 
-/* ---- Counter Animation ---- */
 function initCounterAnimation() {
   const counters = document.querySelectorAll('[data-count]');
   if (counters.length === 0) return;
@@ -176,7 +164,6 @@ function initCounterAnimation() {
   counters.forEach((el) => observer.observe(el));
 }
 
-/* ---- Header background on scroll ---- */
 function initHeaderScroll() {
   const header = document.getElementById('header');
   if (!header) return;

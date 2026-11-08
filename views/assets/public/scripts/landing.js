@@ -1,8 +1,3 @@
-/**
- * TrainiFy - landing.js
- * Public landing page interactions
- */
-
 document.addEventListener('DOMContentLoaded', () => {
   initNav();
   initChartBars();
@@ -11,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initFaqToggle();
 });
 
-/** Sticky navbar on scroll */
 function initNav() {
   const nav = document.querySelector('.pub-nav');
   if (!nav) return;
@@ -30,7 +24,6 @@ function initChartBars() {
   });
 }
 
-/** Fade-in on scroll via IntersectionObserver */
 function animateOnScroll() {
   const targets = document.querySelectorAll('.feature-card, .step-card, .price-card, .benefit-item');
   if (!('IntersectionObserver' in window)) return;
@@ -75,8 +68,6 @@ function initFaqToggle() {
     });
   });
 }
-
-/** Smooth scroll for anchor links */
 document.querySelectorAll('a[href^="#"]').forEach(link => {
   link.addEventListener('click', e => {
     const target = document.querySelector(link.getAttribute('href'));
