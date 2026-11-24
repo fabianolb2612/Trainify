@@ -1,24 +1,18 @@
 const MOCK_ADMIN_STATS = {
-  totalUsers: 142,
-  totalStudents: 980,
-  totalWorkouts: 2400,
-  revenue: 'R$ 5.8k'
+  totalUsers: 1,
+  totalStudents: 1,
+  totalWorkouts: 1,
+  revenue: 'R$ 0,00'
 };
 
 const MOCK_ADMIN_ACTIVITY = [
-  { text: 'Novo usuário <strong>Carlos Melo</strong> cadastrado', time: '5 min' },
-  { text: 'Conta ativada por Fernanda S.', time: '20 min' },
-  { text: 'Relatório mensal exportado por Admin', time: '1h' },
-  { text: 'Usuário <strong>Pedro R.</strong> suspendeu a conta', time: '3h' },
-  { text: 'Conta ativada para novo usuário', time: '5h' }
+  { text: 'Novo usuário <strong>Fabiano Braga</strong> cadastrado', time: '10 min' },
+  { text: 'Aluno <strong>Alex Possamai</strong> cadastrado por Fabiano Braga', time: '5 min' },
+  { text: 'Novo treino criado para <strong>Alex Possamai</strong>', time: '2 min' }
 ];
 
 const MOCK_RECENT_USERS = [
-  { name: 'João Dorea',   status: 'active',   date: '10/01/2025' },
-  { name: 'Maria Santos', status: 'active',   date: '15/01/2025' },
-  { name: 'Carlos Rocha', status: 'active',   date: '22/01/2025' },
-  { name: 'Ana Pereira',  status: 'active',   date: '03/02/2025' },
-  { name: 'Lucas Dias',   status: 'inactive', date: '10/02/2025' }
+  { name: 'Fabiano Braga', status: 'active', date: '24/11/2026' }
 ];
 
 document.addEventListener('DOMContentLoaded', () => {

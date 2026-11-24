@@ -1,10 +1,5 @@
 const MOCK_USERS = [
-  { id:'1', name:'João Dorea',    email:'joao@email.com',    phone:'(51)99111-0001', role:'trainer', status:'active',   createdAt:'10/01/2025' },
-  { id:'2', name:'Maria Santos',  email:'maria@email.com',   phone:'(51)99111-0002', role:'trainer', status:'active',   createdAt:'15/01/2025' },
-  { id:'3', name:'Carlos Rocha',  email:'carlos@email.com',  phone:'(51)99111-0003', role:'trainer', status:'active',   createdAt:'22/01/2025' },
-  { id:'4', name:'Ana Pereira',   email:'ana@email.com',     phone:'(51)99111-0004', role:'trainer', status:'active',   createdAt:'03/02/2025' },
-  { id:'5', name:'Lucas Dias',    email:'lucas@email.com',   phone:'(51)99111-0005', role:'trainer', status:'inactive', createdAt:'10/02/2025' },
-  { id:'6', name:'Admin TrainiFy',email:'admin@trainify.com',phone:'(51)99000-0000', role:'admin',   status:'active',   createdAt:'01/01/2025' }
+  { id:'1', name:'Fabiano Braga', email:'fabiano@trainify.com', phone:'(51)99111-0001', role:'trainer', status:'active', createdAt:'24/11/2026' }
 ];
 
 let filteredUsers = [...MOCK_USERS];
@@ -12,7 +7,7 @@ let filteredUsers = [...MOCK_USERS];
 document.addEventListener('DOMContentLoaded', () => {
   setEl('adminStatUsers',  MOCK_USERS.length);
   setEl('adminStatActive', MOCK_USERS.filter(u => u.status === 'active').length);
-  setEl('adminStatNew',    2);
+  setEl('adminStatNew',    1);
   renderUsers(filteredUsers);
   initUserFilters();
   initUserActions();
