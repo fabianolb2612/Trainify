@@ -333,4 +333,43 @@ class User extends Model
 
         return $stmt->rowCount() > 0;
     }
+    public function toggleStatus(int $id): bool
+    {
+        try {
+            $query = "UPDATE {$this->table} SET active = IF(active = 1, 0, 1) WHERE id = :id";
+            $stmt = Connect::getInstance()->prepare($query);
+            $stmt->bindValue(":id", $id, PDO::PARAM_INT);
+            $stmt->execute();
+
+            if ($stmt->rowCount() === 0) {
+                $this->errorMessage = "Usuário não encontrado.";
+                return false;
+            }
+
+            return true;
+        } catch (PDOException $exception) {
+            $this->errorMessage = "Erro ao alterar status do usuário.";
+            return false;
+        }
+    }
+
+    public function deleteUser(int $id): bool
+    {
+        try {
+            $query = "DELETE FROM {$this->table} WHERE id = :id";
+            $stmt = Connect::getInstance()->prepare($query);
+            $stmt->bindValue(":id", $id, PDO::PARAM_INT);
+            $stmt->execute();
+
+            if ($stmt->rowCount() === 0) {
+                $this->errorMessage = "Usuário não encontrado.";
+                return false;
+            }
+
+            return true;
+        } catch (PDOException $exception) {
+            $this->errorMessage = "Não é possível excluir este usuário pois possui registros vinculados.";
+            return false;
+        }
+    }
 }

@@ -618,4 +618,87 @@ class Users extends Api
             "success"
         )->back(null);
     }
+    public function toggleStatus(array $data): void
+    {
+        if (!$this->authToken(1)) {
+            $this->call(
+                401,
+                "unauthorized",
+                "Administrador não autenticado ou token inválido.",
+                "error"
+            )->back(null);
+            return;
+        }
+
+        $id = filter_var($data["user_id"] ?? 0, FILTER_VALIDATE_INT);
+        if (!$id) {
+            $this->call(
+                400,
+                "bad_request",
+                "ID do usuário inválido.",
+                "error"
+            )->back(null);
+            return;
+        }
+
+        $user = new User();
+        if (!$user->toggleStatus($id)) {
+            $this->call(
+                404,
+                "not_found",
+                $user->getErrorMessage(),
+                "error"
+            )->back(null);
+            return;
+        }
+
+        $this->call(
+            200,
+            "success",
+            "Status atualizado com sucesso.",
+            "success"
+        )->back(null);
+    }
+
+    public function deleteAdmin(array $data): void
+    {
+        if (!$this->authToken(1)) {
+            $this->call(
+                401,
+                "unauthorized",
+                "Administrador não autenticado ou token inválido.",
+                "error"
+            )->back(null);
+            return;
+        }
+
+        $id = filter_var($data["user_id"] ?? 0, FILTER_VALIDATE_INT);
+        if (!$id) {
+            $this->call(
+                400,
+                "bad_request",
+                "ID do usuário inválido.",
+                "error"
+            )->back(null);
+            return;
+        }
+
+        $user = new User();
+        if (!$user->deleteUser($id)) {
+            $this->call(
+                400,
+                "bad_request",
+                $user->getErrorMessage(),
+                "error"
+            )->back(null);
+            return;
+        }
+
+        $this->call(
+            200,
+            "success",
+            "Usuário removido com sucesso.",
+            "success"
+        )->back(null);
+    }
 }
